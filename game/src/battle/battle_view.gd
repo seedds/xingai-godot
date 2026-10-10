@@ -175,10 +175,38 @@ func add_patch(entry: int, c: Vector2i) -> Node:
 	return sp
 
 
-## Small overlay marks (patch < 4): 0/2 fire, 1/3 other.
+## Map objects of ops 0x58 / 0x21 and 纵火 / 修筑 whose type is kept per cell (types 0..3 and > 200), drawn by
+## 0x4525da with the battle object's frame counter B+5 (0..7): 0 fire (U_select 19 frames 0..3, blended 0x46), 1 boat
+## (frames 4/5), 2 burning boat (6/7), 3 the white cell frame (Mark 标志 frame 3, hidden with byte EV[4049] = 1),
+## 201..203 the trap (U_select 16 frame 1), ≥ 0xcc nothing.
 func add_mark(kind: int, c: Vector2i) -> void:
 	marks[c] = kind
 	overlay.queue_redraw()
+
+
+var _mark_t := 0.0
+var _mark_frame := 0
+
+
+func _draw_mark(c: Vector2i, kind: int) -> void:
+	var f := _mark_frame
+	var p := cell_pos(c)
+	match kind:
+		0:
+			overlay.draw_texture_rect_region(Assets.tex("gfx/ui/u_select/19.png"), Rect2(p, Vector2(CELL, CELL)),
+					Rect2(0, 48 * (f & 3), 48, 48), Color(1, 1, 1, 0.7))   # [G] blend 0x46 taken as 70 %
+		1, 2:
+			var fr := (4 if kind == 1 else 6) + (f & 1)
+			overlay.draw_texture_rect_region(Assets.tex("gfx/ui/u_select/19.png"), Rect2(p, Vector2(CELL, CELL)),
+					Rect2(0, 48 * fr, 48, 48))
+		3:
+			if Mem.r8(Mem.EV + 4 * 4049) != 1:
+				overlay.draw_texture_rect_region(Assets.tex("gfx/ui/mark/07.png"), Rect2(p, Vector2(CELL, CELL)),
+						Rect2(0, 48 * 3, 48, 48))
+		_:
+			if kind < 0xcc:
+				overlay.draw_texture_rect_region(Assets.tex("gfx/ui/u_select/16.png"), Rect2(p, Vector2(CELL, CELL)),
+						Rect2(0, 48, 48, 48))
 
 
 func _draw_overlay() -> void:
@@ -186,8 +214,7 @@ func _draw_overlay() -> void:
 	for c in goal_cells:
 		overlay.draw_rect(Rect2(cell_pos(c) + Vector2(2, 2), Vector2(CELL - 4, CELL - 4)), Color(1.0, 0.9, 0.2, 0.22 * pulse))
 	for c in marks:
-		var col := Color(1, 0.4, 0.1, 0.55) if int(marks[c]) in [0, 2] else Color(0.3, 0.3, 0.3, 0.5)
-		overlay.draw_circle(cell_center(c), 14, col)
+		_draw_mark(c, int(marks[c]))
 	for c in _hl_move:
 		overlay.draw_rect(Rect2(cell_pos(c) + Vector2(1, 1), Vector2(CELL - 2, CELL - 2)), Color(0.25, 0.45, 1.0, 0.38 * pulse))
 	for c in _hl_attack:
@@ -241,6 +268,13 @@ func _draw_cursor(n: Node2D) -> void:
 func _process(delta: float) -> void:
 	if not _hl_move.is_empty() or not _hl_attack.is_empty():
 		overlay.queue_redraw()
+	if not marks.is_empty():
+		# [G] the frame counter B+5 advances at the original's idle animation points; here every 4 ticks
+		_mark_t += delta
+		if _mark_t >= 0.2:
+			_mark_t = 0.0
+			_mark_frame = (_mark_frame + 1) & 7
+			overlay.queue_redraw()
 	var key := Mem.r32(0x501bd2) ^ (Mem.r16(0x501bd6) << 7)
 	if Mem.r8(0x501bd2) >= 2:
 		key ^= BUnit.gen << 20

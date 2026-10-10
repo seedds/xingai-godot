@@ -35,7 +35,7 @@ right are the original's (`U_select.e5`); the mouse over one highlights it, and 
 |---|---|
 | **刀兵初現** | new game |
 | **烽煙再起** | load a game: the list of the 10 save slots. When there is an autosave, a menu first offers **继续游戏** (continue from it) or **读取进度** (the slot list) |
-| **沙場點兵** | the original's 环境设定 settings dialog. Not available from the title screen yet (the button does nothing); in a battle the system menu has it |
+| **沙場點兵** | the original's 环境设定 settings dialog (also in the battle system menu); 确定 keeps the settings for new games |
 | **南山放馬** | quit (does nothing on iPhone and Android, where apps are not quit) |
 
 A build stamped with a version (`.github/scripts/stamp_version.sh`, used by the release workflow) shows it
@@ -231,6 +231,5 @@ on. The winner may gain experience when the duel closes. Command duels where you
 | Android: "App not installed" over an older build | The new APK is signed with another key; uninstall first (this deletes the saves) or build with the release key ([BUILDING.md](BUILDING.md#android)) |
 | Missing characters (▯) in text | The desktop uses system Chinese fonts: SimSun, Songti SC, STSong, Heiti SC or PingFang SC, with Hiragino Sans GB, Heiti SC, Microsoft YaHei and SimHei as fallbacks (on macOS make sure they are not disabled in Font Book). Phones use the bundled Noto Serif SC; `WG_BUNDLED_FONT=1` uses it on a desktop too |
 | 保存 says 目前禁止存档 | The scenario forbids saving at this point; save later |
-| 沙場點兵 on the title screen does nothing | Not ported there yet; 环境设定 is in the battle system menu |
 | A story scene "does nothing" | It is waiting for you: click the character that continues the story, or look for the 出征 button in sortie mode |
 | Window too small or too large | Drag its edge or corner (it snaps to 4:3) or toggle full screen (⌘F) |

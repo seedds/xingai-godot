@@ -6,7 +6,7 @@ Debug options, the automated test harness, and the reverse-engineering workflow.
 ## Running from source
 
 ```sh
-./run_game.sh                               # windowed; downloads the HD pack once, re-imports when a script changed
+./run_game.sh                               # windowed; re-imports when a script changed
 godot --headless --path game ...            # headless, for tests (after one `--import`)
 godot -e --path game                        # open in the Godot editor
 ```
@@ -190,22 +190,24 @@ Building and installing on a phone: `tools/build_ios.sh --device`; in the Xcode 
 game's output is in `adb logcat -s godot`. Debug variables reach the iOS app through `IOS_ENV`. For example,
 `IOS_ENV='{"WG_SHELLSHOT":"user://shots"}' tools/build_ios.sh --device` saves screenshots in the app's Documents
 folder. Fetch them from a phone with
-`xcrun devicectl device copy from --device UDID --domain-type appDataContainer --domain-identifier com.seedds.wagang --source Documents/shots --destination DIR`;
-in the simulator they are under `$(xcrun simctl get_app_container booted com.seedds.wagang data)/Documents`. For
+`xcrun devicectl device copy from --device UDID --domain-type appDataContainer --domain-identifier com.seedds.xingai --source Documents/shots --destination DIR`;
+in the simulator they are under `$(xcrun simctl get_app_container booted com.seedds.xingai data)/Documents`. For
 example, this plays one battle turn through the touch path with screenshots:
 `IOS_ENV='{"WG_START":"1","WG_NOVIDEO":"1","WG_ACCEPT_SPAM":"1","WG_INPUTBOT":"user://bot","WG_BOTTURNS":"1","WG_SHELLSHOT":"user://shots"}' tools/build_ios.sh --sim`.
 
 ## HD graphics and releases
 
-* `tools/get_hd_pack.sh` downloads the HD graphics pack into `game/assets_hd/`. `tools/upscale_assets.py`
-  rebuilds it, and `tools/upscale.py` upscales single images for trying models. See [HD_GRAPHICS.md](HD_GRAPHICS.md).
-* Every push to `main` that changes the game builds and publishes *Build N* for macOS, Windows, iPhone and Android; see
-  "Automatic releases" in [BUILDING.md](BUILDING.md). Check a run with `gh run list --workflow release.yml`.
+* There is no HD graphics pack for this game yet; the mechanism and what a pack would need are in
+  [HD_GRAPHICS.md](HD_GRAPHICS.md).
+* The release workflow is not active for this repository (no remote, and `game/assets/` is not committed); see
+  "Automatic releases" in [BUILDING.md](BUILDING.md).
 
 ## Reverse-engineering workflow
 
-The original executable is `wg2025/wagan.wa` (PE32, image base 0x400000). The mod's code lives in an extra
-`.text2` section around 0x4d0000 and hooks the original code with `jmp` patches.
+The original executable is `orig/Ekd5.exe` (PE32, image base 0x400000), the community 6.6 engine: most of Koei's code
+range (0x401000–0x486000) was rewritten in place, and its extension data lives in `.api` (0x4be000) and `.text3`
+(0x4ce000; the saved block 0x501000–0x531000). Facts and addresses are collected in the specs listed in
+[README.md](README.md).
 
 * **Ghidra (preferred):** `tools/ghidra/gdec.sh OUT.c 0x41973c 0x448524 …` decompiles functions headlessly. The
   first run imports and analyses the executable into `extract/ghidra_proj` (slow, once). The script uses Ghidra

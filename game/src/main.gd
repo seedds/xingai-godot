@@ -311,7 +311,7 @@ func _title_screen() -> void:
 					_title_menu.visible = false
 					return
 			2:
-				pass       # 環境設定 dialog (KANKYOU, 0x41bad7): not ported
+				await Kankyou66.run(ui)      # 沙場點兵: the 環境設定 dialog (KANKYOU, 0x44f8eb → 0x41bad7)
 			3:
 				if not OS.has_feature("mobile"):
 					get_tree().quit()

@@ -122,7 +122,13 @@ func _apply() -> void:
 	var sp := int(ctrls[0x5d1]["sel"])
 	var w := Mem.r16(0x500ad8)
 	Mem.w16(0x500ad8, (w & 0xff00) if sp == 4 else ((sp << 8) | 1))
-	Mem.w8(0x500fa0, int(ctrls[0x5d0]["sel"]))
+	var pat := int(ctrls[0x5d0]["sel"])
+	if pat != Mem.r8(0x500fa0):
+		SpecialFuncs.sv_write(3, pat)          # 0x40abdc(n, 1): the window pattern is kept in byte 3 of SV\SV.E5S
+	Mem.w8(0x500fa0, pat)
+	# 0x42416a(4, 4, GS): GS+0..3 become the settings bytes 4..7 of SV\SV.E5S, which a new game starts from (0x4241a3)
+	for k in 4:
+		SpecialFuncs.sv_write(4 + k, Mem.r8(Mem.GS + k))
 	for k in 32:
 		Mem.w8(OPT + k, copy[k])
 	if (bits & 1) != was_bgm:

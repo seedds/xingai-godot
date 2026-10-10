@@ -1108,9 +1108,11 @@ func menu_ready() -> bool:
 	return input != null and input.idle
 
 
+## The touch shell's 菜单 / Android back: the system menu even when a unit is under the cursor (a right click there
+## would open its 武将情报).
 func open_menu() -> void:
 	if menu_ready():
-		view.cell_clicked.emit(view.cursor_cell, MOUSE_BUTTON_RIGHT)
+		input.request_menu()
 
 
 ## op 0x27 in a battle file: mode 3 creates the battlefield (map = a4 (0xffff → 99) + 100·EV 4051, EV 4051 consumed).

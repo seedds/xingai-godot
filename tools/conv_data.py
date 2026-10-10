@@ -1,32 +1,37 @@
-"""Convert wg2025 game data tables to JSON for the Godot port.
+"""Convert the 新改曹操傳 6.6 game data tables (Data.e5, Star.e5, Imsg.e5, tables in Ekd5.exe) to JSON for the Godot port.
 
 usage: tools/venv/bin/python -I tools/conv_data.py [GAME_DIR] [OUT_DIR]
-  GAME_DIR defaults to <repo>/wg2025 (read-only input)
+  GAME_DIR defaults to <repo>/orig     (read-only input; files are only parsed, nothing is executed)
   OUT_DIR  defaults to <repo>/game/assets/data
 
-Sources (see docs/rules.md for field evidence / exe addresses):
-  data.wa  (Ls12 archive, 10 entries)
-    e0 persons     1024 x 32  (parser 0x408be3)
-    e1 items        104 x 25  (parser 0x40c537)
-    e2 shops        128 x 36  (parser 0x40dcce, exe loads first 58)
-    e3 classes       53 x 27  (parser 0x4093ef)
-    e4 class families (terrain tables) 27 x 60 (parser 0x40948a)
-    e5 strategies    73 x 70  (parser 0x40ddaf, exe loads first 68)
-    e6..e9 name tables filled with the placeholder "终端" (not loaded by the exe)
-  Fhua.wa  1946 x 200-byte GBK text records (reader 0x40bf56)
-  person.wa 1024 bytes: per-person custom battle-sprite selector (0x406a75)
-  wagan.wa  name tables in .data (class / family / terrain / effect names)
+Sources (record layouts, field evidence and exe addresses: docs/rules.md section 1, memory map: docs/memory.md):
+  Data.e5 (Ls12, 10 entries; loaded once at boot by 0x41b639)
+    e0 persons     1024 x 32  -> 1024 x 0x48 at [0x4cea00]   parser 0x408c0c (loop 0x41b666)
+    e1 items        104 x 25  -> 0x49f820 (items 0..103)      raw copy, fixed up by 0x4010b0
+    e2 shops        128 x 36  -> 128 x 0x28 at [0x4cea04]     parser 0x40d793 (loop 0x41b7ee)
+    e3 classes       80 x 35  -> 80 x 0x23 at 0x4a2a27        raw copy 0x436360 (loop 0x41b73e)
+    e4 families      40 x 60  -> 40 x 0x3c at 0x4a3517        raw copy 0x40956f (loop 0x41b790)
+    e5 strategies   144 x 97  -> 144 x 0x61 at 0x4a3e77       parser 0x40d737 (loop 0x41b830)
+       + 0x610 bytes after them = 97 skill names x 16 (武将技/军师技) copied to 0x4a7510
+    e6..e9 "闲置区段" filler (not loaded)
+  Star.e5 (raw, 152 x 25)  -> items 104..255 at 0x4a0248 (0x451313 reads up to 0x27d8 bytes)
+  Imsg.e5 (raw, 2507 x 200 GBK)  reader 0x40bf56(buf, index); index bases see TEXT_RANGES
+  Ekd5.exe name / extension tables (see names.json and docs/rules.md)
 """
-import os as _os
-_REPO = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))   # repository root
-import json, os, struct, sys
+import json
+import os
+import struct
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(HERE)
-from ls12 import read_archive  # noqa: E402
+_REPO = os.path.dirname(HERE)
+sys.path.insert(0, HERE)
+from e5 import Archive  # noqa: E402
 
-GAME = sys.argv[1] if len(sys.argv) > 1 else _REPO + '/wg2025'
+GAME = sys.argv[1] if len(sys.argv) > 1 else _REPO + '/orig'
 OUT = sys.argv[2] if len(sys.argv) > 2 else _REPO + '/game/assets/data'
+
+NONE = 0xff
 
 
 def gbk(b):
@@ -36,267 +41,343 @@ def gbk(b):
 
 def ff(v):
     """0xff -> None (empty slot)"""
-    return None if v == 0xff else v
+    return None if v == NONE else v
 
 
-# ---------------------------------------------------------------- exe tables
+# ---------------------------------------------------------------- the executable
 class Exe:
-    def __init__(self, path):
-        import pefile
-        pe = pefile.PE(path, fast_load=True)
-        self.base = pe.OPTIONAL_HEADER.ImageBase
-        self.secs = [(self.base + s.VirtualAddress, s.PointerToRawData, s.SizeOfRawData) for s in pe.sections]
-        self.data = open(path, 'rb').read()
+    """Ekd5.exe read as the loader maps it (sections at their VAs). Parsed with struct only."""
 
-    def off(self, va):
-        for v, ro, rs in self.secs:
-            if v <= va < v + rs:
-                return ro + va - v
+    def __init__(self, path):
+        self.data = open(path, 'rb').read()
+        pe = struct.unpack_from('<I', self.data, 0x3c)[0]
+        nsec = struct.unpack_from('<H', self.data, pe + 6)[0]
+        optsz = struct.unpack_from('<H', self.data, pe + 20)[0]
+        opt = pe + 24
+        self.base = struct.unpack_from('<I', self.data, opt + 28)[0]
+        self.secs = []
+        for i in range(nsec):
+            o = opt + optsz + 40 * i
+            vsz, va, rsz, roff = struct.unpack_from('<IIII', self.data, o + 8)
+            self.secs.append((self.base + va, max(vsz, rsz), roff, rsz))
+
+    def read(self, va, n):
+        for v, vs, ro, rs in self.secs:
+            if v <= va < v + vs:
+                o = va - v
+                raw = self.data[ro + o:ro + min(o + n, rs)] if o < rs else b''
+                return raw + bytes(n - len(raw))       # zero-filled virtual part
         raise ValueError(hex(va))
 
-    def u32(self, va):
-        return struct.unpack_from('<I', self.data, self.off(va))[0]
-
     def u8(self, va):
-        return self.data[self.off(va)]
+        return self.read(va, 1)[0]
 
-    def cstr(self, va):
-        o = self.off(va)
-        return gbk(self.data[o:self.data.index(b'\0', o)])
+    def u16(self, va):
+        return struct.unpack('<H', self.read(va, 2))[0]
+
+    def u32(self, va):
+        return struct.unpack('<I', self.read(va, 4))[0]
+
+    def cstr(self, va, maxlen=64):
+        return gbk(self.read(va, maxlen))
 
     def ptr_table(self, va, n):
         return [self.cstr(self.u32(va + 4 * i)) for i in range(n)]
 
-
-TERRAIN_COUNT = 30
-
-
-# ---------------------------------------------------------------- shapes
-# Range / area shapes recovered by emulating 0x436586 (range codes) and 0x435d6c (area codes) with
-# tools/rd_emu.py (see docs/rules.md §6). Offsets are (dx, dy) relative to the origin.
-def _man(lo, hi, r=6):
-    return [[x, y] for y in range(-r, r + 1) for x in range(-r, r + 1) if lo <= abs(x) + abs(y) <= hi]
+    def fixed_table(self, va, n, stride):
+        d = self.read(va, n * stride)
+        return [gbk(d[i * stride:(i + 1) * stride]) for i in range(n)]
 
 
-def _cheb(n, r=6):
-    return [[x, y] for y in range(-r, r + 1) for x in range(-r, r + 1) if max(abs(x), abs(y)) == n]
+# ---------------------------------------------------------------- exe addresses (verified, docs/rules.md)
+CLASS_NAMES = 0x48bea8          # u32[80] -> 9-byte GBK names at 0x5000d0
+FAMILY_NAMES = 0x48c570         # u32[40] -> 9-byte names at 0x48c610
+TERRAIN_NAMES = 0x48bdb0        # u32[34] (平原..工事); scripts may rename entries by pointer
+TERRAIN_COUNT = 34
+EQUIP_TYPE_NAMES = 0x48bc04     # u32[15]: 剑 枪 弓 棍 炮车 锤 斧 扇 宝剑 神器 铠甲 劲装 袍服 辅助 道具 (index type>>1)
+STRAT_EFFECT_NAMES = 0x48bfe8   # 72 x 9 bytes, strategy effect id (record +0x0b) (getter 0x4212e3)
+ITEM_EFFECT_NAMES = 0x4cb7a0    # 230 x 16 bytes, accessory / treasure effect id - 0x1a (0x4230fa)
+USE_EFFECT_NAMES = 0x4ce000     # 58 x 9 bytes, consumable effect id - 0x1a (0x4230fa, item+0x14 == 3)
+SPECIAL_NAMES = 0x4cc600        # 255 x 16 bytes, 特效 (person / class special effects) (0x41b707); desc Imsg 430+i
+STRAT_TABLES = 0x4d14e0         # 10 x u8[144] per-strategy extension tables (System.ini Mg* keys)
+MATCHUP = 0x4d1a80              # u8[40][40] percent, [defender_family*40 + attacker_family] (0x426737)
+FAMILY_ATTRS = 0x4d20c0         # 9 x u8[40] per-family attribute rows following the matchup table
+S_SPRITE = 0x501000             # u16[1024] battle (S) sprite override per person (file 0xD2800, 0x4068de)
+R_SPRITE = 0x50f800             # u16[1024] story (R) sprite per person (file 0xE1000, 0x409038)
+SP_TABLE = 0x501c00             # u8[1024] SP per person (0x416eb3)
 
+STRAT_TABLE_KEYS = [            # order of the ten tables at 0x4d14e0 + 0x90*k (orig/System.ini)
+    ('mimic_pierce', 'MgMF 策略能否被模仿、辅助穿透对策略是否有效'),
+    ('effect_index', 'MgID 策略效果索引'),
+    ('ai_use_battle', 'MgAIYN1 AI是否使用策略(战场), 13 = not used'),
+    ('ai_use_training', 'MgAIYN2 AI和我军是否使用策略(练武场), 13 = not used'),
+    ('hit_cap', 'MgHit 策略命中上限; 0 -> 90 (大觉醒), 1 -> 100 (觉醒), 2 -> 100, 3 -> 34 (海啸), 4 -> 50 (暗杀)'),
+    ('learn_group', 'Mg8 学会策略(8类设置)'),
+    ('damage_coef', 'MgHurt 策略伤害系数; 28 = no damage'),
+    ('damage_kind', 'MgHurtYN 是否伤血: 0 四系, 1 毒麻, 2 八图/撞心, 3 青龙/朱雀, 4 不伤血'),
+    ('meff', 'MgMeff 小动画 meff number'),
+    ('mcall', 'MgMcall 大动画 mcall number; < 100 = none (only the small animation)'),
+]
+FAMILY_ATTR_KEYS = [            # rows at 0x4d20c0 + 40*k; readers given, meaning partly unverified
+    ('attr0_move_kind', '0x43f371: terrain/move kind (3 = special case, else jump table 0x43f43e)'),
+    ('attr1', '0x4011e8: tested == 0'),
+    ('attr2', '0x403d34: copied to [0x500e7c] (>= 2 sets [0x500c45])'),
+    ('attr3', 'getter 0x4281af'),
+    ('attr4', 'getter 0x43fff4'),
+    ('attr5', '0x4190e8 / AI 0x439a78 (== 2 tested)'),
+    ('attr6_percent', '0x43c16d: percent applied in strategy damage (0x425ad9)'),
+    ('attr7', '0x416e9c: 0 -> the SP table 0x501c00 is used (SP / 必杀 allowed?)'),
+    ('attr8', '0x40114b / 0x411278: non-zero -> +0x4f (index), 9 tested by AI 0x44db2d'),
+]
 
-RANGE_SHAPES = {   # attack range (class byte 1) and strategy cast range (strategy byte 0x0d) share these codes
-    0: {'desc': 'adjacent 4 (manhattan 1)', 'cells': _man(1, 1)},
-    1: {'desc': '8 surrounding (chebyshev 1)', 'cells': _cheb(1)},
-    2: {'desc': 'manhattan 2 ring', 'cells': _man(2, 2)},
-    3: {'desc': 'manhattan 2..3', 'cells': _man(2, 3)},
-    4: {'desc': 'manhattan 2..4', 'cells': _man(2, 4)},
-    5: {'desc': 'straight lines length 1..2 (8 cells)', 'cells': [[x, y] for y in range(-2, 3) for x in range(-2, 3) if (x == 0) != (y == 0)]},
-    6: {'desc': 'manhattan 1..2', 'cells': _man(1, 2)},
-    7: {'desc': 'manhattan 3..4', 'cells': _man(3, 4)},
-    8: {'desc': 'manhattan 3..5', 'cells': _man(3, 5)},
-    9: {'desc': 'manhattan 3 ring', 'cells': _man(3, 3)},
-    10: {'desc': 'whole map', 'cells': 'all'},
-    11: {'desc': 'none (cannot attack) / self only for strategies', 'cells': []},
-    12: {'desc': 'manhattan 1..3', 'cells': _man(1, 3)},
-    13: {'desc': 'manhattan 1..4', 'cells': _man(1, 4)},
-    14: {'desc': '3 cells wide bars at distance 3 (12 cells)', 'cells': [[s * 3, t] for s in (-1, 1) for t in (-1, 0, 1)] + [[t, s * 3] for s in (-1, 1) for t in (-1, 0, 1)]},
-    15: {'desc': 'chebyshev-3 ring without corners (20 cells)', 'cells': [c for c in _cheb(3) if abs(c[0]) != abs(c[1])]},
+# Imsg.e5 index map: reader 0x40bf56(buf, index); wrappers give the bases.
+TEXT_RANGES = {
+    'strategy_desc': [0, 144, '0x425aa2: index < 241 read directly'],
+    'skill_desc': [144, 97, '武将技 0..79 / 军师技 80..96 (names: names.json skills)'],
+    'battle_name': [250, 99, '0x4190aa: 0xfa + i, i <= 99'],
+    'class_desc': [350, 80, '0x40bfbd: 0x15e + class, class < 80'],
+    'special_desc': [430, 180, '0x419230: 0x1ae + i (特效 i, names 0x4cc600)'],
+    'retreat_line': [650, 49, 'header record 649'],
+    'critical_line': [700, 99, '0x40c0e7: 0x2bc + i'],
+    'credits': [800, 119, '0x431564: 0x320 + i'],
+    'person_bio': [922, 1024, '0x40bfdb: 0x39a + person, person < 1024'],
+    'item_desc': [1946, 256, '0x4143ae: 0x79a + item'],
+    'extra_line': [2458, 49, '0x40c00f: 0x99a + i, i < 49'],
 }
-AREA_SHAPES = {    # strategy effect area (strategy byte 0x0e); origin = target cell (always included)
-    0: {'desc': 'target only', 'cells': []},
-    1: {'desc': 'target + adjacent 4', 'cells': _man(1, 1)},
-    2: {'desc': 'target + 8 surrounding (3x3)', 'cells': _cheb(1)},
-    3: {'desc': 'target + 8 surrounding (3x3) (separate case 0x435f85)', 'cells': _cheb(1)},
-    4: {'desc': 'line: 1 cell beyond the target, away from caster', 'cells': 'line', 'length': 1},
-    5: {'desc': 'line: 5 cells beyond the target, away from caster', 'cells': 'line', 'length': 5},
-    6: {'desc': 'line: 2 cells beyond the target, away from caster', 'cells': 'line', 'length': 2},
-    7: {'desc': 'target + 8 surrounding (case 0x436012)', 'cells': _cheb(1)},
-    8: {'desc': 'target + 9x9 square', 'cells': [c for c in [[x, y] for y in range(-4, 5) for x in range(-4, 5)] if c != [0, 0]]},
-    9: {'desc': 'target + 5x5 square', 'cells': [c for c in [[x, y] for y in range(-2, 3) for x in range(-2, 3)] if c != [0, 0]]},
-    10: {'desc': 'sweep: only when target adjacent (8-dir) to caster; adds the 2 cells adjacent to the target '
-                 'perpendicular to the caster->target direction (diagonal: the 2 cells adjacent to both)', 'cells': 'sweep'},
-    11: {'desc': '8 cells around the CASTER (target ignored)', 'cells': 'caster_ring'},
-    12: {'desc': 'line from target away from caster to the map edge', 'cells': 'line', 'length': 255},
-}
+
+
+def class_family(c):
+    """0x40bf0c: class <= 59 -> class/3 (20 three-tier families), 60..79 -> class-40, else 40 (none)."""
+    if c <= 0x3b:
+        return c // 3
+    if c < 0x50:
+        return c - 40
+    return 40
+
+
+def item_category(t, b12):
+    """0x40b444 on the in-memory record: type (+0x11) < 0x14 weapon, < 0x1a armour, else byte +0x14
+    (file byte 0x12): 2 accessory, 3 consumable."""
+    if t < 0x14:
+        return 0
+    if t < 0x1a:
+        return 1
+    return b12
+
+
+CATEGORY_NAMES = {0: 'weapon', 1: 'armor', 2: 'accessory', 3: 'consumable'}
 
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    exe = Exe(os.path.join(GAME, 'wagan.wa'))
-    # name tables (pointer tables in .data, see docs/rules.md)
-    item_groups = exe.ptr_table(0x48bc20, 11)        # 近战系..道具 (xref 0x40c978)
-    item_effects = exe.ptr_table(0x48bc50, 59)       # 每回合恢复HP..兵种上升, index = effect_id-18
-    strat_effects = exe.ptr_table(0x48bd40, 28)      # 攻击(火)..机动上升
-    terrain_names = exe.ptr_table(0x48bd40 + 28 * 4, TERRAIN_COUNT)  # 平原..地下
-    family_names = exe.ptr_table(0x48be38, 27)       # 英雄..百姓
-    class_names = exe.ptr_table(0x48bea8, 53)        # 游侠..百姓
-    # extra effect names present in .data but not in the 59-entry pointer table (mod additions)
-    extra_effect_names = [exe.cstr(a) for a in (0x48c1be, 0x48c1c7, 0x48c1ce, 0x48c1db, 0x48c1e4,
-                                                0x48c1ed, 0x48c1fa, 0x48c203, 0x48c20c, 0x48c215)]
-
-    # effect id space shared by aux-item `type` and treasure `special` (0x407a09 / 0x407af2):
-    #   18..76 -> item_effects[id-18]; 81..90 -> extra mod effects (固定伤害 = 85 = 墨阳剑, 辅助地形移动 = 86 = 黄骠马 ...)
-    effect_names = {i + 18: n for i, n in enumerate(item_effects)}
-    effect_names.update({81 + i: n for i, n in enumerate(extra_effect_names)})
-
-    ent = read_archive(os.path.join(GAME, 'data.wa'))
-    fhua = open(os.path.join(GAME, 'Fhua.wa'), 'rb').read()
+    exe = Exe(os.path.join(GAME, 'Ekd5.exe'))
+    data = Archive(os.path.join(GAME, 'Data.e5'))
+    imsg = open(os.path.join(GAME, 'Imsg.e5'), 'rb').read()
+    star = open(os.path.join(GAME, 'Star.e5'), 'rb').read()
+    texts = [gbk(imsg[i * 200:(i + 1) * 200]) for i in range(len(imsg) // 200)]
 
     def text(i):
-        return gbk(fhua[i * 200:(i + 1) * 200])
+        return texts[i] if 0 <= i < len(texts) else ''
 
-    texts = [text(i) for i in range(len(fhua) // 200)]
+    # ------------------------------------------------------------ name tables
+    class_names = exe.ptr_table(CLASS_NAMES, 80)
+    family_names = exe.ptr_table(FAMILY_NAMES, 40)
+    terrain_names = exe.ptr_table(TERRAIN_NAMES, TERRAIN_COUNT)
+    equip_type_names = exe.ptr_table(EQUIP_TYPE_NAMES, 15)
+    strat_effect_names = exe.fixed_table(STRAT_EFFECT_NAMES, 72, 9)
+    item_effect_names = exe.fixed_table(ITEM_EFFECT_NAMES, 230, 16)
+    use_effect_names = exe.fixed_table(USE_EFFECT_NAMES, 58, 9)
+    special_names = exe.fixed_table(SPECIAL_NAMES, 255, 16)
+    e5 = data[5]
+    skill_tail = e5[144 * 97:]
+    skill_names = [gbk(skill_tail[i * 16:(i + 1) * 16]) for i in range(len(skill_tail) // 16)]
 
     # ------------------------------------------------------------ classes (e3)
-    e3 = ent[3]
+    e3 = data[3]
     classes = []
-    for i in range(len(e3) // 27):
-        r = e3[i * 27:(i + 1) * 27]
-        fam = i // 3 if i <= 38 else (i - 26 if i < 53 else 27)   # 0x4077d0
+    for i in range(len(e3) // 35):
+        r = e3[i * 35:(i + 1) * 35]
+        fam = class_family(i)
+        eq = list(r[9:35])
         classes.append({
             'id': i,
-            'name': class_names[i] if i < len(class_names) else '',
+            'name': class_names[i],
             'family': fam,
-            'family_name': family_names[fam] if fam < 27 else '',
-            'move': r[0],                       # 0x40727b: move = class[0] + equip(7)
-            'attack_range': r[1],               # 0x43f8f5 getter 0x44f9a0 (range shape code)
-            'growth': {                         # 0x4073b9 level up, 0x4095a0(i)
+            'family_name': family_names[fam] if fam < 40 else '',
+            'move': r[0],                       # move points
+            'attack_range': r[1],               # hit-area code (Hitarea), 0..32
+            'growth': {                         # 0x40dbae: class[2 + stat] (stat 0..4, 5 HP, 6 MP)
                 'attack': r[2], 'defense': r[3], 'spirit': r[4], 'agility': r[5], 'morale': r[6],
                 'hp': r[7], 'mp': r[8]},
-            'equip_types': [t for t in range(18) if r[9 + t]],   # 0x4095c0(type) != 0 -> may equip
-            'equip_raw': list(r[9:27]),
-            'description': texts[350 + i] if i < 53 else '',
+            'equip_types': [t for t in range(26) if eq[t]],   # may equip item type t (0..25)
+            'equip_raw': eq,
+            'description': text(350 + i),
         })
 
-    # ------------------------------------------------- class families / terrain (e4)
-    e4 = ent[4]
+    # ------------------------------------------------- class families / terrain (e4) + exe tables
+    e4 = data[4]
+    matchup = exe.read(MATCHUP, 1600)
+    attrs = exe.read(FAMILY_ATTRS, 40 * len(FAMILY_ATTR_KEYS))
     families = []
     for i in range(len(e4) // 60):
         r = e4[i * 60:(i + 1) * 60]
-        families.append({
+        fam = {
             'id': i,
             'name': family_names[i],
-            'terrain_effect': list(r[:30]),     # x10 % (10 = 100%), 0x43f84d
-            'move_cost': [None if b == 0xff else b for b in r[30:60]],   # 0xff = impassable
-        })
-    terrain = {'names': terrain_names, 'count': TERRAIN_COUNT,
-               'note': 'terrain_effect[t] is in units of 10% (attack & defense multiplier), move_cost None = impassable'}
+            'terrain_effect': list(r[:30]),     # PERCENT (100 = normal) per terrain 0..29 (wg2025: units of 10%)
+            'move_cost': [None if b == NONE else b for b in r[30:60]],   # None = impassable
+            'damage_taken_from': list(matchup[i * 40:(i + 1) * 40]),   # % when attacked by family j (0x426737)
+        }
+        for k, (key, _) in enumerate(FAMILY_ATTR_KEYS):
+            fam[key] = attrs[k * 40 + i]
+        families.append(fam)
+    terrain = {
+        'names': terrain_names, 'count': TERRAIN_COUNT,
+        'note': 'class_families.terrain_effect[t] is a PERCENT (100 = 100%, Data.e5 e4 bytes 0..29); '
+                'move_cost None = impassable. Data.e5 holds 30 terrain columns; the exe names 34 terrain '
+                'types (30 地雷, 31 战壕, 32 掩体, 33 工事 have no column). Map terrain byte = '
+                '[mapbuf + 0x640 + x + y*W] (0x412557).',
+    }
 
     # ------------------------------------------------------------- persons (e0)
-    e0 = ent[0]
-    pw = open(os.path.join(GAME, 'person.wa'), 'rb').read()
+    e0 = data[0]
+    s_spr = struct.unpack('<1024H', exe.read(S_SPRITE, 2048))
+    r_spr = struct.unpack('<1024H', exe.read(R_SPRITE, 2048))
+    sp = exe.read(SP_TABLE, 1024)
     persons = []
     for i in range(len(e0) // 32):
         r = e0[i * 32:(i + 1) * 32]
+        hp = struct.unpack_from('<H', r, 0x17)[0]
         persons.append({
             'id': i,
-            'name': gbk(r[0:13]),
-            'face': struct.unpack_from('<H', r, 0x0d)[0],     # mem+0x04
-            'sprite': r[0x0f],                                # mem+0x02 (R/S map sprite index)
-            'unk_10': r[0x10],                                # mem+0x26 (unknown, raw)
-            'fixed_growth_flag': r[0x11],                     # mem+0x2a; 0 -> randomised growth (0x448b09)
-            'attack': r[0x12],     # 武艺  (mem word +0x11 & raw byte +0x21)
-            'defense': r[0x13],    # 统制  (+0x13 / +0x22)
-            'spirit': r[0x14],     # 智谋  (+0x15 / +0x23)
-            'agility': r[0x15],    # 感知 / 反应 (+0x17 / +0x24)
-            'morale': r[0x16],     # 胆魄  (+0x19 / +0x25)
-            'hp': min(struct.unpack_from('<H', r, 0x17)[0], 500),   # mem+0x1c base max HP (clamped 500)
-            'mp': min(r[0x19], 250),                                 # mem+0x20 base max MP (clamped 250)
-            'class': r[0x1a],                                        # mem+0x2b
-            'level': r[0x1b] or 1,                                   # mem+0x2c
-            'exp': r[0x1c],                                          # mem+0x2d
-            'weapon': ff(r[0x1d]), 'armor': ff(r[0x1e]), 'accessory': ff(r[0x1f]),
-            'custom_sprite_sel': pw[i] if i < len(pw) else 0,        # person.wa, 0x406a75
-            'bio': texts[922 + i] if 922 + i < len(texts) else '',
+            'name': gbk(r[0:12]),               # 0x408c0c copies 12 bytes to +0x08 (tail -> +0x3f, 0x40a72c)
+            'face': struct.unpack_from('<H', r, 0x0d)[0],   # +0x04, and the face table 0x50f000[id] (0x423e30)
+            'sprite': r[0x0f],                  # file byte 0x0f: NOT loaded by the 6.6 engine (0x408c0c skips it)
+            'unk_10': r[0x10],                  # +0x26
+            'army': r[0x11],                    # +0x2a: 0 = in the player's army, 0xff = not (0x40c603, 0x4095b9)
+            'fixed_growth_flag': r[0x11],       # (wg2025 name of the same byte, kept for compatibility)
+            'attack': r[0x12],                  # 武力 word +0x11 and raw byte +0x21
+            'defense': r[0x13],                 # 统率 +0x13 / +0x22
+            'spirit': r[0x14],                  # 智力 +0x15 / +0x23
+            'agility': r[0x15],                 # 敏捷 +0x17 / +0x24
+            'morale': r[0x16],                  # 运气 +0x19 / +0x25
+            'hp': min(hp, 500),                 # +0x1b (u32), clamped to 500 at load
+            'hp_raw': hp,
+            'mp': min(r[0x19], 250),            # +0x1f (u16), clamped to 250 at load
+            'class': r[0x1a],                   # +0x2b
+            'level': r[0x1b] or 1,              # +0x2c (0 -> 1)
+            'exp': r[0x1c],                     # +0x2d
+            'weapon': ff(r[0x1d]),              # +0x2e (level +0x2f and exp +0x30 left 0)
+            'armor': ff(r[0x1e]),               # +0x31 (+0x32 / +0x33 left 0)
+            'accessory': ff(r[0x1f]),           # +0x34
+            's_sprite': s_spr[i],               # 0x501000[id]
+            'r_sprite': r_spr[i],               # 0x50f800[id]
+            'sp': sp[i],                        # 0x501c00[id] (initial value in the exe)
+            'bio': text(922 + i),
         })
 
-    # --------------------------------------------------------------- items (e1)
-    e1 = ent[1]
+    # --------------------------------------------------------------- items (e1 + Star.e5)
+    e1 = data[1]
+    raw_items = [(e1[i * 25:(i + 1) * 25], 'Data.e5') for i in range(len(e1) // 25)]
+    for i in range(256 - len(raw_items)):
+        raw_items.append((star[i * 25:(i + 1) * 25], 'Star.e5'))
     items = []
-
-    def item_category(t):   # 0x40c6ea
-        if t < 14: return 'weapon'
-        if t < 18: return 'armor'
-        if t < 63: return 'accessory'
-        if t < 81: return 'consumable'
-        return 'accessory'
-
-    for i in range(len(e1) // 25):
-        r = e1[i * 25:(i + 1) * 25]
+    for i, (r, src) in enumerate(raw_items):
         t = r[0x11]
-        cat = item_category(t)
-        eff = effect_names.get(t) if t >= 18 else None
-        spec = r[0x12]
-        spec_name = effect_names.get(spec) if spec != 0xff else None
+        b12 = r[0x12]
+        cat = item_category(t, b12)
+        equip = cat in (0, 1)
+        treasure = equip and (t & 1) == 1                  # 0x40b4e1
+        effect = (b12 if b12 != NONE else None) if equip else t     # 0x40b4bd: id; index = id - 0x1a
+        if effect is not None and cat == 3:
+            eff_name = use_effect_names[effect - 0x1a] if 0x1a <= effect < 0x1a + len(use_effect_names) else None
+        elif effect is not None:
+            eff_name = item_effect_names[effect - 0x1a] if 0x1a <= effect < 0x1a + len(item_effect_names) else None
+        else:
+            eff_name = None
         items.append({
             'id': i,
-            'name': gbk(r[0:17]),
-            'type': t,                          # mem+0x11; 0..17 weapon/armor kinds, >=18 effect id
-            'category': cat,
-            'type_effect_name': eff,            # for t>=18: effect_names[t]
-            'weapon_kind': (t // 2) if t < 18 else None,   # index into item_groups (近战系.. 衣服)
-            'treasure': bool(t < 18 and t % 2 == 1),       # odd weapon/armor types carry a special effect
-            'special': ff(spec),                # mem+0x14, effect id for treasures (same id space as type)
-            'special_name': spec_name,
-            'price': r[0x13],                   # mem+0x12 (x100 gold?; 255 = not sold)
-            'icon': r[0x14],                    # mem+0x13
-            'value': r[0x15],                   # mem+0x15 base value at level 1
-            'special_value': r[0x16],           # mem+0x16
-            'growth': r[0x17],                  # mem+0x17 per-level increase (weapons/armor)
-            'unk_18': r[0x18],                  # mem+0x18 (1 for unique items)
-            'description': texts[i] if i < 104 else '',
+            'name': gbk(r[0:14]),               # 15-byte field; memory keeps 14 bytes (0x4010b0 writes 0 at +0x0e)
+            'source': src,
+            'type': t,                          # +0x11: 0..0x13 weapon kinds, 0x14..0x19 armour kinds, else effect id
+            'category': CATEGORY_NAMES.get(cat, 'unknown'),
+            'category_code': cat,
+            'equip_type_name': equip_type_names[t >> 1] if equip else equip_type_names[13 if cat == 2 else 14],
+            'treasure': treasure,
+            'special': (b12 if b12 != NONE else None) if equip else None,   # +0x14 for weapons/armour
+            'effect': effect,                   # effect id (treasure special or accessory/consumable type)
+            'effect_name': eff_name,
+            'price': r[0x13],                   # +0x12; buy = price*100 (0x40e070), sell = 3/4 of it (0x40b477)
+            'icon': struct.unpack_from('<H', r, 0x0f)[0],   # +0x0f u16 icon picture (0x4063bf -> 0x4089b9)
+            'unk_13': r[0x14],                  # +0x13 (wg2025 called this byte the icon; = item id for most items)
+            'value': r[0x15],                   # +0x15 base value (level 1)
+            'special_value': r[0x16],           # +0x16
+            'growth': r[0x17],                  # +0x17 per-level increase (equipment) / family restriction
+            'unk_18': r[0x18],                  # +0x18
+            'description': text(1946 + i),
         })
 
-    # ---------------------------------------------------------- strategies (e5)
-    e5 = ent[5]
+    # ---------------------------------------------------------- strategies (e5) + exe tables
+    tabs = [exe.read(STRAT_TABLES + 0x90 * k, 0x90) for k in range(len(STRAT_TABLE_KEYS))]
     strategies = []
-    for i in range(len(e5) // 70):
-        r = e5[i * 70:(i + 1) * 70]
-        learn = {str(c): r[0x11 + c] for c in range(53) if r[0x11 + c]}
-        strategies.append({
+    for i in range(144):
+        r = e5[i * 97:(i + 1) * 97]
+        learn = {str(c): r[0x11 + c] for c in range(80) if r[0x11 + c]}
+        s = {
             'id': i,
-            'name': gbk(r[0:10]),
-            'effect': r[0x0b],                  # mem+0x0f, index into strategy effect names
-            'effect_name': strat_effects[r[0x0b]] if r[0x0b] < len(strat_effects) else None,
-            'target': r[0x0c],                  # mem+0x0b: 0 enemy, 1 ally, 2 none/weather
-            'range': r[0x0d],                   # mem+0x0c: cast range shape code
-            'area': r[0x0e],                    # mem+0x0d: effect area shape code
-            'mp': r[0x0f],                      # mem+0x0e: MP cost
-            'anim': r[0x10],                    # mem+0x10: animation / element group
-            'learn_level_by_class': learn,      # mem+0x11+class, 0 = cannot learn (0x409580)
-            'loaded_by_exe': i < 68,
-            'description': texts[150 + i] if i < 68 else '',
-        })
+            'name': gbk(r[0:10]),               # +0x00 (10 bytes, +0x0a = 0)
+            'effect': r[0x0b],                  # +0x0f strategy effect (names 0x48bfe8)
+            'effect_name': strat_effect_names[r[0x0b]] if r[0x0b] < len(strat_effect_names) else None,
+            'target': r[0x0c],                  # +0x0b 0 enemy, 1 ally, 2 none (weather)
+            'range': r[0x0d],                   # +0x0c cast range (hit-area code)
+            'area': r[0x0e],                    # +0x0d effect area code
+            'mp': r[0x0f],                      # +0x0e MP cost
+            'anim': r[0x10],                    # +0x10 animation group
+            'learn_level_by_class': learn,      # +0x11 + class (80 classes), 0 = never
+            'description': text(i),
+        }
+        for k, (key, _) in enumerate(STRAT_TABLE_KEYS):
+            s[key] = tabs[k][i]
+        strategies.append(s)
 
     # --------------------------------------------------------------- shops (e2)
-    e2 = ent[2]
+    e2 = data[2]
     shops = []
     for i in range(len(e2) // 36):
         r = e2[i * 36:(i + 1) * 36]
         shops.append({
             'id': i,
-            'unk_a': struct.unpack_from('<H', r, 0)[0],
-            'unk_b': struct.unpack_from('<H', r, 2)[0],
-            'equipment': [b for b in r[4:20] if b != 0xff],
-            'items': [b for b in r[20:36] if b != 0xff],
+            'unk_a': struct.unpack_from('<H', r, 0)[0],   # -> u32 +0
+            'unk_b': struct.unpack_from('<H', r, 2)[0],   # -> u32 +4
+            'equipment': [b for b in r[4:20] if b != NONE],
+            'items': [b for b in r[20:36] if b != NONE],
             'raw': r.hex(),
-            'loaded_by_exe': i < 58,
         })
 
     # ---------------------------------------------------------- misc / names
     names = {
-        'item_groups': item_groups,
-        'item_effects': item_effects,
-        'item_effects_extra_unreferenced': extra_effect_names,
-        'effect_names_by_id': {str(k): v for k, v in sorted(effect_names.items())},
-        'strategy_effects': strat_effects,
-        'terrain': terrain_names,
-        'class_families': family_names,
         'classes': class_names,
-        'battle_names': [texts[250 + i] for i in range(58)],
+        'class_families': family_names,
+        'terrain': terrain_names,
+        'equip_types': equip_type_names,
+        'strategy_effects': strat_effect_names,
+        'item_effects_by_id': {str(k + 0x1a): n for k, n in enumerate(item_effect_names)},
+        'use_effects_by_id': {str(k + 0x1a): n for k, n in enumerate(use_effect_names) if n},
+        'specials': special_names,
+        'skills': skill_names,
+        'battle_names': [text(250 + i) for i in range(99)],
+        'strategy_tables': {k: v for k, v in STRAT_TABLE_KEYS},
+        'family_attrs': {k: v for k, v in FAMILY_ATTR_KEYS},
     }
-    text_ranges = {
-        'item_desc': [0, 104], 'strategy_desc': [150, 68], 'battle_name': [250, 58],
-        'class_desc': [350, 53], 'person_bio': [922, 1024],
-        'note': 'other ranges (420-921) hold skill descriptions, quotes etc. Index = record number (200 bytes each).',
+    text_ranges = {k: v[:2] for k, v in TEXT_RANGES.items()}
+    text_ranges['note'] = ('[first index, count]; Imsg.e5 record = 200 GBK bytes, reader 0x40bf56. '
+                           + '; '.join('%s: %s' % (k, v[2]) for k, v in TEXT_RANGES.items()))
+    sprite_tables = {
+        's_sprite': list(s_spr), 'r_sprite': list(r_spr),
+        'note': 's_sprite = u16[1024] at 0x501000 (exe file offset 0xD2800, System.ini FileHead): battle (S) '
+                'sprite per person, 0 = by class (reader 0x4068de); r_sprite = u16[1024] at 0x50f800 '
+                '(file 0xE1000, RFileHead): story (R) sprite per person (0x409038; op 0x411f49 writes it). '
+                'Both lie in the 0x501000..0x531000 block that saves store raw.',
     }
 
     def dump(name, obj):
@@ -311,12 +392,10 @@ def main():
     dump('strategies.json', strategies)
     dump('shops.json', shops)
     dump('names.json', names)
-    dump('shapes.json', {'range': {str(k): v for k, v in RANGE_SHAPES.items()},
-                         'area': {str(k): v for k, v in AREA_SHAPES.items()},
-                         'note': 'range codes: class.attack_range, strategy.range; area codes: strategy.area. '
-                                 'For ally-targeting strategies the caster cell is added to the range (flag bit 1).'})
     dump('texts.json', {'ranges': text_ranges, 'texts': texts})
-    print('wrote', OUT, len(persons), len(items), len(classes), len(families), len(strategies), len(shops), len(texts))
+    dump('sprite_tables.json', sprite_tables)
+    print('wrote', OUT, 'persons', len(persons), 'items', len(items), 'classes', len(classes),
+          'families', len(families), 'strategies', len(strategies), 'shops', len(shops), 'texts', len(texts))
 
 
 if __name__ == '__main__':

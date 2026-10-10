@@ -24,7 +24,7 @@ const ITEM_MODE := 0x500c44     # 0 attack; 1 mine detonation; 2 thrown item
 const FORCED_MOVE := 0x500ad3   # 1 during knock-back / forced moves
 const MOVE_RECT := 0x501bf0     # script move limit {x, y, w, h} (0 = none)
 const STRAT_ITEM := 0x500ad7    # 1: an attack item is used as a strategy
-const FOG_MAP := false          # the port does not compute the visibility map 0x4934b0 yet
+const VIS := 0x4934b0           # per-cell visibility: bit 0 seen by the player group, bit 1 by the enemy group
 
 const DIR4: Array[Vector2i] = [Vector2i(0, -1), Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0)]
 ## 0x4359f5 (table 0x435a3e): up, right, down, left, up-right, down-right, down-left, up-left
@@ -991,8 +991,7 @@ static func pushes(a: BUnit) -> bool:
 static func fog(a: BUnit, d: BUnit, dmg: int) -> int:
 	if ev(4087) != 0 or Mem.r8(0x501bd2) < 2:
 		return dmg
-	if not FOG_MAP:
-		return dmg      # the visibility map 0x4934b0 (0x42a2af / 0x42b1f1, 增加视野) is not built yet [open item]
+	vis_update()
 	var ga := 1 if (a.slot < 60 or a.kind == 5) else 2
 	var gd := 1 if (d.slot < 60 or d.kind == 5) else 2
 	if ga == gd:
@@ -1001,6 +1000,44 @@ static func fog(a: BUnit, d: BUnit, dmg: int) -> int:
 	if (Mem.r8(0x4934b0 + d.pos.x + d.pos.y * map_w()) & mask) == 0:
 		return dmg * 80 / 100
 	return dmg
+
+
+static var _vis_gen := -1
+
+
+## Visibility map 0x4934b0 while the battle tint mode (0x501bd2) is ≥ 2 (fog): every on-map unit reveals its cell
+## and its sight shape for its group (0x42a297 → 0x42a6b8 / 0x42a708 / 0x42a5d6; a cell is cleared only when no
+## unit of the group still sees it, so the map is the union of the groups' sights — rebuilt here when units moved).
+## Bits 2/3 come from other sources and are kept.
+static func vis_update() -> void:
+	if Mem.r8(0x501bd2) < 2 or st() == null:
+		return
+	if _vis_gen == BUnit.gen:
+		return
+	_vis_gen = BUnit.gen
+	var W := map_w()
+	for i in W * map_h():
+		Mem.w8(VIS + i, Mem.r8(VIS + i) & 0xc)
+	for u: BUnit in st().units:
+		if u.state != 2 or u.pid < 0:
+			continue
+		var g := 1 if (u.slot < 60 or u.kind == 5) else 2
+		var cells: Array[Vector2i] = [u.pos]
+		var p := Mem.r32(0x4d1400 + 4 * sight_shape(u))
+		var guard := 0
+		while Mem.r16(p) != 0xffff and guard < 64:
+			expand_entry(u.pos, Mem.r8(p), Mem.r8(p + 1), cells)
+			p += 2
+			guard += 1
+		for c in cells:
+			if in_map(c):
+				Mem.w8(VIS + c.x + c.y * W, Mem.r8(VIS + c.x + c.y * W) | g)
+
+
+## Sight 0x42b1f1: 增加视野 (QuerySources(65, 0, 1, 0)) ≥ 12 → shape table entry v − 2, else entry 6 (Manhattan ≤ 2).
+static func sight_shape(u: BUnit) -> int:
+	var v := Effects.src(u.pid, 65, 0, 1, 0) & 0xff
+	return v - 2 if v >= 12 else 6
 
 
 ## Modifiers 0x412c78: direction / 围攻 bonus; unless preview (flag 1 for strategies): fog and the rand(7) spread

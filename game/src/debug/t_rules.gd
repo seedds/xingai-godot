@@ -174,6 +174,21 @@ func run() -> void:
 	_check(path.size() == 3 and path[-1] == Vector2i(10, 7), "path to (10,7): %s" % [path])
 	e2.state = 0
 
+	# ---- fog (tint mode ≥ 2): sight = Manhattan 2 → an enemy 3 cells away is unseen → ×0.8 damage
+	Mem.w8(0x501bd2, 30)
+	var fa := _unit(st, 3, 500, 0, Vector2i(2, 2))
+	var fd := _unit(st, 62, 501, 2, Vector2i(5, 2))
+	Rules.vis_update()
+	_check(Mem.r8(Rules.VIS + 4 + 2 * 20) & 1 and not (Mem.r8(Rules.VIS + 5 + 2 * 20) & 1), "sight reaches Manhattan 2")
+	var dfog: int = Rules.fog(fa, fd, 100)
+	fd.pos = Vector2i(4, 2)
+	Rules.vis_update()
+	var dseen: int = Rules.fog(fa, fd, 100)
+	_check(dfog == 80 and dseen == 100, "fog ×80 unseen (%d), seen %d" % [dfog, dseen])
+	Mem.w8(0x501bd2, 0)
+	fa.state = 0
+	fd.state = 0
+
 	# ---- growth: person 0 (群雄, class 0) 攻击: class grade 6 + ability grade(88) 6 → 6 per level
 	Game.new_game_state()
 	var p0 := Game.person(0)

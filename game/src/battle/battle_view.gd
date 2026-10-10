@@ -207,7 +207,18 @@ func _draw_tint() -> void:
 		return
 	var c := Mem.r32(0x501bd4)
 	var col := Color8(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff, int(lvl * 255))
-	tint.draw_rect(Rect2(Vector2.ZERO, Vector2(map_w * CELL, map_h * CELL)), col)
+	var mode := Mem.r8(0x501bd2)
+	if mode < 2:
+		tint.draw_rect(Rect2(Vector2.ZERO, Vector2(map_w * CELL, map_h * CELL)), col)
+		return
+	# fog (0x42a43e): cells the player group sees are darkened by `mode` %, the others by `level` %
+	Rules.vis_update()
+	var seen := col
+	seen.a = clampf(mode / 100.0, 0.0, 1.0)
+	for y in map_h:
+		for x in map_w:
+			var v := Mem.r8(Rules.VIS + x + y * map_w)
+			tint.draw_rect(Rect2(cell_pos(Vector2i(x, y)), Vector2(CELL, CELL)), seen if (v & 0xd) != 0 else col)
 
 
 func _draw_cursor(n: Node2D) -> void:
@@ -231,6 +242,8 @@ func _process(delta: float) -> void:
 	if not _hl_move.is_empty() or not _hl_attack.is_empty():
 		overlay.queue_redraw()
 	var key := Mem.r32(0x501bd2) ^ (Mem.r16(0x501bd6) << 7)
+	if Mem.r8(0x501bd2) >= 2:
+		key ^= BUnit.gen << 20
 	if key != _tint_key:
 		_tint_key = key
 		tint.queue_redraw()

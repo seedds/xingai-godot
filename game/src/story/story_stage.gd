@@ -450,10 +450,37 @@ func op_change_scene(ins: Dictionary) -> void:
 
 
 ## 0x40bbaf: entry = byte + 256·EV[4027] (+ 40 for kind 2); Mmap.e5 → gfx/backgrounds (index.json `file`).
+## 0x425dcd: the scene grid Pmap.e5 entry = byte + 256·EV[4027] (no kind offset) for walking (RpgActor.route).
 func _load_scene_picture() -> void:
 	var entry := scene_image + 256 * Mem.ev(4027) + (40 if scene_kind == 2 else 0)
 	scene_entry = entry
 	bg.texture = background_texture(entry)
+	_load_grid(scene_image + 256 * Mem.ev(4027))
+
+
+static var _buha: Array = []
+
+
+## Pmap grid as converted (gfx/backgrounds/buha/NNN.png: 200×100 grey = the raw lo/hi bytes per cell).
+func _load_grid(entry: int) -> void:
+	RpgActor.grid = PackedByteArray()
+	if _buha.is_empty():
+		var d: Variant = Assets.json("gfx/backgrounds/index.json")
+		if d is Dictionary:
+			_buha = d.get("buha", {}).get("masks", [])
+	if _buha.is_empty():
+		return
+	if entry < 0 or entry >= _buha.size():
+		entry = 0         # past the archive: entry 0 (0x41fc89)
+	var m: Dictionary = _buha[entry]
+	var img := Assets.image("gfx/backgrounds/" + str(m["file"]))
+	if img == null:
+		return
+	img.convert(Image.FORMAT_L8)
+	var hw: Array = m.get("header_words", [0, 100, 100, 1])
+	RpgActor.grid_x = int(hw[1])
+	RpgActor.grid_y = int(hw[2])
+	RpgActor.grid = img.get_data()
 
 
 static var _bg_index: Array = []
@@ -517,8 +544,7 @@ func op_actor_select(ins: Dictionary) -> void:
 ## walks in parallel; the last one yields until no actor walks.
 func op_actor_move(ins: Dictionary) -> void:
 	var pid := u16(ins, 1) & 0xfff
-	var d := u16(ins, 5)
-	var end_dir := -1 if d == 0xffff else d
+	var end_dir := u16(ins, 5)
 	if actors.has(pid) and is_instance_valid(actors[pid]):
 		var a: RpgActor = actors[pid]
 		if vm and vm.next_op == 0x32:

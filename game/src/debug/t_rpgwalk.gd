@@ -35,4 +35,31 @@ func run() -> void:
 	await a.walk_to(29, 26, 2, true)
 	_check(a.dir == 2 and a.gx == 29, "final facing 2 after walking -X")
 	a.queue_free()
+	# distance-field route (0x4291f7 / 0x428256) around a wall: a 3×3 actor going +X from (40,50) to (50,50) with
+	# blocked cells x 45 for y 44..56 must step round the wall's end and still arrive
+	var g := PackedByteArray()
+	g.resize(100 * 100 * 2)
+	for y in range(44, 57):
+		g[2 * (100 * y + 45) + 1] = 0xf0
+	RpgActor.grid = g
+	var r: Variant = RpgActor.route(40, 50, 50, 50)
+	_check(r != null, "route found around the wall")
+	if r != null:
+		var x := 40
+		var y := 50
+		var through := false
+		for d in r:
+			x += RpgActor.STEP_DX[d]
+			y += RpgActor.STEP_DY[d]
+			if RpgActor.blocked(x, y, 3, 3):
+				through = true
+		_check(x == 50 and y == 50 and not through, "arrives at (50,50) without crossing the wall: %s" % [r])
+	RpgActor.grid = PackedByteArray()
+	var open: Variant = RpgActor.route(40, 50, 43, 46)
+	_check(open == RpgActor.walk_steps(40, 50, 43, 46), "open-ground route = the axis rule: %s" % [open])
+	for y in range(0, 100):
+		g[2 * (100 * y + 45) + 1] = 0xf0
+	RpgActor.grid = g
+	_check(RpgActor.route(40, 50, 50, 50) == null, "no route through a full wall")
+	RpgActor.grid = PackedByteArray()
 	print("t_rpgwalk: PASS" if _ok else "t_rpgwalk: FAILED")

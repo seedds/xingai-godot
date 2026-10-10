@@ -67,6 +67,13 @@ All options are environment variables read at start-up, for example
 | `WG_SAVETEST=1` | Save at battle turn 2 and quit; run again with `WG_LOADSLOT=18` to check the restore |
 | `WG_ACCEPT_SPAM=1` | Press Enter every 0.6 s |
 | `WG_SHOTS=dir` | Save a screenshot to *dir* every `WG_SHOT_EVERY` seconds (default 3) |
+| `WG_ONEFILE=1` | With `WG_START`: run that one scenario file and quit (`tools/runall.sh`) |
+| `WG_OPSTATS=1` | Print the executed opcodes (0x72 by sub-function) when a file ends (`OPSTATS …` lines) |
+| `WG_SKIPBATTLES=1` | Story-only flow tests: every battle file runs its deployment and aftermath, the turn loop is skipped |
+| `WG_CHOOSE_AVOID=a,b` | Autoplay keeps off choice options containing one of these words (the flow scripts avoid the side games 夢幻關卡, 外傳, 兵種大對決 … by default) |
+| `WG_STORYSAVETEST=n` | Save to slot *n* (≥ 11) at the first wait of a story scene and quit; resume with `WG_LOADSLOT=n` |
+| `WG_ENDTEST=v` | Play the ending show of ending *v* and quit |
+| `WG_TRACE_ROUTE=1` | Report story walks whose target cannot be reached |
 | `WG_SHELLSHOT=dir` | Touch shell only: the same for the whole screen, side buttons included (`user://…` works on a phone) |
 | `WG_SHELLSIZE=WxH` | Touch shell on a desktop: open the window at this size, e.g. `1734x800` (iPhone shape) or `1334x750` (16:9) |
 
@@ -89,6 +96,7 @@ The scripts in `tools/` run the game headless in autoplay and log to `extract/`:
 | `tools/flowres.sh SLOT STOP LOG [seconds]` | Resume such a run from its autosave slot |
 | `tools/flowwatch.sh LOG…` | Print skips and errors as they appear, and `STALL` when a log is silent for 5 minutes (use with a log watcher) |
 | `tools/gtest.sh t_name` | Run `game/src/debug/t_name.gd` under the headless test runner |
+| `tools/runall.sh [OUTDIR] [n …]` | Run each story file (or the given scenario numbers) once headless with autoplay (`WG_ONEFILE`, `WG_OPSTATS`), in parallel (`JOBS`, `TMO`), and summarise warnings / script errors |
 
 The autosave slot numbers are save files in the game's user folder: use **11 or higher**, since slots 0–9 are the
 player's own saves. Run several ranges in parallel with bash, for example

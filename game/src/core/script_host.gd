@@ -120,6 +120,12 @@ func current_unit_person() -> int:
 	return -1
 
 
+## Battle HP / MP change of a person's unit through 0x45aa37 with byte EV[4044] = mode (0 sub floor 1, 1 add,
+## 2 set; clamped to the unit's maximum, never kills) — op 0x38 attrs 7 / 8. BattleStage; no units outside a battle.
+func unit_hp_mp_op(_pid: int, _attr: int, _v: int, _mode: int) -> void:
+	pass
+
+
 # ------------------------------------------------------------------ UI wrappers (new GameUI API, old one as fallback)
 func ui_talk(pid: int, text: String, flags := 0x20) -> void:
 	if ui.has_method("talk"):

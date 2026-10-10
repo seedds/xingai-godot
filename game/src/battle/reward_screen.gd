@@ -60,6 +60,21 @@ static func present(st: BattleStage, gold: int, ids: Array, mode: int, levels: A
 	s.queue_free()
 
 
+## 0x44b328(text): the text in 48-px (64 with 15 or more view rows) white letters at the top of the window for 20
+## ticks (op 0x5a "开始作战", 0x48e1c8).
+static func banner(st: BattleStage, text: String) -> void:
+	if Game.autoplay:
+		return
+	var s := RewardScreen.new()
+	s.set_anchors_preset(Control.PRESET_FULL_RECT)
+	s.mouse_filter = Control.MOUSE_FILTER_STOP
+	st.ui.add_window(s)
+	var size := 0x40 if int(st.view.view_size().y) / 48 >= 15 else 0x30
+	s._text(text, size, size * 0.5, 0x12)
+	await s._ticks(20)
+	s.queue_free()
+
+
 func _text(t: String, size: int, y: float, colour: int) -> void:
 	var f := Assets.font()
 	var w := f.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x

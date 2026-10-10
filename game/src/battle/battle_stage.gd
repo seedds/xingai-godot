@@ -1880,8 +1880,9 @@ func op_ui_0e(_ins: Dictionary) -> void:
 	vm.active = false
 
 
+## op 0x5a (0x44bac2 → 0x44b328(0x48e1c8)): "开始作战" over the map for 20 ticks.
 func op_ui_5a(_ins: Dictionary) -> void:
-	pass
+	await RewardScreen.banner(self, "开始作战")
 
 
 ## op 0x54: the retreat check pass (0x42bc14).
@@ -2921,15 +2922,54 @@ func _army_avg_level() -> int:
 	return maxi(s / n, 1)
 
 
-## op 0x5b: highlight a rectangle.
+## op 0x5b (0x416ae3): rectangle x1, y1, x2, y2 (bytes) and flag (0xffff → 0), battle only → 0x416609.
 func op_op_5b(ins: Dictionary) -> void:
+	var r := 0
+	for i in 4:
+		r |= (arg(ins, i) & 0xff) << (8 * i)
+	var flag := arg(ins, 4) & 0xffff
+	if flag == 0xffff:
+		flag = 0
+	await goal_rect(flag, r)
+
+
+## 0x416609(flag, rect): flag 0 keeps the rectangle as the battle's goal area (B+0xc, B+8 = 1; op 0x19 clears B+8);
+## another flag shows it once and keeps the stored one; rect −1 shows the stored one. Shown (stored area or flag
+## ≠ 0): clamped to the map, the view centred on its middle (0x4165d4), three blinks of 10 ticks on / 10 off.
+func goal_rect(flag: int, rect: int) -> void:
+	var prev := 0
+	if rect != -1:
+		if Mem.r8(B + 8) == 1:
+			prev = Mem.r32(B + 0xc)
+		Mem.w32(B + 0xc, rect)
+		if flag == 0:
+			Mem.w8(B + 8, 1)
+	var r := Mem.r32(B + 0xc)
+	if rect != -1 and flag != 0:
+		Mem.w32(B + 0xc, prev)
+	if Mem.r8(B + 8) == 0 and flag == 0:
+		return
+	var v := [r & 0xff, (r >> 8) & 0xff, (r >> 16) & 0xff, (r >> 24) & 0xff]
+	for i in 4:
+		v[i] = mini(v[i], (Rules.map_w() if i % 2 == 0 else Rules.map_h()) - 1)
+	if v[0] > v[2] or v[1] > v[3]:
+		return
+	await scroll_cell(Vector2i(_mid(v[0], v[2]), _mid(v[1], v[3])))
 	var cells: Array[Vector2i] = []
-	for y in range(mini(arg(ins, 1), arg(ins, 3)), maxi(arg(ins, 1), arg(ins, 3)) + 1):
-		for x in range(mini(arg(ins, 0), arg(ins, 2)), maxi(arg(ins, 0), arg(ins, 2)) + 1):
+	for y in range(v[1], v[3] + 1):
+		for x in range(v[0], v[2] + 1):
 			cells.append(Vector2i(x, y))
-	view.goal_cells = cells
-	if not cells.is_empty():
-		await view.center_on(cells[cells.size() / 2])
+	for k in 3:
+		view.goal_cells = cells
+		await wait(0.5)
+		view.goal_cells = []
+		await wait(0.5)
+
+
+## 0x4165d4: a + ⌈(b − a) / 2⌉ when b − a > 2, else a.
+static func _mid(a: int, b: int) -> int:
+	var d := b - a
+	return a + d / 2 + d % 2 if d > 2 else a
 
 
 ## op 0x5c: blink the person's unit three times.

@@ -37,7 +37,7 @@ class PE:
         """find E8 rel32 calls to target"""
         res = []
         for v, vs, ro, rs, n in self.secs:
-            if 'text' not in n: continue
+            if 'text' not in n and n != '.code': continue
             seg = self.data[ro:ro + rs]
             for i in range(len(seg) - 5):
                 if seg[i] == 0xE8:

@@ -27,8 +27,14 @@ func path(rel: String) -> String:
 
 
 func exists(rel: String) -> bool:
-	return FileAccess.file_exists(ROOT + rel) or (rel.ends_with(".png") and hd_active()
-			and FileAccess.file_exists(HD_ROOT + rel.get_basename() + ".webp"))
+	return FileAccess.file_exists(ROOT + rel) or (rel.ends_with(".png") and (_jpg_twin(rel) != "" or hd_active()
+			and FileAccess.file_exists(HD_ROOT + rel.get_basename() + ".webp")))
+
+
+## Pictures the original stores as JPEG are kept as .jpg; code asks for the .png name. Returns the .jpg path or "".
+func _jpg_twin(rel: String) -> String:
+	var j := rel.get_basename() + ".jpg"
+	return j if FileAccess.file_exists(ROOT + j) else ""
 
 
 func _ready() -> void:
@@ -137,14 +143,18 @@ func _hd_touch(rel: String, t: Texture2D) -> void:
 		_hd_bytes -= int(_hd_lru.pop_front()[2])
 
 
-## Load a PNG as an Image (not cached).
+## Load a PNG (or its .jpg twin, or a .jpg asked for by name) as an Image (not cached).
 func image(rel: String) -> Image:
+	if rel.ends_with(".png") and not FileAccess.file_exists(ROOT + rel) and _jpg_twin(rel) != "":
+		rel = _jpg_twin(rel)
 	var p := ROOT + rel
 	if not FileAccess.file_exists(p):
 		push_warning("missing image: " + rel)
 		return null
 	var img := Image.new()
-	if img.load_png_from_buffer(FileAccess.get_file_as_bytes(p)) != OK:
+	var bytes := FileAccess.get_file_as_bytes(p)
+	var err := img.load_jpg_from_buffer(bytes) if rel.ends_with(".jpg") else img.load_png_from_buffer(bytes)
+	if err != OK:
 		return null
 	return img
 

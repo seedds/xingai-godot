@@ -177,7 +177,8 @@ func _boot() -> void:
 		_run_flow()
 		return
 	if OS.get_environment("WG_NOVIDEO") == "":
-		await ui.video.play("pre")
+		# 0x42b95c → 0x4112cd: movie 0 (Logo.Avi) before the title; the opening (Open.Avi) is played by a script
+		await ui.video.play("logo")
 	to_title()
 
 
@@ -299,7 +300,7 @@ func _show_version() -> void:
 
 # ------------------------------------------------------------------ scenario loop
 func scenario_file(n: int) -> String:
-	return ("R_%02d" if n % 2 == 0 else "S_%02d") % (n / 2)
+	return ("R_%03d" if n % 2 == 0 else "S_%03d") % (n / 2)
 
 
 func _run_flow() -> void:

@@ -1,4 +1,4 @@
-"""usage: dis.py VA [n] [noret]  -- disassemble wagan.wa with simple annotations"""
+"""usage: dis.py VA [n] [noret]  -- disassemble Ekd5.exe with simple annotations"""
 import os as _os
 _REPO = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))   # repository root
 import sys

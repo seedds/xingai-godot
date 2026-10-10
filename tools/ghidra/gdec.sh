@@ -4,7 +4,7 @@
 export JAVA_HOME=${JAVA_HOME_21:-/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home}
 GH=${GHIDRA_INSTALL_DIR:-/opt/homebrew/Cellar/ghidra/12.1.4/libexec}
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-PROJ=$ROOT/extract/ghidra_proj
+PROJ=${GDEC_PROJ:-$ROOT/extract/ghidra_proj}   # a copy per parallel user (Ghidra locks the project)
 EXE=$ROOT/orig/Ekd5.exe
 SP=$ROOT/tools/ghidra
 mkdir -p "$PROJ"

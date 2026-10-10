@@ -2,7 +2,7 @@
 import os as _os
 _REPO = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))   # repository root
 import pefile, struct, sys, capstone, re
-EXE = _REPO + '/wg2025/wagan.wa'
+EXE = _REPO + '/orig/Ekd5.exe'
 class PE:
     def __init__(self, path=EXE):
         self.pe = pefile.PE(path, fast_load=True)

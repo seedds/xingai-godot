@@ -195,6 +195,8 @@ func _act(unit: BUnit) -> void:
 	u = unit
 	W = Rules.map_w()
 	H = Rules.map_h()
+	if W == 0 or H == 0:
+		return                                  # port: no field loaded (a missing map), nothing to evaluate
 	var mv := 100 if (u.flags & 0x80) else u.move_points() & 0xff
 	forbidden = NO_CELL
 	Mem.w32(0x4b2c1c, 0)

@@ -257,6 +257,13 @@ var _auto_i := 0
 
 func _wait_for_click() -> int:
 	if Game.autoplay or Game.demo:
+		var st := OS.get_environment("WG_STORYSAVETEST")
+		if st != "" and int(st) >= 11:
+			# debug: save at the first wait for the player (slot ≥ 11) and quit; resume with WG_LOADSLOT
+			Game.save_game(int(st), save_state())
+			print("== story save test: saved %s scene %d to slot %s" % [vm.name, vm.scene, st])
+			get_tree().quit()
+			return -2
 		if Game.demo:
 			await get_tree().create_timer(1.0).timeout
 		await get_tree().process_frame

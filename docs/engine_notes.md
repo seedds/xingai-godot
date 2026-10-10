@@ -146,3 +146,9 @@ as `[ebp-4]`, cdecl handlers that return a second value in ECX): check decompile
   item records of 0x408b0d (item byte +0x18 bit 0).
 * **Godot 4.7 bug** met by the port: `PackedByteArray.get_string_from_multibyte_char("GBK")` hangs on an
   unterminated buffer holding exactly one double-byte character; `TextExpand.from_gbk` appends a NUL first.
+* **Story walking** (op 0x32 → 0x429159): script actors are 3×3 cells (0x428c8e(…, 3, 3, …)); 0x4291f7 builds a
+  breadth-first distance field from the target over the Pmap grid (footprint cells with high byte 0xf0 block,
+  0x426913; the step bounds of 0x4281c7 subtract h−1 twice from y), stopping when it steps onto the start; the walk
+  (0x42869c / 0x428256) takes the neighbour with the smallest distance, trying the last direction first, then +1, +2,
+  +3 (initial heading 0x40aedc: the longer axis, X on a tie). No route → no move and no turn; a final facing > 3 → 0.
+  On every shipped story file the route is found (no blocked targets under autoplay).

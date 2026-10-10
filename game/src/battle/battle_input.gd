@@ -863,10 +863,11 @@ func next_unit() -> bool:
 
 ## The menu bar / toolbar (WM_COMMAND 0x474c97) as one menu: 0x6d 结束回合, 0x6e 检索未执行部队 (both battle only),
 ## 0x69 武将一览 (dialog 186), 0x9cd5 持有道具一览 (dialog 325), 0x6a 胜利条件 (or "现在无法显示"), 0x6b 环境设定
-## (KANKYOU), 0x65 保存 (refused with "目前禁止存档" while u8 0x500fff = 0), 0x66 读取, 0x68 结束游戏 (→ the title).
-## [G] 战场缩小图, 历史情报, 练武场 and the 地形 / 宝物 lists are not offered here.
-const SYSTEM_MENU := ["结束回合", "检索未执行部队", "武将一览", "持有道具一览", "胜利条件", "环境设定", "保存", "读取",
-	"回到标题"]
+## (KANKYOU), 0x65 保存 (refused with "目前禁止存档" while u8 0x500fff = 0), 0x66 读取, 0x68 结束游戏 (→ the title),
+## 0x6f 历史情报 (0x41c3d7), 0x6c 战场缩小图 (0x449d96, battle only). The menu bar (0x4759bc) greys 练武场 in a battle;
+## 地形情报一览, 宝物图鉴, 装备情报 and 版本情报 are not ported (as on the story screen).
+const SYSTEM_MENU := ["结束回合", "检索未执行部队", "武将一览", "持有道具一览", "历史情报", "胜利条件", "战场缩小图",
+	"环境设定", "保存", "读取", "回到标题"]
 
 
 func system_menu() -> void:
@@ -883,16 +884,21 @@ func system_menu() -> void:
 		3:
 			await PartyMenu.item_menu(st.ui)
 		4:
+			if st.ui.has_method("history_window"):
+				await st.ui.history_window()
+		5:
 			var t := st.victory_text if st.victory_text != "" else st.goal_text
 			await st.ui.dialog.talk(null, "", t if t != "" else "现在无法显示", false)
-		5:
-			await Kankyou66.run(st.ui)
 		6:
+			BattleOverview.ensure(st).open()
+		7:
+			await Kankyou66.run(st.ui)
+		8:
 			if Mem.r8(0x500fff) == 0:
 				await st.ui.popup("目前禁止存档")
 			else:
 				await main.save_menu()
-		7:
+		9:
 			await main.load_menu()
-		8:
+		10:
 			main.to_title()

@@ -141,6 +141,8 @@ through EV variables.
 | `BattleHUD` | hovered-unit panel, turn and weather, phase banners |
 | `ResultPanel` / `RewardScreen` | the unit result window 0x450986 / the op 0x59 reward screen 0x44b5a8 |
 | `DtPicture` | the op 0x72 sub 12 map objects (DT.e5) |
+| `Mines` | modern-war mines: the record layer 0x510000, steps, explosions, item handler 10 |
+| `BattleOverview` | 战场缩小图, the 1/8-scale map window 0x4603c1 (units, view frame, frame dragging) |
 | `Rules` (`core/rules.gd`) | battle formulas: stat pipeline, damage, hit / critical rates, RNG and decks (docs/battle.md) |
 | `Effects` (`core/effects.gd`) | the 特效 query 0x4101d9 (personal, 附加技能, class, item, 专属 / 套装, 模仿 / 屏蔽; docs/skills.md) |
 | `Movement` | the flood 0x438484, zones of control, step-toward and paths |

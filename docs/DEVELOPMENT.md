@@ -62,6 +62,7 @@ All options are environment variables read at start-up, for example
 | `WG_BOTMODE=load`, `WG_BOTSLOT=n` | Input-bot variant: load slot *n* from the battle menu |
 | `WG_BOTMODE=duel` | Input-bot variant: stage a 单挑 between the first player unit and the first enemy, with screenshots |
 | `WG_BOTMODE=victory` | Input-bot variant: open the system menu, pick 胜利条件 and screenshot the window |
+| `WG_BOTMODE=overview` | Input-bot variant: open 战场缩小图 from the system menu, drag its view frame, close it; screenshots and the camera before / after |
 | `WG_BOTMODE=display` | Input-bot variant: toggle the 环境设定 display options by their hotkeys and screenshot each |
 | `WG_BOTMODE=sortie` | Input-bot variant: open the sortie dialog 选择武将 over the battle with the army as candidates |
 | `WG_BOTMODE=touchcancel` | Input-bot variant for the touch shell: checks that taps on empty spots cancel and that 菜单 opens the system menu; prints `TOUCHCANCEL: PASS` and writes `touchcancel.txt` to the bot folder |

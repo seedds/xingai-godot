@@ -239,6 +239,62 @@ func victory_test() -> void:
 	st.get_tree().quit()
 
 
+## WG_BOTMODE=overview: open the system menu, pick 战场缩小图, screenshot; drag the view frame two cells right and one
+## down (a press inside the frame), screenshot; close it with its close box.
+func overview_test() -> void:
+	if st.input._player_units().is_empty():
+		return                                 # no player unit this phase: the next one runs the test
+	Game.set_meta("bot_owns_input", true)
+	await _wait_idle(20.0)
+	await _click_cell(_empty_cell(), MOUSE_BUTTON_RIGHT)
+	await _wait(0.4)
+	for k in BattleInput.SYSTEM_MENU.find("战场缩小图"):
+		await _key("ui_down")
+	await _key("ui_accept")
+	await _wait(0.5)
+	await shot("overview")
+	var ov := st.overview
+	if ov == null or not ov.visible:
+		print("== bot: overview NOT shown")
+		st.get_tree().quit()
+		return
+	var cam0 := st.view.camera.position
+	var p0 := ov.position + Vector2(BattleOverview.BORDER, BattleOverview.BORDER + BattleOverview.CAP) \
+		+ cam0 / 8.0 + Vector2(4, 4)
+	var path := [p0, p0 + Vector2(6, 3), p0 + Vector2(13, 7)]
+	for i in path.size():
+		var sp: Vector2 = get_viewport().get_screen_transform() * path[i]
+		if i == 0:
+			var ev := InputEventMouseButton.new()
+			ev.button_index = MOUSE_BUTTON_LEFT
+			ev.pressed = true
+			ev.position = sp
+			ev.global_position = sp
+			Input.parse_input_event(ev)
+		else:
+			var mv := InputEventMouseMotion.new()
+			mv.position = sp
+			mv.global_position = sp
+			mv.button_mask = MOUSE_BUTTON_MASK_LEFT
+			Input.parse_input_event(mv)
+		await get_tree().process_frame
+		await get_tree().process_frame
+	await shot("overview_drag")
+	var up := InputEventMouseButton.new()
+	up.button_index = MOUSE_BUTTON_LEFT
+	up.pressed = false
+	up.position = get_viewport().get_screen_transform() * path[-1]
+	up.global_position = up.position
+	Input.parse_input_event(up)
+	await _wait(0.3)
+	await shot("overview_moved")
+	print("== bot: overview camera %s -> %s" % [cam0, st.view.camera.position])
+	await _tap(ov.position + ov._close_box().get_center())
+	await _wait(0.3)
+	print("== bot: overview %s after its close box" % ("visible" if ov.visible else "hidden"))
+	st.get_tree().quit()
+
+
 ## WG_BOTMODE=display: the display options of 环境设定 (§5.6) — toggled by their hotkeys (5 6 E F G O; I, AI方针, is
 ## on in the exe's initial data), then a
 ## unit's move range with the path preview, its target picker, and the 环境设定 dialog from the system menu.
@@ -443,6 +499,9 @@ func run_phase() -> void:
 		return
 	if OS.get_environment("WG_BOTMODE") == "display":
 		await display_test()
+		return
+	if OS.get_environment("WG_BOTMODE") == "overview":
+		await overview_test()
 		return
 	if OS.get_environment("WG_BOTMODE") == "sortie":
 		await sortie_test()

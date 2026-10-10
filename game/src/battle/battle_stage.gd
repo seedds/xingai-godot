@@ -40,6 +40,7 @@ var _in_checkpoint := false
 var _resumed := false        # loaded from a save made during the player phase: its start already happened
 var duel: DuelLayer
 var pictures: Dictionary = {}     # sub-12 map objects: slot → DtPicture
+var overview: BattleOverview      # 战场缩小图 window, created on first use
 var event_slots: Dictionary = {}  # reader event slots 5 / 6 (victory / defeat latches of ops 0x42 / 0x43)
 
 ## Battle object fields.
@@ -100,6 +101,8 @@ func _exit_tree() -> void:
 		hud.queue_free()
 	if duel and is_instance_valid(duel):
 		duel.queue_free()     # it lives in the UI layer, which outlasts the stage
+	if overview and is_instance_valid(overview):
+		overview.queue_free()
 
 
 func in_battle() -> bool:
@@ -136,7 +139,13 @@ func run_file(file: String) -> void:
 		Game.skip_battle_scenario = -1
 		vm.scene = mini(2, vm.scene_count() - 1)
 	elif vm.active and vm.scene == 1 and field_ready:
+		# 0x44f058: 自动显示战场缩小图 (GS+0 bit 3) shows the overview before the first round
+		if Mem.r8(Mem.GS) & 8 != 0 and not Game.autoplay:
+			BattleOverview.ensure(self).open()
 		await battle_loop()
+		# 0x41ba73: the overview closes with the battle
+		if overview and is_instance_valid(overview):
+			overview.close()
 		if result == 3 and vm.active and vm.scene == 1:
 			# out of rounds (B+1 = 3): defeat → game over (scene flag 0x20 of the scene loop 0x42c228)
 			await Game.main.game_over()
@@ -1877,6 +1886,20 @@ func op_ui_0e(_ins: Dictionary) -> void:
 	await Game.main.game_over()
 	vm.abort = true
 	vm.active = false
+
+
+## op 0x12 in a battle (0x411aa6): the 战场缩小图 is shown while the choice box is open and hidden again afterwards
+## unless it was already visible.
+func op_choice(ins: Dictionary) -> void:
+	if Game.autoplay or view == null:
+		await super.op_choice(ins)
+		return
+	var ov := BattleOverview.ensure(self)
+	var was := ov.visible
+	ov.open()
+	await super.op_choice(ins)
+	if not was and is_instance_valid(ov):
+		ov.close()
 
 
 ## op 0x5a (0x44bac2 → 0x44b328(0x48e1c8)): "开始作战" over the map for 20 ticks.

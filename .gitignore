@@ -1,0 +1,14 @@
+# original game (input, copyrighted) and generated output
+/orig
+/build/
+/extract/
+# Python / tooling
+/tools/venv
+__pycache__/
+*.pyc
+# Godot editor cache
+/game/.godot/
+# macOS
+.DS_Store
+/tools/upscale_models/
+/game/assets_hd/

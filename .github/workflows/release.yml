@@ -1,0 +1,324 @@
+# Builds the game for macOS, Windows, iPhone and Android on every push to main and publishes them as a GitHub release.
+# The build number is the workflow's run number, so it increases with every build: tag build-N, version 1.0.N.
+# The iPhone .ipa (built on a macOS runner) and the Android .apk are added to the release after the others.
+# Only the newest KEEP_BUILDS builds are kept (each is about 4.4 GB).
+name: Release builds
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:          # documentation and offline tools don't change the game
+      - "docs/**"
+      - "**/*.md"
+      - "tools/**"
+      - ".gitignore"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  GODOT_VERSION: 4.7.2
+  # SHA-256 of the Godot downloads (as listed on the godot-builds release)
+  GODOT_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_MACOS_SHA256: c58a24e31d720be9d62f60cb5627c4e695fb72f21b0cfe1bc9ccaa9a3b3ba63e
+  TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+  # SHA-256 of the Android release key's certificate (secrets ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_PASSWORD)
+  ANDROID_CERT_SHA256: a07c41ea2d4c5972156a57e46527896c6b9c6e1cc4f11a2e529094bdc732e667
+  KEEP_BUILDS: 5
+
+jobs:
+  build:
+    # a manual run from another branch must not publish a build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+
+      - name: Build number
+        run: |
+          echo "BUILD=${{ github.run_number }}" >> "$GITHUB_ENV"
+          echo "VERSION=1.0.${{ github.run_number }}" >> "$GITHUB_ENV"
+
+      - name: Cache Godot and export templates
+        id: cache-godot
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-macos-windows
+
+      - name: Install Godot and export templates
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
+          templates="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p ~/godot "$templates"
+          curl -sSL --fail -o /tmp/godot.zip "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          echo "${GODOT_SHA256}  /tmp/godot.zip" | sha256sum -c -
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          mv /tmp/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          # only the two templates we export with (the full bundle is 1.3 GB)
+          curl -sSL --fail -o /tmp/templates.tpz "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          echo "${TEMPLATES_SHA256}  /tmp/templates.tpz" | sha256sum -c -
+          unzip -q -j /tmp/templates.tpz templates/version.txt templates/macos.zip \
+            templates/windows_release_x86_64.exe -d "$templates"
+          rm /tmp/templates.tpz /tmp/godot.zip
+
+      - name: Add the HD graphics pack
+        # releases ship the HD art only (see the script)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/scripts/add_hd_pack.sh
+
+      - name: Stamp the version
+        run: .github/scripts/stamp_version.sh "${VERSION}" "${BUILD}"
+
+      - name: Import the project
+        run: ~/godot/godot --headless --path game --import
+
+      - name: Export
+        run: |
+          mkdir -p build/windows
+          ~/godot/godot --headless --path game --export-release "macOS" "../build/XinGai-macOS-build-${BUILD}.zip"
+          ~/godot/godot --headless --path game --export-release "Windows" ../build/windows/XinGai.exe
+          test -s "build/XinGai-macOS-build-${BUILD}.zip"
+          test -s build/windows/XinGai.exe && test -s build/windows/XinGai.pck
+          (cd build/windows && zip -q -r "../XinGai-Windows-build-${BUILD}.zip" .)
+          ls -la build
+
+      - name: Smoke test the exported data
+        # the .pck is the same on every platform: play the first scenarios headless from the Windows build's pack
+        # and make sure no picture is missing now that the originals are left out
+        run: |
+          code=0
+          WG_START=0 WG_AUTO=1 WG_GOD=1 WG_STOP=3 WG_NOVIDEO=1 timeout 900 \
+            ~/godot/godot --headless --main-pack build/windows/XinGai.pck > /tmp/smoke.log 2>&1 || code=$?
+          grep "^== " /tmp/smoke.log || true
+          if [ "$code" -ne 0 ]; then echo "the game exited with code $code"; tail -40 /tmp/smoke.log; exit 1; fi
+          grep -q "^== scenario 2" /tmp/smoke.log
+          if grep -E "missing (image|json)|SCRIPT ERROR|Parse Error|Compile Error|Failed to load" /tmp/smoke.log; then exit 1; fi
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          subject="$(git log -1 --format=%s)"
+          cat > /tmp/notes.md <<EOF
+          Automatic build ${BUILD} (version ${VERSION}) of commit ${GITHUB_SHA::7}: ${subject}
+
+          **macOS** (macOS 11+ on Apple Silicon, 10.13+ on Intel): unzip \`XinGai-macOS-build-${BUILD}.zip\` and open the app.
+          It is not notarized, so macOS blocks it the first time. On macOS 15 and later open **System Settings →
+          Privacy & Security**, scroll down and click **Open Anyway** (on older versions: right-click the app → **Open**).
+          Or run \`xattr -dr com.apple.quarantine <app>\` in Terminal.
+
+          **Windows** (64-bit): unzip \`XinGai-Windows-build-${BUILD}.zip\` and run \`XinGai.exe\` (keep \`XinGai.pck\`
+          next to it). If SmartScreen warns about an unknown publisher, choose **More info → Run anyway**.
+
+          **iPhone** (iOS 15+, iPhone XS or newer): \`XinGai-iOS-build-${BUILD}.ipa\` is added a few minutes after the
+          others. It is unsigned: install it with AltStore or Sideloadly, which sign it with your Apple ID (with a free
+          Apple ID the app has to be re-signed every 7 days). Touch controls: tap = click, drag = scroll the map or a
+          list, tap an empty spot or **返回** = cancel, **菜单** (top left) = system menu, **快进** = fast forward.
+
+          **Android** (Android 7.0+, 64-bit ARM): \`XinGai-Android-build-${BUILD}.apk\` is added a few minutes after
+          the others. Open it on the phone and allow the browser or file manager to install apps when asked. Later
+          builds install over it and keep the saves. Touch controls as on the iPhone; the back button or gesture works
+          as **返回** (opens the **菜单** where there is nothing to go back from).
+          EOF
+          files=("build/XinGai-macOS-build-${BUILD}.zip" "build/XinGai-Windows-build-${BUILD}.zip")
+          # only the build of main's newest commit becomes "Latest" (not a re-run of an older one)
+          latest=false
+          if [ "$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}" refs/heads/main | cut -f1)" = "${GITHUB_SHA}" ]; then
+            latest=true
+          fi
+          if gh release view "build-${BUILD}" > /dev/null 2>&1; then
+            # a re-run of this build: replace its files
+            gh release upload "build-${BUILD}" "${files[@]}" --clobber
+          else
+            gh release create "build-${BUILD}" "${files[@]}" \
+              --target "${GITHUB_SHA}" --title "Build ${BUILD}" --notes-file /tmp/notes.md --latest="${latest}"
+          fi
+
+      - name: Remove old builds
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --limit 200 --json tagName --jq '.[].tagName' | { grep -E '^build-[0-9]+$' || true; } \
+            | sort -t- -k2 -n -r | tail -n +$((KEEP_BUILDS + 1)) | while read -r tag; do
+              echo "deleting $tag"
+              gh release delete "$tag" --cleanup-tag --yes
+            done
+
+  ios:
+    # the iPhone build: an unsigned .ipa (for sideloading) added to the release the build job published
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+
+      - name: Build number
+        run: |
+          echo "BUILD=${{ github.run_number }}" >> "$GITHUB_ENV"
+          echo "VERSION=1.0.${{ github.run_number }}" >> "$GITHUB_ENV"
+
+      - name: Cache Godot and the iOS export template
+        id: cache-godot
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6
+        with:
+          path: |
+            ~/godot
+            ~/Library/Application Support/Godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-macos-ios
+
+      - name: Install Godot and the iOS export template
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
+          templates="$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p ~/godot "$templates"
+          curl -sSL --fail -o /tmp/godot.zip "$base/Godot_v${GODOT_VERSION}-stable_macos.universal.zip"
+          echo "${GODOT_MACOS_SHA256}  /tmp/godot.zip" | shasum -a 256 -c -
+          unzip -q /tmp/godot.zip -d ~/godot
+          curl -sSL --fail -o /tmp/templates.tpz "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          echo "${TEMPLATES_SHA256}  /tmp/templates.tpz" | shasum -a 256 -c -
+          unzip -q -j /tmp/templates.tpz templates/version.txt templates/ios.zip -d "$templates"
+          rm /tmp/templates.tpz /tmp/godot.zip
+
+      - name: Add the HD graphics pack
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/scripts/add_hd_pack.sh
+
+      - name: Stamp the version
+        run: .github/scripts/stamp_version.sh "${VERSION}" "${BUILD}"
+
+      - name: Build the iPhone app
+        run: |
+          godot=~/godot/Godot.app/Contents/MacOS/Godot
+          "$godot" --headless --path game --import
+          xcodebuild -version
+          GODOT="$godot" tools/build_ios.sh --unsigned
+          mv build/XinGai-iOS.ipa "build/XinGai-iOS-build-${BUILD}.ipa"
+          # the app, the engine and the game data must all be in the package
+          unzip -l "build/XinGai-iOS-build-${BUILD}.ipa" > /tmp/ipa.txt
+          grep -q "Payload/XinGai.app/XinGai$" /tmp/ipa.txt
+          grep -q "Payload/XinGai.app/XinGai.pck$" /tmp/ipa.txt
+          ls -la build
+
+      - name: Add it to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "build-${BUILD}" "build/XinGai-iOS-build-${BUILD}.ipa" --clobber
+
+  android:
+    # the Android build: an .apk signed with the release key, added to the release the build job published
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+
+      - name: Build number
+        run: |
+          echo "BUILD=${{ github.run_number }}" >> "$GITHUB_ENV"
+          echo "VERSION=1.0.${{ github.run_number }}" >> "$GITHUB_ENV"
+
+      - name: Cache Godot and the Android export template
+        id: cache-godot
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-android
+
+      - name: Install Godot and the Android export template
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
+          templates="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p ~/godot "$templates"
+          curl -sSL --fail -o /tmp/godot.zip "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          echo "${GODOT_SHA256}  /tmp/godot.zip" | sha256sum -c -
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          mv /tmp/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          # the prebuilt release APK only (no Gradle build)
+          curl -sSL --fail -o /tmp/templates.tpz "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          echo "${TEMPLATES_SHA256}  /tmp/templates.tpz" | sha256sum -c -
+          unzip -q -j /tmp/templates.tpz templates/version.txt templates/android_release.apk -d "$templates"
+          rm /tmp/templates.tpz /tmp/godot.zip
+
+      - name: Point Godot at the JDK and the Android SDK
+        # Godot takes their paths from JAVA_HOME and ANDROID_HOME when it first writes its editor settings (the
+        # import below); it signs the APK with the SDK's apksigner
+        run: |
+          echo "JAVA_HOME=${JAVA_HOME_17_X64}" >> "$GITHUB_ENV"
+          test -x "${JAVA_HOME_17_X64}/bin/java" && test -x "${ANDROID_HOME}/platform-tools/adb"
+          ls "${ANDROID_HOME}/build-tools"
+
+      - name: Add the HD graphics pack
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/scripts/add_hd_pack.sh
+
+      - name: Stamp the version
+        run: .github/scripts/stamp_version.sh "${VERSION}" "${BUILD}"
+
+      - name: Import the project
+        run: ~/godot/godot --headless --path game --import
+
+      - name: Export the Android app
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          GODOT_ANDROID_KEYSTORE_RELEASE_USER: wagang
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD" ]; then
+            echo "::error::no release key: set the secrets ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD (docs/BUILDING.md)"
+            exit 1
+          fi
+          export GODOT_ANDROID_KEYSTORE_RELEASE_PATH="$RUNNER_TEMP/release.keystore"
+          trap 'rm -f "$GODOT_ANDROID_KEYSTORE_RELEASE_PATH"' EXIT
+          base64 -d <<< "$KEYSTORE_BASE64" > "$GODOT_ANDROID_KEYSTORE_RELEASE_PATH"
+          mkdir -p build
+          ~/godot/godot --headless --path game --export-release "Android" "../build/XinGai-Android-build-${BUILD}.apk"
+          test -s "build/XinGai-Android-build-${BUILD}.apk"
+
+      - name: Check the package
+        run: |
+          apk="build/XinGai-Android-build-${BUILD}.apk"
+          # signed with the release key: an APK signed with another key does not install over the earlier builds
+          apksigner="$(ls -d "${ANDROID_HOME}"/build-tools/*/apksigner | sort -V | tail -1)"
+          "$apksigner" verify --print-certs "$apk" | tee /tmp/certs.txt
+          grep -q "certificate SHA-256 digest: ${ANDROID_CERT_SHA256}$" /tmp/certs.txt
+          # the engine, the scripts and the game data are in the package, the pictures in HD only
+          unzip -l "$apk" > /tmp/apk.txt
+          grep -q " lib/arm64-v8a/libgodot_android.so$" /tmp/apk.txt
+          grep -q " assets/project.binary$" /tmp/apk.txt
+          grep -q " assets/src/touch/touch_shell.tscn.remap$" /tmp/apk.txt
+          grep -q " assets/assets/data/exe_image.bin$" /tmp/apk.txt
+          n=$(grep -c " assets/assets_hd/.*\.webp$" /tmp/apk.txt)
+          echo "HD pack: $n images"
+          test "$n" -ge 3400
+          if grep -E " assets/assets/gfx/(portraits|maps|units)/.*\.png$" /tmp/apk.txt | head -3 | grep .; then exit 1; fi
+          ls -la build
+
+      - name: Add it to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "build-${BUILD}" "build/XinGai-Android-build-${BUILD}.apk" --clobber

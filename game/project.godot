@@ -1,0 +1,37 @@
+; Engine configuration file.
+config_version=5
+
+[application]
+
+config/name="新改曹操傳"
+run/main_scene="res://src/main.tscn"
+run/main_scene.mobile="res://src/touch/touch_shell.tscn"
+config/features=PackedStringArray("4.7")
+config/quit_on_go_back=false
+
+[autoload]
+
+Assets="*res://src/core/assets.gd"
+Audio="*res://src/core/audio.gd"
+Mem="*res://src/core/mem.gd"
+Game="*res://src/core/game.gd"
+
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=480
+window/size/window_width_override=1280
+window/size/window_height_override=960
+window/stretch/mode="canvas_items"
+window/stretch/mode.mobile="disabled"
+window/stretch/aspect="keep"
+window/handheld/orientation=4
+window/ios/hide_home_indicator=true
+window/ios/suppress_ui_gesture=true
+
+[rendering]
+
+textures/vram_compression/import_etc2_astc=true
+
+textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)

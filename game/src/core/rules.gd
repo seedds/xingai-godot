@@ -24,6 +24,7 @@ const ITEM_MODE := 0x500c44     # 0 attack; 1 mine detonation; 2 thrown item
 const FORCED_MOVE := 0x500ad3   # 1 during knock-back / forced moves
 const MOVE_RECT := 0x501bf0     # script move limit {x, y, w, h} (0 = none)
 const STRAT_ITEM := 0x500ad7    # 1: an attack item is used as a strategy
+const FOG_MAP := false          # the port does not compute the visibility map 0x4934b0 yet
 
 const DIR4: Array[Vector2i] = [Vector2i(0, -1), Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0)]
 ## 0x4359f5 (table 0x435a3e): up, right, down, left, up-right, down-right, down-left, up-left
@@ -990,6 +991,8 @@ static func pushes(a: BUnit) -> bool:
 static func fog(a: BUnit, d: BUnit, dmg: int) -> int:
 	if ev(4087) != 0 or Mem.r8(0x501bd2) < 2:
 		return dmg
+	if not FOG_MAP:
+		return dmg      # the visibility map 0x4934b0 (0x42a2af / 0x42b1f1, 增加视野) is not built yet [open item]
 	var ga := 1 if (a.slot < 60 or a.kind == 5) else 2
 	var gd := 1 if (d.slot < 60 or d.kind == 5) else 2
 	if ga == gd:

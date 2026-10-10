@@ -135,6 +135,12 @@ func run_file(file: String) -> void:
 		vm.scene = mini(2, vm.scene_count() - 1)
 	elif vm.active and vm.scene == 1 and field_ready:
 		await battle_loop()
+		if result == 3 and vm.active and vm.scene == 1:
+			# out of rounds (B+1 = 3): defeat → game over (scene flag 0x20 of the scene loop 0x42c228)
+			await Game.main.game_over()
+			vm.abort = true
+			vm.active = false
+			return
 	# aftermath scenes
 	while vm.active:
 		var ran2: bool = await vm.poll()
@@ -367,6 +373,16 @@ func _battle_end(bonus: int) -> void:
 			for s in 5:
 				_merit_gain(u, s, bonus)
 		Mem.w8(p.base + 0x28, mini(Mem.r8(p.base + 0x28) + 1, 255))
+	# 0x408fa0 (EV 4047 功勋分配模式): persons 0..101 move the 功勋 of every ability whose +0x02 bit is clear to the
+	# shared pool EV 4048
+	if Rules.ev(4047) != 0:
+		for pid in 102:
+			var pb := Mem.person_addr(pid)
+			for s in 5:
+				if (Mem.r8(pb + 2) >> s) & 1 == 0:
+					var a := 0x508000 + 10 * pid + 2 * s
+					Mem.w32(Mem.EV + 4 * 4048, Rules.ev(4048) + Mem.r16(a))
+					Mem.w16(a, 0)
 
 
 ## 功勋 gain 0x42ab8e (person store 0x508000 + 10·id + 2·s; not when the raw ability is 0xff).

@@ -1284,9 +1284,22 @@ static func learned_by_table(p: Person, s: int) -> bool:
 ## Knows 0x41dc78(unit, s, onlyImitable): 学会策略 masks (QueryAny(0x49 + k, 0x6c, 3, 0)) against Mg8, or (k = 0)
 ## class level / person list; imitation only for strategies with MgMF bit 0.
 static func knows(u: BUnit, s: int, only_imitable := false) -> bool:
-	var p := u.person
+	return _knows(u.person, s, only_imitable, learn_masks(u))
+
+
+## The 8 学会策略 masks of a unit (QueryAny(0x49 + k, 0x6c, 3, 0), 0x43e1a8).
+static func learn_masks(u: BUnit) -> Array:
+	var out := []
+	Effects.begin_cache()
 	for k in 8:
-		var m := Effects.any(p.id, 0x49 + k, 0x6c, 3, 0)
+		out.append(Effects.any(u.pid, 0x49 + k, 0x6c, 3, 0))
+	Effects.end_cache()
+	return out
+
+
+static func _knows(p: Person, s: int, only_imitable: bool, masks: Array) -> bool:
+	for k in 8:
+		var m: int = masks[k]
 		if (m != 0 and (m & mg(MG8, s)) != 0) or (k == 0 and (learned_by_level(p, s) or learned_by_table(p, s))):
 			if not only_imitable or (mg(MG_MF, s) & 1):
 				return true
@@ -1298,13 +1311,16 @@ static func knows(u: BUnit, s: int, only_imitable := false) -> bool:
 ## knows them.
 static func known_strategies(u: BUnit, imitate := true) -> Array[int]:
 	var out: Array[int] = []
+	var masks := learn_masks(u)
+	var p := u.person
 	for s in 144:
-		if knows(u, s):
+		if _knows(p, s, false, masks):
 			out.append(s)
 	if imitate and u.eff(0x2d, 0x3b, 1, 1) != 0:
 		for o in Effects.neighbours4(u):
+			var om := learn_masks(o)
 			for s in 144:
-				if not out.has(s) and knows(o, s, true):
+				if not out.has(s) and _knows(o.person, s, true, om):
 					out.append(s)
 		out.sort()
 	return out

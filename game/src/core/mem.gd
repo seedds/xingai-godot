@@ -6,26 +6,38 @@ extends Node
 ## in the original byte layout and the rest of the engine reads it through views
 ## (Person / BUnit / GS accessors).
 ##
-##   0x400000 .. 0x5a9c00   initial image of wagan.wa (assets/data/exe_image.bin)
-##   0x01000000 ..          heap: person table (1024 × 0x48), pointer stored at [0x4d0048]
+##   0x400000 .. 0x542800   initial image of Ekd5.exe (assets/data/exe_image.bin; BSS zero-filled)
+##   0x01000000 ..          heap: person table (1024 × 0x48) then the shops (128 × 0x28), one block as the
+##                          original allocates them (0x483bd5); pointers at [0x4cea00] / [0x4cea04]
+##   0x02000000 ..          battle map buffer (paged, so it is saved), reached through the object at 0x48b140
 ##   anything else          sparse 4 KiB pages, zero-initialised
+## Layouts and evidence: docs/memory.md.
 
 const IMG_BASE := 0x400000
-const HEAP_PERSONS := 0x01000000
+const HEAP := 0x01000000
 const PERSON_SIZE := 0x48
-const PERSON_PTR := 0x4d0048
+const PERSON_PTR := 0x4cea00      # → persons
+const SHOP_PTR := 0x4cea04        # → shops = persons + 0x12000
+const LAST_PERSON_PTR := 0x4cea08 # → &person[0x3ff] (scratch record of 0x41de7e / 0x418f1f)
+const SHOP_SIZE := 0x28
+const HEAP_SIZE := 1024 * PERSON_SIZE + 128 * SHOP_SIZE
 
 # well-known addresses
-const GS := 0x4b0770              # game-state block
-const UNITS := 0x4b2c50           # 115 × 0x24 battle units
-const UNIT_SIZE := 0x24
-const FLAGS := 0x492fc8           # u32 per flag (Reader+0x38)
-const EV := 0x55b000              # mod extended int vars u32[4096]
-const PT := 0x563000              # mod pointer table u32[2048]
-const BYTEVARS := 0x55a000        # mod byte vars (person.wa sprite overrides live here)
+const GS := 0x4b0770              # game-state block (700 bytes)
+const UNITS := 0x4a7b20           # 250 × 0x30 battle units: slots 0..19 player, 20..59 friends, 60..249 enemies
+const UNIT_SIZE := 0x30
+const UNIT_SLOTS := 250
+const FLAGS := 0x492fc8           # u32[2048] (Reader 0x492f90 + 0x38)
+const EV := 0x502000              # script integer variables u32[4096]; config EVs 4016..4095
+const PT := 0x506000              # script pointer variables u32[481]
+const S_SPRITE := 0x501000        # u16[1024] battle sprite per person (0 = by class)
+const SP := 0x501c00              # u8[1024] 必杀 SP per person
+const FACE_TABLE := 0x50f000      # u16[1024] face per person (mirrors person +0x04)
+const R_SPRITE := 0x50f800        # u16[1024] story sprite per person
 const MAP_WH := 0x4b422c          # map width/height bytes
-const MAP_PTR := 0x4aeb44         # u32 pointer to the battle map buffer: 0x640-byte header, then w×h terrain
-const MAP_BUF := 0x02000000       # where this port keeps that buffer (paged memory, so it is saved)
+const MAP_OBJ := 0x48b140         # buffer object: u8 type, +4 u32 size, +0xc u32 data pointer (getter 0x401669)
+const MAP_BUF := 0x02000000       # where this port keeps that buffer: +0 header, +0x640 terrain, +0xc80 unit grid
+const MAP_BUF_SIZE := 0x19000
 
 var img := PackedByteArray()
 var img_end := 0
@@ -50,13 +62,14 @@ func reset() -> void:
 	img = _initial_img.duplicate()
 	img_end = IMG_BASE + img.size()
 	heap = PackedByteArray()
-	heap.resize(1024 * PERSON_SIZE)
+	heap.resize(HEAP_SIZE)
 	pages.clear()
-	w32(PERSON_PTR, HEAP_PERSONS)
-	# person.wa sprite-override table is loaded at 0x55a000 by the mod
-	var pw := FileAccess.get_file_as_bytes(Assets.path("data/person_wa.bin"))
-	for i in pw.size():
-		w8(BYTEVARS + i, pw[i])
+	w32(PERSON_PTR, HEAP)
+	w32(SHOP_PTR, HEAP + 1024 * PERSON_SIZE)
+	w32(LAST_PERSON_PTR, HEAP + 0x3ff * PERSON_SIZE)
+	w8(MAP_OBJ, 1)
+	w32(MAP_OBJ + 4, MAP_BUF_SIZE)
+	w32(MAP_OBJ + 0xc, MAP_BUF)
 
 
 func _page(addr: int) -> PackedByteArray:
@@ -72,8 +85,8 @@ func r8(addr: int) -> int:
 	addr &= 0xffffffff
 	if addr >= IMG_BASE and addr < img_end:
 		return img[addr - IMG_BASE]
-	if addr >= HEAP_PERSONS and addr < HEAP_PERSONS + heap.size():
-		return heap[addr - HEAP_PERSONS]
+	if addr >= HEAP and addr < HEAP + heap.size():
+		return heap[addr - HEAP]
 	var k := addr >> 12
 	if pages.has(k):
 		return pages[k][addr & 0xfff]
@@ -96,8 +109,8 @@ func w8(addr: int, v: int) -> void:
 	if watch_lo >= 0: _watch(addr, v, 1)
 	if addr >= IMG_BASE and addr < img_end:
 		img[addr - IMG_BASE] = v
-	elif addr >= HEAP_PERSONS and addr < HEAP_PERSONS + heap.size():
-		heap[addr - HEAP_PERSONS] = v
+	elif addr >= HEAP and addr < HEAP + heap.size():
+		heap[addr - HEAP] = v
 	else:
 		var p := _page(addr)
 		p[addr & 0xfff] = v
@@ -108,8 +121,8 @@ func r16(addr: int) -> int:
 	addr &= 0xffffffff
 	if addr >= IMG_BASE and addr + 1 < img_end:
 		return img.decode_u16(addr - IMG_BASE)
-	if addr >= HEAP_PERSONS and addr + 1 < HEAP_PERSONS + heap.size():
-		return heap.decode_u16(addr - HEAP_PERSONS)
+	if addr >= HEAP and addr + 1 < HEAP + heap.size():
+		return heap.decode_u16(addr - HEAP)
 	return r8(addr) | (r8(addr + 1) << 8)
 
 
@@ -118,8 +131,8 @@ func w16(addr: int, v: int) -> void:
 	if watch_lo >= 0: _watch(addr, v, 2)
 	if addr >= IMG_BASE and addr + 1 < img_end:
 		img.encode_u16(addr - IMG_BASE, v & 0xffff)
-	elif addr >= HEAP_PERSONS and addr + 1 < HEAP_PERSONS + heap.size():
-		heap.encode_u16(addr - HEAP_PERSONS, v & 0xffff)
+	elif addr >= HEAP and addr + 1 < HEAP + heap.size():
+		heap.encode_u16(addr - HEAP, v & 0xffff)
 	else:
 		w8(addr, v)
 		w8(addr + 1, v >> 8)
@@ -129,8 +142,8 @@ func r32(addr: int) -> int:
 	addr &= 0xffffffff
 	if addr >= IMG_BASE and addr + 3 < img_end:
 		return img.decode_u32(addr - IMG_BASE)
-	if addr >= HEAP_PERSONS and addr + 3 < HEAP_PERSONS + heap.size():
-		return heap.decode_u32(addr - HEAP_PERSONS)
+	if addr >= HEAP and addr + 3 < HEAP + heap.size():
+		return heap.decode_u32(addr - HEAP)
 	return r8(addr) | (r8(addr + 1) << 8) | (r8(addr + 2) << 16) | (r8(addr + 3) << 24)
 
 
@@ -140,8 +153,8 @@ func w32(addr: int, v: int) -> void:
 	if watch_lo >= 0: _watch(addr, v, 4)
 	if addr >= IMG_BASE and addr + 3 < img_end:
 		img.encode_u32(addr - IMG_BASE, v)
-	elif addr >= HEAP_PERSONS and addr + 3 < HEAP_PERSONS + heap.size():
-		heap.encode_u32(addr - HEAP_PERSONS, v)
+	elif addr >= HEAP and addr + 3 < HEAP + heap.size():
+		heap.encode_u32(addr - HEAP, v)
 	else:
 		w8(addr, v)
 		w8(addr + 1, v >> 8)
@@ -208,8 +221,10 @@ func unit_addr(slot: int) -> int:
 
 
 # ------------------------------------------------------------------ save / restore
-## Writable ranges that make up the persistent state.
-const SAVE_RANGES := [[0x48b000, 0x4ccbbc], [0x4ce000, 0x4d0000], [0x55a000, 0x59a960]]
+## Writable ranges that make up the persistent state: all of .text2 (CCZ data + BSS: GS, flags, units, actors …)
+## and the 6.6 block 0x501000..0x531000 that the original saves raw (docs/memory.md §9). The tables the original
+## never saves (items, classes, strategies) are included and simply come back unchanged.
+const SAVE_RANGES := [[0x48b000, 0x4be000], [0x501000, 0x531000]]
 
 
 func snapshot() -> Dictionary:
@@ -228,8 +243,7 @@ func restore(d: Dictionary) -> void:
 	for i in SAVE_RANGES.size():
 		var b := Marshalls.base64_to_raw(parts[i])
 		var o: int = SAVE_RANGES[i][0] - IMG_BASE
-		for j in b.size():
-			img[o + j] = b[j]
+		img = img.slice(0, o) + b + img.slice(o + b.size())
 	heap = Marshalls.base64_to_raw(d["heap"])
 	pages.clear()
 	for k in d.get("pages", {}):

@@ -16,7 +16,7 @@ static func get_attr(st: BattleStage, pid: int, attr: int) -> int:
 	if pid == 0xffff or pid > 0x400:
 		return -1
 	if attr == 15:
-		return Game.stack_count(pid)
+		return PersonAttrs.get_attr(pid, 15)
 	if attr == 7:
 		# the person's battle-unit HP (hidden/not-yet-appeared units keep full HP)
 		# 0x4112e9: unit index lookup; no unit → the value is the index 0xff (255), not 0

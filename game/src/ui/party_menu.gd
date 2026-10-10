@@ -58,7 +58,7 @@ static func equip_menu(ui: GameUI) -> void:
 			var cur: int = [p.weapon, p.armor, p.accessory][si]
 			var cur_lvl: int = [p.weapon_lvl, p.armor_lvl, 0][si]
 			var cur_exp: int = [p.weapon_exp, p.armor_exp, 0][si]
-			if k == 0 and cur >= 0 and not Game.is_stack_item(cur) and Game.bag_free_slot() < 0:
+			if k == 0 and cur >= 0 and Game.bag_free_slot() < 0:
 				await ui.popup("道具已满，无法卸下。", 1.2)
 				continue
 			if k > 0:

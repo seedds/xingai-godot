@@ -1,11 +1,13 @@
 class_name PersonAttrs
 extends RefCounted
 ## Person attribute ids (0x406d87 / 0x406f54) used by ops 0x36/0x38 outside battles:
-## 0-4 stat words, 5 base MaxHP, 6 base MaxMP, 9 level, 10-14 raw abilities, 15 item stack count.
+## 0-4 stat words, 5 base MaxHP, 6 base MaxMP, 9 level, 10-14 raw abilities, 15 the per-unit byte 0x501a84[slot]
+## of the unit holding the person (AddStat 0x406eca, slot from 0x477adc).
 
 static func get_attr(pid: int, attr: int) -> int:
 	if attr == 15:
-		return Game.stack_count(pid)
+		var s := Game.unit_slot_of_person(pid)
+		return Mem.r8(0x501a84 + s) if s >= 0 else 0
 	var p := Game.person(pid)
 	if p == null:
 		return 0
@@ -37,5 +39,6 @@ static func set_attr(pid: int, attr: int, op: int, v: int) -> void:
 			else: p.level = maxi(nv, 1)
 		10, 11, 12, 13, 14: p.set_raw(attr - 10, mini(nv, 120))
 		15:
-			if Game.is_stack_item(pid):
-				Mem.w8(Game.STACKS + pid - Game.STACK_FIRST, clampi(nv, 0, 99))
+			var s := Game.unit_slot_of_person(pid)
+			if s >= 0:
+				Mem.w8(0x501a84 + s, clampi(nv, 0, 255))

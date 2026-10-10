@@ -14,7 +14,6 @@ var names_db: Dictionary = {}
 var texts_db: Dictionary = {}
 var terrain_names: Array = []
 var unit_index: Dictionary = {}
-var person_overrides: Dictionary = {}
 var portraits: Dictionary = {}
 
 # runtime state
@@ -32,15 +31,15 @@ var ending_reached := false
 var skip_battle_scenario := -1   # flow-test: skip this battle (jump to its aftermath)
 var _name_index: Dictionary = {}
 
-## GS+7: scenario counter. even = R_(n/2) story file, odd = S_(n/2) battle file.
+## GS+6 (u16): scenario counter. even = R_(n/2) story file, odd = S_(n/2) battle file.
 var scenario: int:
-	get: return Mem.r8(Mem.GS + 7)
-	set(v): Mem.w8(Mem.GS + 7, v)
+	get: return Mem.r16(Mem.GS + 6)
+	set(v): Mem.w16(Mem.GS + 6, v)
 
-## GS+0xc: gold (u32, max 9,999,999).
+## GS+0xc: gold (u32, max 999,999; setter 0x40e1a4).
 var gold: int:
 	get: return Mem.r32(Mem.GS + 0xc)
-	set(v): Mem.w32(Mem.GS + 0xc, clampi(v, 0, 9999999))
+	set(v): Mem.w32(Mem.GS + 0xc, clampi(v, 0, 999999))
 var chapter_title := ""
 var play_time := 0.0
 var loaded := false
@@ -82,27 +81,41 @@ func load_data() -> void:
 	terrain_names = t["names"] if t else []
 	var ui: Variant = Assets.json("gfx/units/index.json")
 	unit_index = ui if ui else {}
-	if unit_index.has("entry_index"):
-		for k in unit_index["entry_index"].get("person_override", {}):
-			person_overrides[int(k)] = int(unit_index["entry_index"]["person_override"][k])
 	var pi: Variant = Assets.json("gfx/portraits/index.json")
 	portraits = pi if pi else {}
 	new_game_state()
 	loaded = true
 
 
-## Reload a person's base record from data.wa (0x41b606) — used for generated battle units.
+## Reset a person from Data.e5 (0x41b617 → 0x408c0c with flag 1): like the boot load, but the face comes back
+## from the face table instead of the file.
 func reset_person(pid: int) -> void:
 	var recs: Array = Assets.json("data/persons.json")
 	if pid < 0 or pid >= recs.size():
 		return
-	var keep_face := person(pid).face
-	var keep_member := Mem.r8(person(pid).base + 0x2a)
+	var keep_face := Mem.r16(Mem.FACE_TABLE + 2 * pid)
 	Person.init_record(recs[pid])
 	person(pid).face = keep_face
-	Mem.w8(person(pid).base + 0x2a, keep_member)
 
 
+## Sortie parameters (GS+0x26b..): maximum, forced persons u16[20] and excluded persons u16[20], each list
+## written 5 at a time at a ring offset (u32 0x4b0a2c / 0x4b0a30).
+const SORTIE_MAX := 0x4b09db
+const SORTIE_FORCED := 0x4b09dc
+const SORTIE_EXCLUDED := 0x4b0a04
+const SORTIE_RING := 0x4b0a2c
+const SORTIE_LIST := 0x48b350     # u16 person ids, 0xffff-terminated
+
+
+## Sortie defaults (0x41c96d): both lists 0xffff, ring offsets 0.
+func reset_sortie_params() -> void:
+	Mem.fill(SORTIE_FORCED, SORTIE_RING - SORTIE_FORCED, 0xff)
+	Mem.w32(SORTIE_RING, 0)
+	Mem.w32(SORTIE_RING + 4, 0)
+
+
+## A new game: the state the original has after booting (Data.e5 loaded, 0x41b639) and the title's new-game
+## initialisation (0x42baf8).
 func new_game_state() -> void:
 	Mem.reset()
 	persons.clear()
@@ -113,12 +126,13 @@ func new_game_state() -> void:
 	inventory.clear()
 	history.clear()
 	init_bag()
-	# sortie parameters default: max 1, no forced persons, protagonist flags (u32 0x4b0a04[0..9]) set
-	Mem.w8(0x4b09ec, 1)
-	for k in 5:
-		Mem.w32(0x4b09f0 + 4 * k, 0xffff)
-	for k in 10:
-		Mem.w32(0x4b0a04 + 4 * k, 0xffff)
+	# 0x42baf8: GS+0..3 = 1f 01 01 00 (then the settings bytes 4..7 of SV\SV.E5S), GS+4 = 0xff, flags 714..801 cleared
+	for k in 4:
+		Mem.w8(Mem.GS + k, [0x1f, 1, 1, 0][k])
+	Mem.w32(Mem.GS + 4, 0xff)
+	Mem.fill(0x493af0, 352, 0)
+	Mem.w8(SORTIE_MAX, 1)
+	reset_sortie_params()
 	ivars.clear()
 	play_time = 0.0
 	_name_index.clear()
@@ -156,23 +170,19 @@ func strategy(id: int) -> Dictionary:
 	return strategies_db[id]
 
 
-## Class family (0x4077d0): class <= 38 -> class/3, 39..52 -> class-26, else 27.
+## Class family (0x40bf0c): class <= 59 -> class/3 (20 three-tier families), 60..79 -> class-40, else 40 (none).
 func family_of(c: int) -> int:
-	if c <= 38:
+	if c <= 59:
 		return c / 3
-	if c <= 52:
-		return c - 26
-	return 27
+	if c <= 79:
+		return c - 40
+	return 40
 
 
 func family(f: int) -> Dictionary:
 	if f < 0 or f >= families_db.size():
 		return {}
 	return families_db[f]
-
-
-func person_override(pid: int) -> int:
-	return person_overrides.get(pid, 0)
 
 
 func text(index: int) -> String:
@@ -199,39 +209,23 @@ func terrain_name(t: int) -> String:
 	return s if s != "" else str(terrain_names[t])
 
 
-## Resolved portrait number for a person (GetFace 0x4075a7): the protagonist (pid 0) uses his own
-## face field (faces 0..6 are his expressions); everyone else face+7; persons 1/4/8/35 switch to
-## fixed portraits depending on story bits in GS+0x11.
+## Portrait entry of a person (0x40765c): v = the face table entry 0x50f000[pid]; Face.e5 entry v + 7, or 0 when
+## v is 0.
 func resolved_face(pid: int) -> int:
-	var p := person(pid)
-	if p == null:
+	if pid < 0 or pid >= MAX_PERSONS:
 		return -1
-	var f := p.face
-	var b := Mem.r8(Mem.GS + 0x11)
-	match pid:
-		0:
-			return f & 0xffff
-		1:
-			if (b & 0x0f) == 4:
-				return 0xe0
-			if (b & 0x80) == 0:
-				return 0xdf
-		35:
-			if b & 0x10:
-				return 0xd6
-		8:
-			if b & 0x20:
-				return 0xe2
-		4:
-			if b & 0x40:
-				return 0xe3
-	return f + 7
+	var v := Mem.r16(Mem.FACE_TABLE + 2 * pid)
+	return v + 7 if v != 0 else 0
 
 
-func face_texture(face: int, small := false) -> Texture2D:
+## Face.e5 picture (120x120, dialog and status windows); `big` = the Fb.e5 picture (192x272) of the
+## three-portrait dialog 0x42d8bf where one differs.
+func face_texture(face: int, big := false) -> Texture2D:
 	if face < 0:
 		return null
-	var rel := "gfx/portraits/%s/%03d.png" % ["small" if small else "large", face]
+	var rel := "gfx/portraits/large/%03d.png" % face
+	if big and Assets.exists("gfx/portraits/fb/%03d.png" % face):
+		rel = "gfx/portraits/fb/%03d.png" % face
 	if not Assets.exists(rel):
 		return null
 	return Assets.tex(rel)
@@ -312,21 +306,19 @@ func leave_party(pid: int) -> void:
 	party.erase(pid)
 
 
-## Item bag in GS: 200 slots × 3 bytes (id, level, exp) at 0x4b0783 (0xff = empty);
-## stackable consumables 0x57..0x67 are counts at 0x4b09db[id-0x57] (cf. op 0x6f handler 0x411046).
+## Item bag in GS: 200 slots × {id, level, exp} at 0x4b0783 (GS+0x13); an empty slot is ff ff ff (0x41606a).
+## The 6.6 engine has no item stacks: every item takes a slot.
 const BAG := 0x4b0783
 const BAG_SLOTS := 200
-const STACKS := 0x4b09db
-const STACK_FIRST := 0x57
-const STACK_LAST := 0x67
 
 
-func is_stack_item(id: int) -> bool:
-	return id >= STACK_FIRST and id <= STACK_LAST
-
-
-func stack_count(id: int) -> int:
-	return Mem.r8(STACKS + id - STACK_FIRST) if is_stack_item(id) else 0
+## Slot of the battle unit holding a person (0x477adc), or -1. PENDING: verify the search order in 0x477adc.
+func unit_slot_of_person(pid: int) -> int:
+	for s in Mem.UNIT_SLOTS:
+		var v := Mem.r16(Mem.unit_addr(s))
+		if v != 0xffff and (v & 0xfff) == pid:
+			return s
+	return -1
 
 
 func bag_entries() -> Array:
@@ -334,41 +326,27 @@ func bag_entries() -> Array:
 	for i in BAG_SLOTS:
 		var a := BAG + 3 * i
 		var id := Mem.r8(a)
-		if id != 0xff and id != 0:
+		if id != 0xff:
 			out.append({"slot": i, "id": id, "lvl": Mem.r8(a + 1), "exp": Mem.r8(a + 2)})
-		elif id == 0 and Mem.r8(a + 1) != 0:
-			out.append({"slot": i, "id": id, "lvl": Mem.r8(a + 1), "exp": Mem.r8(a + 2)})
-	for id in range(STACK_FIRST, STACK_LAST + 1):
-		var c := stack_count(id)
-		if c > 0:
-			out.append({"slot": -1, "id": id, "lvl": 0, "exp": 0, "count": c})
 	return out
 
 
 func bag_free_slot() -> int:
 	for i in BAG_SLOTS:
-		var a := BAG + 3 * i
-		if Mem.r8(a) == 0xff or (Mem.r8(a) == 0 and Mem.r8(a + 1) == 0):
+		if Mem.r8(BAG + 3 * i) == 0xff:
 			return i
 	return -1
 
 
 func init_bag() -> void:
-	for i in BAG_SLOTS:
-		Mem.w8(BAG + 3 * i, 0xff)
-		Mem.w8(BAG + 3 * i + 1, 0)
-		Mem.w8(BAG + 3 * i + 2, 0)
+	Mem.fill(BAG, 3 * BAG_SLOTS, 0xff)
 
 
 func add_item(id: int, lvl := 1, xp := 0) -> bool:
-	if is_stack_item(id):
-		Mem.w8(STACKS + id - STACK_FIRST, mini(stack_count(id) + 1, 99))
-		return true
 	var i := bag_free_slot()
 	if i < 0:
 		return false
-	var it := item(id)
-	var equip := String(it.get("category", "")) in ["weapon", "armor"]
+	var equip := int(item(id).get("category_code", 3)) <= 1
 	Mem.w8(BAG + 3 * i, id)
 	Mem.w8(BAG + 3 * i + 1, lvl if equip else 0)
 	Mem.w8(BAG + 3 * i + 2, xp if equip else 0)
@@ -376,24 +354,18 @@ func add_item(id: int, lvl := 1, xp := 0) -> bool:
 
 
 func remove_bag_slot(i: int) -> void:
-	Mem.w8(BAG + 3 * i, 0xff)
-	Mem.w8(BAG + 3 * i + 1, 0)
-	Mem.w8(BAG + 3 * i + 2, 0)
+	Mem.fill(BAG + 3 * i, 3, 0xff)
 
 
-## Remove one item (0x411046): stacks, then the bag, then party members' equipment.
+## Remove one item: the bag first, then party members' equipment. PENDING: check against op 0x3f's handler.
 func remove_item_id(id: int) -> bool:
-	if is_stack_item(id):
-		var c := stack_count(id)
-		if c > 0:
-			Mem.w8(STACKS + id - STACK_FIRST, c - 1)
-			return true
-		return false
 	for i in BAG_SLOTS:
 		if Mem.r8(BAG + 3 * i) == id:
 			remove_bag_slot(i)
 			return true
 	for p in persons:
+		if not is_member(p.id):
+			continue
 		if p.weapon == id:
 			p.weapon = -1
 			return true
@@ -407,14 +379,12 @@ func remove_item_id(id: int) -> bool:
 
 
 func has_item(id: int) -> bool:
-	if is_stack_item(id):
-		return stack_count(id) > 0
 	for i in BAG_SLOTS:
 		if Mem.r8(BAG + 3 * i) == id:
 			return true
-	for pid in party:
+	for pid in party_ids():
 		var p := person(pid)
-		if p and (p.weapon == id or p.armor == id or p.accessory == id):
+		if p.weapon == id or p.armor == id or p.accessory == id:
 			return true
 	return false
 

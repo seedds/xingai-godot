@@ -62,7 +62,7 @@ static func display_name(pid: int) -> String:
 		b.append(c)
 	if b.is_empty():
 		return ""
-	var s := b.get_string_from_multibyte_char("GBK")
+	var s := TextExpand.from_gbk(b)
 	if s == "" and Game.person(pid) != null:
 		s = Game.person(pid).name
 	return s

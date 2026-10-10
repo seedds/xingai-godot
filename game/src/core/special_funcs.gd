@@ -1,34 +1,46 @@
 class_name SpecialFuncs
 extends RefCounted
-## EEX op 0x71 特殊功能 (handler 0x436436, jump table 0x43646b, ids < 0x14):
-##  0 / 4: EV[4088] = rand(EV[4088])  (0x43640e: u32 @0x55efe0 = EV base 0x55b000 + 0x3fe0)
-##  5    : write byte EV[2699] to SAVEDATA\Niuniu.wa @0 (persistent system record)  (0x436502 → 0x41a1b0)
+## Op 0x71 特效请求 (0x403936, unused by the shipped scripts): byte 0x500acd = n; `call [0x409693 + 4n]`: n = 0, 1,
+## 3, 4, 5 → the custom-person dialog 0x41ff21 (resource 0x150) for EV[4054]; n = 2 → 0x41e34e. Not ported.
+##
+## And the persistent system record `SV\SV.E5S` (0x41a280 read byte, 0x41a1c6 write byte; a missing file is created by
+## 0x42225a): 0x10f bytes, bytes 4..7 = 1f 01 01 64 (the GS settings copied at new game), the rest 0. Byte 0..2 = the
+## endings reached (title emblems 1..3), byte 3 = window pattern, byte item + 0x10 = item collected (0x408b0d).
+## Kept as user://sv.e5s.
 
-const NIUNIU := "user://niuniu.bin"
+const SV := "user://sv.e5s"
+const SV_SIZE := 0x10f
 
 
 static func run(_host: ScriptHost, n: int) -> void:
-	match n:
-		0, 4:
-			Mem.set_ev(4088, Rules.rand(Mem.ev(4088)))
-		5:
-			write_niuniu(0, Mem.ev(2699) & 0xff)
-		_:
-			push_warning("special_func %d not implemented" % n)
+	push_warning("special_func (op 0x71) %d not implemented (unused by the scripts)" % n)
 
 
-static func read_niuniu() -> PackedByteArray:
+static func sv_read() -> PackedByteArray:
 	var b := PackedByteArray()
-	if FileAccess.file_exists(NIUNIU):
-		b = FileAccess.get_file_as_bytes(NIUNIU)
-	if b.size() < 108:
-		b.resize(108)
+	if FileAccess.file_exists(SV):
+		b = FileAccess.get_file_as_bytes(SV)
+	if b.size() < SV_SIZE:
+		var fresh := b.is_empty()
+		b.resize(SV_SIZE)
+		if fresh:
+			b[4] = 0x1f
+			b[5] = 1
+			b[6] = 1
+			b[7] = 0x64
 	return b
 
 
-static func write_niuniu(off: int, v: int) -> void:
-	var b := read_niuniu()
-	b[off] = v
-	var f := FileAccess.open(NIUNIU, FileAccess.WRITE)
+static func sv_write(off: int, v: int) -> void:
+	if off < 0 or off >= SV_SIZE:
+		return
+	var b := sv_read()
+	b[off] = v & 0xff
+	var f := FileAccess.open(SV, FileAccess.WRITE)
 	if f:
 		f.store_buffer(b)
+
+
+## Compatibility name (title screen).
+static func read_niuniu() -> PackedByteArray:
+	return sv_read()

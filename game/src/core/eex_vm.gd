@@ -1,12 +1,18 @@
 class_name EexVM
 extends RefCounted
-## Interpreter for EEX scenario scripts (JSON produced by tools/eex.py), following the original
-## execution model (docs/eex.md §4):
-##  * poll(): when no body is running, evaluate every section of the current scene; the LAST section
-##    whose condition list is all-true runs. A scene with exactly one section is linear: when its body
-##    ends the next scene starts. Multi-section scenes are event loops left via next_scene/goto_scenario.
-##  * Bodies are flat lists; nesting is tracked at runtime (IF pushes a level, END pops one, a goto at
-##    depth > 0 pops one level and continues at the target — possibly in another section).
+## Interpreter for EEX scenario scripts (JSON produced by tools/eex.py), following the 6.6 engine's execution model
+## (docs/eex.md §4; select 0x4100a1, run_block 0x4105ff, run_child 0x410857, block_end 0x410738, dispatcher
+## 0x4109e6, goto 0x416c41, manager 0x4180c1 / 0x41811f):
+##  * poll(): when no body is running, evaluate every section of the current scene; the LAST section whose
+##    condition list qualifies runs (an instruction that returns 0 vetoes; other results don't).
+##  * Bodies are flat lists; nesting is tracked at run time. IF pushes a level, END runs block_end for the level.
+##    Each level keeps its own "last test result" (ELSE), next-scene and end-of-file marks, as run_block's locals.
+##  * block_end(depth): next_scene, or the body END of a one-section scene → scene + 1 (status 3, ends the body);
+##    else, at depth > 0 or in a multi-section scene → continue (0) unless the file ended (goto_scenario) → the
+##    file is finished (4). Status 3 / 4 from an inner level end the whole body.
+##  * goto (0x76): jump, then leave the current level iff the target is at/before the latest IF executed
+##    ([0x500ab0]) or the target is at/after the latest block end ([0x500ab4]) while the goto itself is before it.
+##    At depth 0 it never leaves.
 ## Opcodes are dispatched to `host.op_<name>(ins)`; tests return bool; handlers may await.
 
 signal file_finished
@@ -16,14 +22,14 @@ var host: Object
 var name := ""
 var scene := 0
 var running := false
-var active := false          # false once the file has finished
-var next_scene_pending := false
-var end_file_pending := false
+var active := false          # reader +0x28: false once the file has finished
 var abort := false
 var trace := false
 var last_section := -1
 var next_op := -1            # opcode after the one being executed (-1 at the end of a body)
 var _warned: Dictionary = {}
+var _last_if := -1           # [0x500ab0]: offset of the latest IF opcode executed
+var _block_end := -1         # [0x500ab4]: end offset of the latest block entered or skipped (or the body)
 
 
 func load_script(file: String) -> bool:
@@ -62,19 +68,19 @@ func _call(ins: Dictionary) -> Variant:
 	return null
 
 
+## Result of a test position (condition list or IF): 1 true, 0 false. Handlers that return nothing count as 1 ("ok"),
+## as the original's non-test handlers return status 1.
 func _test(ins: Dictionary) -> int:
-	# returns 1 true, 0 false (comments count as true)
 	var op := int(ins["op"])
 	if op == 2:
 		return 1
 	var r: Variant = await _call(ins)
 	if r == null:
-		# non-test handlers return 1 ("ok") in the original, so as IF conditions they count as true
 		return 1
 	return 1 if bool(r) else 0
 
 
-## Condition list: qualifies if every instruction that returns a test result is true.
+## Condition list (0x4100a1): qualifies if no instruction returned 0.
 func check_conditions(sec: Dictionary) -> bool:
 	for ins in sec.get("conditions", []):
 		if int(ins["op"]) == 0:
@@ -97,7 +103,7 @@ func poll() -> bool:
 	for k in secs.size():
 		if await check_conditions(secs[k]):
 			chosen = k
-	if chosen < 0:
+	if chosen < 0 or not active:
 		return false
 	await run_section(chosen)
 	return true
@@ -115,7 +121,6 @@ func poll_all(max_rounds := 1000) -> void:
 
 func run_section(k: int) -> void:
 	var secs := sections(scene)
-	var single := secs.size() == 1
 	running = true
 	last_section = k
 	if OS.get_environment("WG_TRACE_SEC") != "":
@@ -123,15 +128,12 @@ func run_section(k: int) -> void:
 		if host.has_method("trace_info"):
 			t = host.trace_info()
 		print("  [sec %s %d.%d] %s %s" % [name, scene, k, secs[k].get("title", ""), t])
-	next_scene_pending = false
-	end_file_pending = false
 	abort = false
-	await _run(secs[k]["body"], scene, k, 0)
+	_block_end = int(secs[k].get("body_end", -1))
+	var r := await _run(secs[k]["body"], scene, k, 0, secs.size())
 	running = false
-	if end_file_pending:
+	if r == 4 and not abort:
 		_finish_file()
-	elif next_scene_pending or single:
-		_advance_scene()
 
 
 func _advance_scene() -> void:
@@ -152,16 +154,45 @@ func _body_of(sc: int, sec: int) -> Array:
 	return secs[sec]["body"]
 
 
-func _run(body: Array, sc: int, sec: int, start: int) -> void:
+## block_end 0x410738 for the level that just reached its END: 3 = scene advanced (ends the body), 4 = file finished,
+## 0 = continue.
+func _block_end_status(depth: int, end_file: bool, next_scene: bool, nsections: int) -> int:
+	if next_scene or (depth == 0 and nsections == 1):
+		scene += 1
+		if scene < scene_count():
+			return 3
+	elif scene < scene_count() and not end_file:
+		return 0
+	active = false
+	return 4
+
+
+## Goto verdict (0x416c41): true = leave the current level.
+func _goto_leaves(ins: Dictionary, t: Dictionary) -> bool:
+	if not t.has("off") or not ins.has("off"):
+		return true      # JSON without offsets: the wg2025 rule (always leave)
+	var target := int(t["off"])
+	if target <= _last_if:
+		return true
+	if target < _block_end:
+		return false
+	return int(ins["off"]) + 2 < _block_end
+
+
+## Run a section body (run_child(1, 0) → run_block). Returns the status of the body: 1 done, 3 scene advanced,
+## 4 file finished, 5 aborted.
+func _run(body: Array, sc: int, sec: int, start: int, nsections: int) -> int:
 	var pc := start
 	var depth := 0
-	var last: Array[int] = [1]        # per-level result of the most recent IF test
+	var last: Array[int] = [1]         # run_block local_c per level: result of the latest IF test (ELSE)
+	var ns: Array[bool] = [false]      # local_18: next_scene seen at this level
+	var ef: Array[bool] = [false]      # local_10: goto_scenario seen at this level
 	var steps := 0
 	while true:
-		if abort or host == null:
-			return
+		if abort or host == null or not is_instance_valid(host):
+			return 5
 		if pc >= body.size():
-			return
+			return 1      # ran past the body (only the casino loops of R_110…, docs/eex.md §4.2): status 5 → 1
 		var ins: Dictionary = body[pc]
 		var op := int(ins["op"])
 		steps += 1
@@ -170,82 +201,89 @@ func _run(body: Array, sc: int, sec: int, start: int) -> void:
 		if trace:
 			print("[%s %d.%d #%d d%d] %s %s" % [name, sc, sec, pc, depth, ins["name"], ins["args"]])
 		match op:
-			0:    # END of the innermost running level
-				if next_scene_pending or end_file_pending:
-					return
-				if depth == 0:
-					return
+			0:    # END → block_end for this level
+				var st := _block_end_status(depth, ef[depth], ns[depth], nsections)
+				if st != 0 or depth == 0:
+					return st if st != 0 else 1
 				depth -= 1
 				last.pop_back()
+				ns.pop_back()
+				ef.pop_back()
 				pc += 1
 				continue
 			1:    # IF <cond> {block}
+				_last_if = int(ins.get("off", -1))
 				var c: Dictionary = ins["cond"]
-				var take := false
-				if int(c["op"]) == 3:
-					take = last[depth] == 0
-				elif int(c["op"]) == 0x76:
-					# goto as an IF condition: treat as a jump
-					var r0 := _goto_target(c)
-					if r0.is_empty():
+				var cop := int(c["op"])
+				if cop == 0x76:
+					# a goto as the condition: the jump happens; leaving pops this level (not in the shipped files)
+					var tg: Dictionary = c.get("target", {})
+					if tg.is_empty():
 						pc += 1
 						continue
-					if depth > 0:
+					if _goto_leaves(c, tg) and depth > 0:
 						depth -= 1
 						last.pop_back()
-					if int(r0["scene"]) != sc or int(r0["section"]) != sec:
-						body = _body_of(int(r0["scene"]), int(r0["section"]))
-						sc = int(r0["scene"])
-						sec = int(r0["section"])
-					pc = int(r0["index"])
+						ns.pop_back()
+						ef.pop_back()
+					if int(tg["scene"]) != sc or int(tg["section"]) != sec:
+						sc = int(tg["scene"])
+						sec = int(tg["section"])
+						body = _body_of(sc, sec)
+					pc = int(tg["index"])
 					continue
+				var take := false
+				if cop == 3:
+					take = last[depth] == 0          # ELSE (status 6) does not change `last`
 				else:
+					next_op = -1
 					var r := await _test(c)
-					if r == 0:
-						last[depth] = 0
-					elif r == 1:
-						last[depth] = 1
-					take = r != 0
+					if abort:
+						return 5
+					last[depth] = r
+					take = r == 1
+				_block_end = int(ins.get("end_off", _block_end))
 				if take:
 					depth += 1
 					last.append(1)
+					ns.append(false)
+					ef.append(false)
 					pc += 1
 				else:
 					pc = int(ins["end"])
 				continue
-			3:    # ELSE outside IF: abort block
-				return
-			0x0c: # exit_section
+			3:    # ELSE outside an IF condition: status 6 → the block (and body) returns 1
+				return 1
+			0x0c: # exit_section: status 8 → 5
 				await _call(ins)
-				return
-			0x0d: # next_scene: finishes after the current block's END
+				return 5
+			0x0d: # next_scene: status 7, takes effect at this level's END
 				await _call(ins)
-				next_scene_pending = true
+				ns[depth] = true
 				pc += 1
 				continue
-			0x11: # goto_scenario
+			0x11: # goto_scenario: status 9, takes effect at this level's END
 				await _call(ins)
-				end_file_pending = true
+				ef[depth] = true
 				pc += 1
 				continue
 			0x76: # goto
-				var t := _goto_target(ins)
+				var t: Dictionary = ins.get("target", {})
 				if t.is_empty():
 					pc += 1
 					continue
-				if depth > 0:
+				if _goto_leaves(ins, t) and depth > 0:
 					depth -= 1
 					last.pop_back()
+					ns.pop_back()
+					ef.pop_back()
 				if int(t["scene"]) != sc or int(t["section"]) != sec:
-					body = _body_of(int(t["scene"]), int(t["section"]))
 					sc = int(t["scene"])
 					sec = int(t["section"])
+					body = _body_of(sc, sec)
 				pc = int(t["index"])
 				continue
 		next_op = int(body[pc + 1]["op"]) if pc + 1 < body.size() else -1
 		await _call(ins)
 		pc += 1
-
-
-func _goto_target(ins: Dictionary) -> Dictionary:
-	return ins.get("target", {})
+	return 1

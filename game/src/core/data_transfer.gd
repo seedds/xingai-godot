@@ -1,85 +1,143 @@
 class_name DataTransfer
 extends RefCounted
-## EEX op 0x78 数据存取 (mod handler 0x4d05f9 → 0x4d06c7): move a value between EV[a0] and a game field.
-##   args: [ev_index, dir (0 read into EV, 1 write from EV), id (person id), field]
-## Field table 0x4d0a97 → (kind, offset, size 0=u8 1=u16 2=u32):
-##   kind 0 person record: f0 → u16 table 0x565000[id] (mod), f1..f26 → person + offset
-##   kind 1 byte var 0x55a000[id] (f27)
-##   kind 2 battle unit found by person id (f28..f41) → unit + offset
+## EEX op 0x78 整型变量赋值 `data_transfer var, dir, id, field` (0x416dcd → 0x4202d8, field decoder 0x415418;
+## docs/eex.md §7.1). var ≥ 0x1000 → the error box "变量值溢出". dir 0: EV[var] = field (zero-extended); dir ≠ 0:
+## field = EV[var] truncated to the field size. Person record = [0x4cea00] + id·0x48 (no bounds check). Unit = the
+## first of the 250 unit records whose dword +0 == id (0x43e4d6; state not checked; EV[4031] does not apply); no unit →
+## nothing happens.
 
+enum { PERSON, R_IMG, S_IMG, UNIT }
+
+## field → [kind, offset, size in bytes]
 const FIELDS := [
-	[0, 0x02, 1], [0, 0x04, 1], [0, 0x11, 1], [0, 0x13, 1], [0, 0x15, 1], [0, 0x17, 1], [0, 0x19, 1],
-	[0, 0x1c, 2], [0, 0x20, 0], [0, 0x21, 0], [0, 0x22, 0], [0, 0x23, 0], [0, 0x24, 0], [0, 0x25, 0],
-	[0, 0x27, 0], [0, 0x29, 0], [0, 0x2a, 0], [0, 0x2b, 0], [0, 0x2c, 0], [0, 0x2d, 0], [0, 0x2e, 0],
-	[0, 0x2f, 0], [0, 0x30, 0], [0, 0x31, 0], [0, 0x32, 0], [0, 0x33, 0], [0, 0x34, 0],
-	[1, 0, 0],
-	[2, 0x04, 0], [2, 0x06, 0], [2, 0x07, 0], [2, 0x0d, 0], [2, 0x0e, 0], [2, 0x10, 2], [2, 0x14, 0],
-	[2, 0x18, 0], [2, 0x19, 0], [2, 0x1a, 0], [2, 0x1b, 0], [2, 0x1c, 0], [2, 0x1d, 0], [2, 0x1e, 0],
+	[R_IMG, 0, 2],                                                          # 0 R形象 u16 0x50f800[id]
+	[PERSON, 0x04, 2],                                                      # 1 头像 (+ face table 0x50f000)
+	[PERSON, 0x11, 2], [PERSON, 0x13, 2], [PERSON, 0x15, 2], [PERSON, 0x17, 2], [PERSON, 0x19, 2],  # 2–6 攻防精爆士
+	[PERSON, 0x1b, 2],                                                      # 7 HP
+	[PERSON, 0x1f, 2],                                                      # 8 MP
+	[PERSON, 0x21, 1], [PERSON, 0x22, 1], [PERSON, 0x23, 1], [PERSON, 0x24, 1], [PERSON, 0x25, 1],  # 9–13 武统智敏运
+	[PERSON, 0x27, 1],                                                      # 14 出战场数
+	[PERSON, 0x29, 1],                                                      # 15 撤退场数
+	[PERSON, 0x2a, 1],                                                      # 16 我军标识
+	[PERSON, 0x2b, 1],                                                      # 17 兵种
+	[PERSON, 0x2c, 1],                                                      # 18 人物等级 (write: level-up)
+	[PERSON, 0x2d, 1],                                                      # 19 经验值
+	[PERSON, 0x2e, 1], [PERSON, 0x2f, 1], [PERSON, 0x30, 1],                # 20–22 武器 / 等级 / 经验
+	[PERSON, 0x31, 1], [PERSON, 0x32, 1], [PERSON, 0x33, 1],                # 23–25 防具 / 等级 / 经验
+	[PERSON, 0x34, 1],                                                      # 26 辅助
+	[S_IMG, 0, 2],                                                          # 27 战场特殊形象 u16 0x501000[id]
+	[UNIT, 0x04, 1], [UNIT, 0x06, 1], [UNIT, 0x07, 1],                      # 28 编号, 29 x, 30 y
+	[PERSON, 0x35, 2],                                                      # 31 杀敌数
+	[UNIT, 0x0e, 1],                                                        # 32 可以控制
+	[UNIT, 0x10, 4], [UNIT, 0x14, 4],                                       # 33 HP, 34 MP (no death check)
 ]
 
-const PERSON_EXT_TABLE := 0x565000
+
+## Unit record of a person for op 0x78 (0x43e4d6): the first slot whose dword +0 equals id, or -1.
+static func unit_addr_of(id: int) -> int:
+	for s in Mem.UNIT_SLOTS:
+		var a := Mem.unit_addr(s)
+		if Mem.r32(a) == id:
+			return a
+	return -1
 
 
-## Slot of the battle unit holding person `pid` (0x43e4d6), or -1.
+## Compatibility: slot of that unit or -1.
 static func unit_slot_of(pid: int) -> int:
-	for s in 115:
-		var a := Mem.UNITS + s * Mem.UNIT_SIZE
-		var v := Mem.r16(a)
-		if v != 0xffff and (v & 0xfff) == pid:
-			return s
-	return -1
+	var a := unit_addr_of(pid)
+	return -1 if a < 0 else (a - Mem.UNITS) / Mem.UNIT_SIZE
 
 
-static func field_addr(field: int, id: int) -> int:
-	if field < 0 or field >= FIELDS.size():
-		return -1
-	var f: Array = FIELDS[field]
-	match f[0]:
-		0:
-			if f[1] == 2:
-				return PERSON_EXT_TABLE + id * 2
-			return Mem.person_addr(id) + f[1]
-		1:
-			return Mem.BYTEVARS + id
-		2:
-			var s := unit_slot_of(id)
-			if s < 0:
-				return -1
-			return Mem.UNITS + s * Mem.UNIT_SIZE + f[1]
-	return -1
+## [address, size] of a field, or [] when there is none (no unit).
+static func field_loc(field: int, id: int) -> Array:
+	var f: Array
+	if field < FIELDS.size():
+		f = FIELDS[field]
+	else:
+		f = [UNIT, field - 0x0b, 1]         # 35..41 buffs / ailments and beyond: unit + (f − 0x0b), no bound check
+	match int(f[0]):
+		PERSON:
+			return [Mem.person_addr(id) + int(f[1]), int(f[2])]
+		R_IMG:
+			return [Mem.R_SPRITE + 2 * id, 2]
+		S_IMG:
+			return [Mem.S_SPRITE + 2 * id, 2]
+		UNIT:
+			var u := unit_addr_of(id)
+			if u < 0:
+				return []
+			return [u + int(f[1]), int(f[2])]
+	return []
+
+
+static func _read(loc: Array) -> int:
+	match int(loc[1]):
+		1: return Mem.r8(loc[0])
+		2: return Mem.r16(loc[0])
+	return Mem.r32(loc[0])
 
 
 static func read_field(field: int, id: int) -> int:
-	var a := field_addr(field, id)
-	if a < 0:
-		return 0
-	match int(FIELDS[field][2]):
-		0: return Mem.r8(a)
-		1: return Mem.r16(a)
-	return Mem.r32(a)
-
-
-static func write_field(field: int, id: int, v: int) -> void:
-	var a := field_addr(field, id)
-	if a < 0:
-		return
-	match int(FIELDS[field][2]):
-		0: Mem.w8(a, v)
-		1: Mem.w16(a, v)
-		_: Mem.w32(a, v)
+	var loc := field_loc(field, id)
+	return 0 if loc.is_empty() else _read(loc)
 
 
 static func run(host: ScriptHost, ins: Dictionary) -> void:
 	var evi := host.arg(ins, 0)
-	var dir := host.arg(ins, 1)
-	var id := host.arg(ins, 2) & 0xffff
-	var field := host.arg(ins, 3)
+	if evi > 0xfff:
+		await host.ui_message(0, "变量值溢出")
+		return
+	var dir := host.u16(ins, 1)
+	var id := host.u16(ins, 2)
+	var field := host.u16(ins, 3)
+	var loc := field_loc(field, id)
+	if loc.is_empty():
+		return
 	if dir == 0:
-		var a := field_addr(field, id)
-		if a < 0:
+		Mem.set_ev(evi, _read(loc))
+		return
+	write_field(field, id, Mem.ev(evi))
+	host._after_poke(int(loc[0]))
+	host.on_field_written(field, id)
+
+
+## Write side of op 0x78 with its side effects: f1 also sets the face table (0x423e30); f2–f8 run the 功勋 hook first
+## (0x408b52 mode 0); f18 with a value above the level levels up silently (0x4073f3), else stores.
+static func write_field(field: int, id: int, v: int) -> void:
+	var loc := field_loc(field, id)
+	if loc.is_empty():
+		return
+	if field >= 2 and field <= 8:
+		merit_set(id, field - 2, v & 0xffff)
+	if field == 18:
+		var p := Game.person(id)
+		if p != null and (v & 0xff) > p.level:
+			p.level_up((v & 0xff) - p.level)
 			return
-		Mem.set_ev(evi, read_field(field, id))
+	match int(loc[1]):
+		1: Mem.w8(loc[0], v)
+		2: Mem.w16(loc[0], v)
+		_: Mem.w32(loc[0], v)
+	if field == 1:
+		Mem.w16(Mem.FACE_TABLE + 2 * id, v & 0xffff)
+
+
+## 功勋 hook 0x408b52(value, 0, stat) for ids < 102 that are not 0xff in +0x2a: the bonus s16 0x508400[id·7 + stat] =
+## value − base; base = current word − bonus for HP (+0x1b) / MP (+0x1f), growth sum (0x408a60) + raw ability for
+## stats 0..4.
+static func merit_set(id: int, stat: int, value: int) -> void:
+	if id > 0x65:
+		return
+	var base_addr := Mem.person_addr(id)
+	if Mem.r8(base_addr + 0x2a) == 0xff:
+		return
+	var b := 0x508400 + 14 * id + 2 * stat
+	var base := 0
+	if stat == 5:
+		base = Mem.r16(base_addr + 0x1b) - Mem.r16s(b)
+	elif stat == 6:
+		base = Mem.r16(base_addr + 0x1f) - Mem.r16s(b)
 	else:
-		write_field(field, id, Mem.ev(evi))
-		host._after_poke(field_addr(field, id))
-		host.on_field_written(field, id)
+		var p := Game.person(id)
+		base = p.growth_sum(stat) + Mem.r8(base_addr + 0x21 + stat)
+	Mem.w16(b, (value - base) & 0xffff)

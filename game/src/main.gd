@@ -166,12 +166,12 @@ func _boot() -> void:
 		for fl in OS.get_environment("WG_SETFLAGS").split(",", false):
 			Mem.set_flag(int(fl), true)          # debug: story flags an earlier branch would have set
 		if Game.scenario % 2 == 1:
-			# starting at a battle: no story scene built the sortie list (u32[] @0x48b350, 0xffff end)
+			# starting at a battle: no story scene built the sortie list (u16[] @0x48b350, 0xffff end)
 			var ids := Game.party_ids()
-			var n := mini(ids.size(), 12)
+			var n := mini(ids.size(), 20)
 			for i in n:
-				Mem.w32(0x48b350 + 4 * i, ids[i])
-			Mem.w32(0x48b350 + 4 * n, 0xffff)
+				Mem.w16(Game.SORTIE_LIST + 2 * i, ids[i])
+			Mem.w16(Game.SORTIE_LIST + 2 * n, 0xffff)
 		if OS.get_environment("WG_AUTOSAVE") != "":
 			Game.save_game(_autoslot(), {})
 		_run_flow()
@@ -243,10 +243,14 @@ func _retry_autosave() -> void:
 	_run_flow()
 
 
+var _title_menu: TitleMenu
+
+
 func _title_screen() -> void:
 	await get_tree().process_frame
 	_abort_flow = false
-	Audio.play_bgm(2)
+	# boot loop 0x404caf: BGM track 0x12 (0x4745a7), title picture, then the four picture buttons
+	Audio.play_bgm(0x12)
 	if _title_bg == null:
 		_title_bg = Sprite2D.new()
 		_title_bg.centered = false
@@ -255,7 +259,7 @@ func _title_screen() -> void:
 	# 0x42bd6c: title picture (Logo.e5 0) at (0,40), plus emblem 1..3 (64x64) at (188 + 100i, 340) for each ending
 	# i recorded in byte i of SV\SV.E5S (0x41a280)
 	_title_bg.texture = Assets.tex("gfx/screens/00.png")
-	var nb := SpecialFuncs.read_niuniu()
+	var nb := SpecialFuncs.sv_read()
 	for i in 3:
 		var em := _title_bg.get_node_or_null("Emblem%d" % i) as Sprite2D
 		if em == null:
@@ -269,30 +273,40 @@ func _title_screen() -> void:
 	_title_bg.visible = true
 	_show_version()
 	ui.set_black(false)
+	if _title_menu == null:
+		_title_menu = TitleMenu.new()
+		add_child(_title_menu)
+	_title_menu.visible = true
 	while true:
-		var items: Array = ["开始新游戏", "读取进度"]
-		if _autosave_enabled() and not Game.save_info(Game.AUTO_SLOT).is_empty():
-			items.push_front("继续游戏")
-		if not OS.has_feature("mobile"):
-			items.append("结束游戏")      # phone apps don't quit themselves
-		# the bottom row stays where the original's three-item menu ends, inside the title picture
-		var i := await ui.menu.choose(items, Vector2(250, 330 - 24 * (items.size() - 3)), false, "", [], 140)
-		match items[i]:
-			"继续游戏":
-				if await _load_slot(Game.AUTO_SLOT):
-					return
-			"开始新游戏":
+		var i := await _title_menu.choose()
+		match i:
+			0:
+				_title_menu.visible = false
 				_title_bg.visible = false
 				Game.new_game_state()
 				Game.scenario = 0
 				_run_flow()
 				return
-			"读取进度":
+			1:
+				# 烽煙再起: the save list (the port's autosave 继续游戏 first when there is one)
+				if _autosave_enabled() and not Game.save_info(Game.AUTO_SLOT).is_empty():
+					var k := await ui.menu.choose(["继续游戏", "读取进度"], Vector2(-1, -1), true)
+					if k == 0:
+						if await _load_slot(Game.AUTO_SLOT):
+							_title_menu.visible = false
+							return
+						continue
+					if k < 0:
+						continue
 				if await load_menu():
+					_title_menu.visible = false
 					return
-			_:
-				get_tree().quit()
-				return
+			2:
+				pass       # 環境設定 dialog (KANKYOU, 0x41bad7): not ported
+			3:
+				if not OS.has_feature("mobile"):
+					get_tree().quit()
+					return
 
 
 ## Build number in the title screen's corner (application/config/version, set by the release workflow).
@@ -352,11 +366,16 @@ func _run_flow() -> void:
 		await st.run_file(file)
 		if gen != _flow_gen:
 			return
+		if OS.get_environment("WG_ONEFILE") != "":
+			# debug: run one scenario file and quit (tools/runall.sh)
+			print("== file done: %s -> next scenario %d" % [file, (Game.scenario + 1) & 0xffff])
+			get_tree().quit()
+			return
 		if _abort_flow or stage == null:
 			break
 		stage.queue_free()
 		stage = null
-		Game.scenario = (Game.scenario + 1) & 0xff
+		Game.scenario = (Game.scenario + 1) & 0xffff
 		if OS.get_environment("WG_AUTOSAVE") != "":
 			Game.save_game(_autoslot(), {})
 	if gen == _flow_gen:
@@ -375,6 +394,69 @@ func game_over() -> void:
 	await ui.popup("", 4.0)
 	s.queue_free()
 	to_title()
+
+
+## Ending show 0x4317ab(v) (op 0x0f / 0x414050): BGM track 0x10, Logo.e5 [4] as the backdrop, then the credits pages
+## of Imsg 800.. (0x431543: one page per round up to ";", "//n" comments skipped, "%" lines 32 px headings at x 208,
+## other lines 64 px at x 240, the block centred in the 400-pixel view), a cast portrait per round (0x431c19, persons
+## u32 0x4b2b30[k] from 0x72 sub 9 — unused by the scripts, not shown), the closing texts (0x431967 / 0x431a0a) and the
+## KOEI logo (Logo.e5 [6]). [G] Timing: the original waits 10 ticks per round plus the portrait animation; here
+## each page stays ~3 s (a click moves on).
+func ending_show(_v: int) -> void:
+	Audio.play_bgm(0x10)
+	var layer := Control.new()
+	layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ui.add_child(layer)
+	var back := TextureRect.new()
+	back.texture = Assets.tex("gfx/screens/04.png")
+	back.position = Vector2(0, 40)
+	layer.add_child(back)
+	ui.set_black(false)
+	var rounds := maxi(Mem.ev(4056) & 0xff, 0x18)
+	var idx := 800
+	for k in mini(rounds, 0x18):
+		var lines := []
+		while idx < 3000:
+			var t := Game.text(idx)
+			idx += 1
+			if t.begins_with(";"):
+				break
+			if t.begins_with("//"):
+				continue
+			lines.append(t)
+		if lines.is_empty():
+			break
+		var page := Control.new()
+		page.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		layer.add_child(page)
+		var heights := 0
+		var nh := 0
+		for t in lines:
+			heights += 32 if t.begins_with("%") else 64
+		var y := 40 - (heights / 2 - 200)
+		for t in lines:
+			var head: bool = t.begins_with("%")
+			var l := UIStyle.label(t.lstrip("%"), 26 if head else 48, Color(1, 0.95, 0.75) if head else Color(1, 1, 1))
+			l.position = Vector2(208 if head else 240, y)
+			page.add_child(l)
+			y += 32 if head else 64
+			nh += 1
+		page.modulate.a = 0.0
+		if not Game.autoplay:
+			var tw := create_tween()
+			tw.tween_property(page, "modulate:a", 1.0, 0.4)
+			await tw.finished
+			var n0 := Game.clicks
+			var t0 := Time.get_ticks_msec()
+			while Time.get_ticks_msec() - t0 < 3000 and Game.clicks == n0:
+				await get_tree().process_frame
+		page.queue_free()
+	back.texture = Assets.tex("gfx/screens/06.png")
+	if not Game.autoplay:
+		await get_tree().create_timer(2.5).timeout
+	layer.queue_free()
+	Audio.stop_bgm()
 
 
 func ending() -> void:

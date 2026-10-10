@@ -68,7 +68,7 @@ static func lines() -> Array:
 		if skip_digits:
 			while k < lb.size() and lb[k] >= 0x30 and lb[k] <= 0x39:
 				k += 1
-		var s := lb.slice(k).get_string_from_multibyte_char("GBK").replace("\r", "")
+		var s := TextExpand.from_gbk(lb.slice(k)).replace("\r", "")
 		out.append([int(e[0]), _expand_ev(s)])
 	return out
 

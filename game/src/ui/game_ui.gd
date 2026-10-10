@@ -567,7 +567,7 @@ class _InfoBar:
 			if c == 0:
 				break
 			b.append(c)
-		return b.get_string_from_multibyte_char("GBK") if not b.is_empty() else ""
+		return TextExpand.from_gbk(b)
 
 	func _draw() -> void:
 		var f := Assets.font()

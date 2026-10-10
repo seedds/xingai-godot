@@ -2135,7 +2135,7 @@ func battle_get_item(iid: int, lvl: int, flag: int, person: int) -> void:
 		# [G] 0x403 / acting unit off the map: the original reads the pointer 0x500ac4 (never set by any code found);
 		# > 0x403: an uninitialised local — no animation in both cases
 	if u != null:
-		await actions.unit_pose(u, 1)
+		await unit_action(u, 1, 0, 0)
 		var icon := Sprite2D.new()
 		icon.centered = false
 		icon.texture = ItemText66.large_icon(iid & 0xff)
@@ -2564,54 +2564,84 @@ func op_unit_op_4e(ins: Dictionary) -> void:
 			set_ai(u, m, tp, tx, ty)
 
 
-## op 0x4f (0x415f47): turn a unit toward another (or to a direction; back > 0 turns away); SE 6.
+## op 0x4f (0x415f47 → 0x4575b8(unit, target, dir, back, scroll, wait)): the unit (selector, else the person's
+## first unit) on the map turns to `dir` (target 0xffff) or toward the target unit (0x435539) — away from it with
+## back > 0; nothing at all when the facing does not change. A change first centres the view on the unit with
+## scroll ≠ 0 (+8 ticks, 0x457771), plays SE 6 (for a direction turn not when byte 0x500ad7 = 2); wait ≠ 0 → 8 ticks.
 func op_unit_op_4f(ins: Dictionary) -> void:
-	var u := unit_sel(arg(ins, 0))
+	var u := _unit_or_person(arg(ins, 0) & 0xffff)
 	if u == null or u.state != 2:
 		return
-	var p2 := arg(ins, 1)
-	var back := arg(ins, 3)
+	var tsel := arg(ins, 1) & 0xffff
+	var back := arg(ins, 3) & 0xffff
 	var scroll := arg(ins, 4)
 	var wt := arg(ins, 5)
-	if scroll != 0 and scroll != 0xffff:
-		await view.ensure_visible(u.pos)
-		await wait(0.4)
-	var d := u.dir
-	if p2 != 0xffff:
-		var t := unit_sel(p2)
-		if t and t.state == 2:
-			d = actions.dir_to(u.pos, t.pos)
-	else:
-		d = arg(ins, 2) & 3
-	if back != 0xffff and back > 0:
-		d = (d + 2) & 3
-	if d != u.dir:
-		u.dir = d
-		if u.node:
-			u.node.dir = d
-			u.node.queue_redraw()
+	var cur := u.dir
+	if tsel == 0xffff:
+		var d := arg(ins, 2) & 0xff
+		if d == cur:
+			return
+		await _turn_scroll(u, scroll)
 		if Mem.r8(Rules.STRAT_ITEM) != 2:
 			Audio.play_se(SoundMap.se_name(6))
-	if wt != 0 and wt != 0xffff:
+		u.dir = d
+	else:
+		var t := _unit_or_person(tsel)
+		if t == null or t.state != 2:
+			return
+		var d2 := actions.dir_to(u.pos, t.pos)
+		if d2 == cur:
+			return
+		await _turn_scroll(u, scroll)
+		Audio.play_se(SoundMap.se_name(6))
+		u.dir = d2
+		if back < 0x8000 and back > 0 and d2 < 4:
+			u.dir = [2, 3, 0, 1][d2]
+	if u.node:
+		u.node.dir = u.dir
+		u.node.queue_redraw()
+	refresh_units()
+	if wt != 0:
 		await wait(0.4)
 
 
-## op 0x50 (0x415fee): a battle-sprite action 0..12 of a unit; pre / post waits when the flags are non-zero.
+## 0x41b882, else (values < 0x400) the first unit holding the person (0x4029c2, any state).
+func _unit_or_person(v: int) -> BUnit:
+	var u := unit_sel(v)
+	if u == null and v < 0x400:
+		u = unit_of_person(v)
+	return u
+
+
+## 0x457771: scroll ≠ 0 → the view centres on the unit, 8 ticks.
+func _turn_scroll(u: BUnit, scroll: int) -> void:
+	if scroll != 0:
+		await scroll_cell(u.pos)
+		await wait(0.4)
+
+
+## op 0x50 (0x415fee): battle only; action 0xffff nothing; the selector's unit, else the person's first unit (a
+## person < 0x400, 0x45778f) → unit_action.
 func op_unit_status(ins: Dictionary) -> void:
-	var u := unit_sel(arg(ins, 0))
-	if u == null or u.state != 2 or u.node == null:
-		return
-	var action := arg(ins, 1)
+	var action := arg(ins, 1) & 0xffff
 	if action == 0xffff:
 		return
-	var pre := arg(ins, 2)
-	var post := arg(ins, 3)
+	var u := _unit_or_person(arg(ins, 0) & 0xffff)
+	await unit_action(u, action & 0xff, arg(ins, 2) & 0xffff, arg(ins, 3) & 0xffff)
+
+
+## 0x45778f(unit, person, action, pre, post): a unit on the map; the view centres on it; pre ≠ 0 → 8 ticks before,
+## post ≠ 0 → 8 ticks after (not for actions 0 and 11; 0xffff counts as non-zero); the action itself is
+## BattleActions.unit_pose (cases 0..12).
+func unit_action(u: BUnit, action: int, pre: int, post: int) -> void:
+	if u == null or u.state != 2:
+		return
+	await scroll_cell(u.pos)
 	var waits := action != 0 and action != 11
-	await view.ensure_visible(u.pos)
-	if pre != 0 and pre != 0xffff and waits:
+	if pre != 0 and waits:
 		await wait(0.4)
 	await actions.unit_pose(u, action)
-	if post != 0 and post != 0xffff and waits:
+	if post != 0 and waits:
 		await wait(0.4)
 
 

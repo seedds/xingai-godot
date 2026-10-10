@@ -553,7 +553,7 @@ func side_upkeep(s: int) -> void:
 	_added_countdown(s)
 	for i in range(lo, hi):
 		await _status_recovery(units[i])
-		_buff_decay(units[i])
+		await _buff_decay(units[i])
 	var olo := 60 if s == 0 else 0
 	var ohi := 250 if s == 0 else 60
 	for j in range(olo, ohi):
@@ -597,8 +597,7 @@ func _status_recovery(u: BUnit) -> void:
 	for d in Rules.DIR8:
 		var n := Rules.unit_at(u.pos + d)
 		if n != null and n.state == 2 and n.side() == u.side() and n.eff(0x64, 0x7b, 1, 1) != 0:
-			u.status = 0
-			hud.popup_number("恢复", u.pos, Color(0.6, 1, 0.6))
+			await unit_attr_op(u, 6, 0x9e, true)      # 0x45aa37(person, 6, 0x9e, 1, slot): cure all, animated
 			return
 	status_tick(u, Rules.recovery_chance(u, 1))
 
@@ -628,8 +627,9 @@ func status_tick(u: BUnit, p: int) -> void:
 	u.status = s
 
 
-## BuffDecay 0x43c940: levels 5/6 count down, 4 wears off with the fade chance, debuffs recover; then the 精进 timer
-## (player units) and the 反間計 control counter (slots ≥ 60).
+## BuffDecay 0x43c940: levels 5/6 count down, 4 wears off with the fade chance, debuffs recover (0 → 1 → 2 directly,
+## 2 → 3 by chance); the returns to 3 go through 0x45aa37 with their animation. Then the 精进 timer (player kind:
+## 1 ends by chance with Meff 0x2f) and the 反間計 control counter (slots ≥ 60: 1 ends with Meff 0x2c, 0x4073bc).
 func _buff_decay(u: BUnit) -> void:
 	if u.state != 2:
 		return
@@ -640,30 +640,38 @@ func _buff_decay(u: BUnit) -> void:
 		if lv == 3:
 			continue
 		if lv >= 5:
-			lv -= 1
+			u.set_buff(k, lv - 1)
 		elif lv == 4:
 			if Rules.chance2(a, 1):
-				lv = 3
+				await unit_attr_op(u, k, 3, true)
 		elif b == 100:
-			lv = 3
+			await unit_attr_op(u, k, 3, true)
 		elif lv < 2:
-			lv += 1
+			u.set_buff(k, lv + 1)
 		elif Rules.chance2(b, 0):
-			lv = 3
-		u.set_buff(k, lv)
+			await unit_attr_op(u, k, 3, true)
 	if u.kind == 0:
 		var c := Mem.r8(0x501b00 + u.slot)
 		if c > 1:
 			Mem.w8(0x501b00 + u.slot, c - 1)
 		elif c == 1 and Rules.chance2(a, 1):
+			await unit_meff(u, 0x2f)
 			Mem.w8(0x501b00 + u.slot, 0)
 	if u.slot >= 60:
 		var c2 := Mem.r8(0x501ad8 + u.slot)
 		if c2 > 1:
 			Mem.w8(0x501ad8 + u.slot, c2 - 1)
 		elif c2 == 1:
-			Rules.chance2(100, 0)
-			release_control(u)
+			if Rules.chance2(100, 0):
+				await unit_meff(u, 0x2c)
+				release_control(u)
+
+
+## 0x427cbc(n): Meff n on the unit when it is in view, then its redraw.
+func unit_meff(u: BUnit, n: int) -> void:
+	var cells: Array[Vector2i] = [u.pos]
+	await strategy.script_anim(n, cells, [], 0x40)
+	refresh_units()
 
 
 ## 0x4073bc(u, 0): the 反間計 control ends (counter 0, kind − 3, AI code 1) — both changes are undone whatever the
@@ -674,16 +682,18 @@ func release_control(u: BUnit) -> void:
 	u.ai = 1
 
 
-## Poison 0x44e024(u, 20): max(MaxHP·20 %, 1), never below 1 HP.
+## Poison 0x44e024(u, 20, show): max(MaxHP·20 %, 1), never below 1 HP; the view centres on the unit and the result
+## window shows the loss (0x450986(0, slot, −1, d, …, 1)) before it is written.
 func _poison(u: BUnit) -> void:
 	if u.state != 2 or not u.poisoned():
 		return
 	var d := maxi(u.max_hp() * 20 / 100, 1)
 	if u.hp <= d:
 		d = u.hp - 1
+	await scroll_cell(u.pos)
+	await result_panel(u, 0, d, 0, 0, 0, 0, true)
 	u.hp = u.hp - d
-	if d > 0:
-		hud.popup_number(str(d), u.pos, Color(0.7, 0.4, 1))
+	refresh_units()
 
 
 ## Regen 0x43cddd: auras and automatic buffs, terrain / 特效 HP and MP recovery (halved under poison), SP, and the
@@ -692,7 +702,7 @@ func _regen(u: BUnit) -> void:
 	if u.state != 2:
 		return
 	await strategy.turn_auras(u)
-	_auto_buffs(u)
+	await _auto_buffs(u)
 	var maxhp := u.max_hp()
 	var t := Rules.regen_pct(u.pos)
 	var hp := maxhp * t / 100 + maxhp * u.eff(0, 0x25, 0, 0) / 100
@@ -700,20 +710,26 @@ func _regen(u: BUnit) -> void:
 	if u.poisoned():
 		hp >>= 1
 		mp >>= 1
+	if hp > 0 and u.hp + hp > maxhp:
+		hp = maxhp - u.hp
+	var sp_gain := 0
 	var sp := u.eff(0x69, 0, 0, 0)
 	if sp:
-		Rules.add_sp(u.pid, sp, true)
+		sp_gain = Rules.add_sp(u.pid, sp, true)
+	if mp > 0 and u.mp + mp > u.max_mp():
+		mp = u.max_mp() - u.mp
 	var g := [0, 0, 0]
 	if u.kind == 0:
 		var bonus := 100 + (u.person.equip_bonus(8) & 0xff)
 		for k in 3:
 			g[k] = u.eff(3 + k, [0x1d, 0x73, 0x73][k], 0, 0) * bonus / 100
-	if hp > 0 and u.hp < maxhp:
-		var h := mini(hp, maxhp - u.hp)
-		u.hp = u.hp + h
-		hud.popup_number("+%d" % h, u.pos, Color(0.4, 1, 0.4))
-	if mp > 0:
-		u.mp = mini(u.mp + mp, u.max_mp())
+	# 0x43cf26: any gain → the view centres on the unit and the result window (kind = the SP gain, else 0x100)
+	if hp > 0 or mp > 0 or g[0] > 0 or g[1] > 0 or g[2] > 0 or sp_gain > 0:
+		await scroll_cell(u.pos)
+		await result_panel(u, sp_gain if sp_gain != 0 else 0x100, -hp, -mp, g[0], g[1], g[2], true)
+	u.hp = u.hp + hp
+	u.mp = u.mp + mp
+	refresh_units()
 	if g[0] > 0:
 		await actions.set_exp(u, g[0])
 	if g[1] > 0:
@@ -722,22 +738,25 @@ func _regen(u: BUnit) -> void:
 		await actions.equip_exp(u, 1, g[2])
 
 
-## AutoBuffs 0x43d038: 自动提升 rows 0x90..0x96 (masks); 0x3f lifts all six to 6 when any is ≤ 3.
+## AutoBuffs 0x43d038: 自动提升 rows 0x90..0x96 (QueryAny(0x90 + i, 0x66, 3, 0), stat masks); 0x3f sets all six
+## to 6 when any is below 4 (Meff 0x26) and stops; other bits raise each such stat below 4 through 0x414361 (below 3
+## → 3, else 6, animated).
 func _auto_buffs(u: BUnit) -> void:
 	for i in 7:
-		var v := u.eff(0x90 + i, 0x66, 3, 0)
+		var v := u.eff(0x90 + i, 0x66, 3, 0) & 0xff
 		if v == 0:
 			continue
 		if v == 0x3f:
 			for j in 6:
-				if u.buff(j) <= 3:
+				if u.buff(j) < 4:
 					for k in 6:
 						u.set_buff(k, 6)
+					await unit_meff(u, 0x26)
 					return
-			continue
+			return
 		for j in 6:
-			if (v >> j) & 1 and u.buff(j) <= 3:
-				u.set_buff(j, Rules.buff_step(u.buff(j), true))
+			if (v >> j) & 1 and u.buff(j) < 4:
+				await unit_attr_op(u, j, 3 if u.buff(j) < 3 else 6, true)
 
 
 ## 0x40ec9d: the 10 timed map objects of 纵火 / 修筑 (0x501ae2: x, y, timer; 0xff free) count down and vanish at 0.
@@ -1854,6 +1873,12 @@ func op_scroll_to(ins: Dictionary) -> void:
 	if Rules.evb(4087) != 0:
 		return
 	await view.center_on(Vector2i(arg(ins, 0), arg(ins, 1)))
+
+
+## Unit result window 0x450986 (ResultPanel): call it before writing HP / MP / SP (EXP already added).
+func result_panel(u: BUnit, kind: int, hp_loss: int, mp_loss: int, sp_gain: int, wexp: int, aexp: int,
+		long_wait := false) -> void:
+	await ResultPanel.show(self, u, kind, hp_loss, mp_loss, sp_gain, wexp, aexp, long_wait)
 
 
 ## 0x45503f: centre the view on a cell (scrolled by 0x454cef, clamped to the map); nothing while byte EV[4087] ≠ 0.

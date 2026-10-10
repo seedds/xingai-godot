@@ -674,6 +674,8 @@ func exchange(side: int, kind: int, arg: int) -> void:
 	var o: DuelFighter = fighters[1 - _s(side)]
 	a.shown = true
 	o.shown = true
+	a.flash(0.0)                   # every redraw blits the clean cached images (ends the appear whitening)
+	o.flash(0.0)
 	a.ghosts.clear()
 	_front(a)
 	await _windup(a, arg)
@@ -738,6 +740,8 @@ func special(side: int, kind: int, arg: int) -> void:
 	var o: DuelFighter = fighters[1 - _s(side)]
 	a.shown = true
 	o.shown = true
+	a.flash(0.0)
+	o.flash(0.0)
 	_front(a)
 	var fwd := _fwd(a)
 	var p := 32 * fwd

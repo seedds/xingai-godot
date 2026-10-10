@@ -8,6 +8,12 @@ extends Node
 
 var ui: GameUI
 var stage = null
+
+
+class FakeBattle:
+	extends ScriptHost
+	func in_battle() -> bool:
+		return true
 var shots := ""
 
 
@@ -85,5 +91,25 @@ func run() -> void:
 	if exp1 == exp0 and Mem.r8(Mem.person_addr(0) + 0x2c) == lv0:
 		print("t_duel66_a: FAIL no EXP given (exp %d → %d)" % [exp0, exp1])
 		ok = false
-	# in-battle path: no unit → inactive
+	# in-battle path: the persons' own units (0x477adc: first slot with state ≠ 0); no unit → inactive
+	var bh := FakeBattle.new()
+	add_child(bh)
+	await get_tree().process_frame
+	var bd := DuelLayer.attach(bh)
+	Mem.fill(Mem.UNITS, 250 * 0x30, 0)
+	await bd.setup(0, 5, 20)
+	if bd.active:
+		print("t_duel66_a: FAIL battle duel active without units")
+		ok = false
+	for e in [[3, 0, 0], [70, 5, 2]]:
+		var ua: int = Mem.UNITS + e[0] * 0x30
+		Mem.w32(ua, e[1])
+		Mem.w8(ua + 5, e[2])
+		Mem.w8(ua + 0xc, 2)
+	await bd.setup(0, 5, 20)
+	if not bd.active or bd.slots != [70, 3] or bd.box != Vector2(8, 84):
+		print("t_duel66_a: FAIL battle duel setup active=%s slots=%s box=%s" % [bd.active, bd.slots, bd.box])
+		ok = false
+	await bd.result(1)
+	await bd.close()
 	print("t_duel66_a: PASS" if ok else "t_duel66_a: FAILED")

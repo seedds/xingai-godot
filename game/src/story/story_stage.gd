@@ -350,27 +350,30 @@ func actor_at(p: Vector2) -> int:
 	return best
 
 
-## The original's menu bar (系统 / 功能) as one menu. 存储进度 follows the save-allowed byte 0x500fff (op 0x74).
+## The original's menu bar as one menu (right click / Esc / 菜单): 情报 → 武将一览 (dialog 186), 持有道具一览 (325),
+## 历史情报; 文件 → 保存 (refused with "目前禁止存档" while u8 0x500fff = 0, op 0x74), 读取; 功能 → 练武场; plus 回到标题.
+## (地形情报一览, 宝物图鉴, 装备情报, 版本情报 and 环境设定 are not ported; equipment is changed through the toolbar's
+## 装备 in sortie mode, as in the original.)
 func _system_menu() -> void:
 	_waiting_click = false
-	var items := ["部队状态", "装备", "道具", "历史情报", "存储进度", "读取进度", "回到标题", "练武场"]
-	var en := [true, true, true, true, Mem.r8(0x500fff) != 0, true, true, true]
-	var i := await ui.menu.choose(items, Vector2(-1, -1), true, "", en)
+	var items := ["武将一览", "持有道具一览", "历史情报", "保存", "读取", "练武场", "回到标题"]
+	var i := await ui.menu.choose(items, Vector2(-1, -1), true)
 	match i:
-		7:
-			await Training.menu(self)
 		0:
 			await Game.main.show_party_status()
 		1:
-			await PartyMenu.equip_menu(ui)
-		2:
 			await PartyMenu.item_menu(ui)
-		3:
+		2:
 			await _show_history()
+		3:
+			if Mem.r8(0x500fff) == 0:
+				await ui_message(0, "目前禁止存档")
+			else:
+				await Game.main.save_menu()
 		4:
-			await Game.main.save_menu()
-		5:
 			await Game.main.load_menu()
+		5:
+			await Training.menu(self)
 		6:
 			Game.main.to_title()
 	_waiting_click = true

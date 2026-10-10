@@ -634,17 +634,6 @@ func _autosave_flush() -> void:
 
 
 # ------------------------------------------------------------------ status screens
+## 武将一览 (dialog 186, PartyMenu.unit_list); a row opens 武将情报.
 func show_party_status() -> void:
-	var ids := Game.party_ids()
-	if ids.is_empty():
-		await ui.popup("没有部队。", 1.0)
-		return
-	var labels := []
-	for pid in ids:
-		var p := Game.person(pid)
-		labels.append("%s  %s  Lv%d" % [p.name, p.class_name_str(), p.level])
-	while true:
-		var i := await ui.menu.choose(labels, Vector2(-1, -1), true, "部队")
-		if i < 0:
-			return
-		await StatusPanel.show_person(ui, Game.person(ids[i]))
+	await PartyMenu.unit_list(ui)

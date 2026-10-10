@@ -58,6 +58,16 @@ static func in_move_rect(c: Vector2i) -> bool:
 ## "Home side" 0x42e2ed (EV 4019 = 1, 深入敌后 超级卡位): slots < 20 → 0, < 60 → 1, else the kind (5 → 2 and
 ## 6 → 3 unless the control counter 0x501ad8 is set; 3 / 6-as-3 → +1 with EV 4053), through table 0x40672d.
 static func home_side(u: BUnit) -> int:
+	return Mem.r8(0x40672d + _home_k(u))
+
+
+## The second result of 0x42e2ed (EDX): the home code before the table, 4 → 3 (0x72 subs 2/3 side filter 0x45aed1).
+static func home_code(u: BUnit) -> int:
+	var k := _home_k(u)
+	return k - 1 if k > 3 else k
+
+
+static func _home_k(u: BUnit) -> int:
 	var k := 0
 	if u.slot >= 20:
 		if u.slot < 60:
@@ -74,7 +84,7 @@ static func home_side(u: BUnit) -> int:
 							k = 3
 						if Mem.r8(Mem.EV + 4 * 4053) != 0:
 							k += 1
-	return Mem.r8(0x40672d + k)
+	return k
 
 
 ## Hostile 0x42e2b7: sides differ, by side() or (use_side false) by the EV 4019 side function.

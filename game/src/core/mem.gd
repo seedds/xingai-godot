@@ -103,10 +103,40 @@ func _watch(addr: int, v: int, size: int) -> void:
 		print_stack()
 
 
+## Write journal (the battle's event poll uses it to see that a section run left the memory as it was): while
+## `journaling`, the first old value of every byte changed is kept in `journal`.
+var journaling := false
+var journal: Dictionary = {}
+
+
+func journal_start() -> void:
+	journal.clear()
+	journaling = true
+
+
+## Stops journaling; true when some journaled byte now differs from its old value.
+func journal_stop() -> bool:
+	journaling = false
+	for a in journal:
+		if r8(a) != journal[a]:
+			journal.clear()
+			return true
+	journal.clear()
+	return false
+
+
+func _log(addr: int, n: int) -> void:
+	for i in n:
+		if not journal.has(addr + i):
+			journal[addr + i] = r8(addr + i)
+
+
 func w8(addr: int, v: int) -> void:
 	addr &= 0xffffffff
 	v &= 0xff
 	if watch_lo >= 0: _watch(addr, v, 1)
+	if journaling and not journal.has(addr):
+		journal[addr] = r8(addr)
 	if addr >= IMG_BASE and addr < img_end:
 		img[addr - IMG_BASE] = v
 	elif addr >= HEAP and addr < HEAP + heap.size():
@@ -130,8 +160,10 @@ func w16(addr: int, v: int) -> void:
 	addr &= 0xffffffff
 	if watch_lo >= 0: _watch(addr, v, 2)
 	if addr >= IMG_BASE and addr + 1 < img_end:
+		if journaling: _log(addr, 2)
 		img.encode_u16(addr - IMG_BASE, v & 0xffff)
 	elif addr >= HEAP and addr + 1 < HEAP + heap.size():
+		if journaling: _log(addr, 2)
 		heap.encode_u16(addr - HEAP, v & 0xffff)
 	else:
 		w8(addr, v)
@@ -152,8 +184,10 @@ func w32(addr: int, v: int) -> void:
 	v &= 0xffffffff
 	if watch_lo >= 0: _watch(addr, v, 4)
 	if addr >= IMG_BASE and addr + 3 < img_end:
+		if journaling: _log(addr, 4)
 		img.encode_u32(addr - IMG_BASE, v)
 	elif addr >= HEAP and addr + 3 < HEAP + heap.size():
+		if journaling: _log(addr, 4)
 		heap.encode_u32(addr - HEAP, v)
 	else:
 		w8(addr, v)
@@ -175,6 +209,20 @@ func r16s(addr: int) -> int:
 func r8s(addr: int) -> int:
 	var v := r8(addr)
 	return v - 0x100 if v >= 0x80 else v
+
+
+## n bytes from addr as a byte array (a copy).
+func slice(addr: int, n: int) -> PackedByteArray:
+	addr &= 0xffffffff
+	if addr >= IMG_BASE and addr + n <= img_end:
+		return img.slice(addr - IMG_BASE, addr - IMG_BASE + n)
+	if addr >= HEAP and addr + n <= HEAP + heap.size():
+		return heap.slice(addr - HEAP, addr - HEAP + n)
+	var b := PackedByteArray()
+	b.resize(n)
+	for i in n:
+		b[i] = r8(addr + i)
+	return b
 
 
 func fill(addr: int, n: int, v: int) -> void:

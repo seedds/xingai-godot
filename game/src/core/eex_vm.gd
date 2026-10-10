@@ -61,16 +61,32 @@ static var op_stats: Dictionary = {}       # WG_OPSTATS: executed ops by name (p
 static var _stats_on := OS.get_environment("WG_OPSTATS") != ""
 
 
+## Ops that only read or write the emulated memory (no window, sound, animation or wait): a section run made of
+## these that changed no memory leaves everything as it was (BattleStage.checkpoint stops repeating it).
+const PURE_OPS := {"end": 1, "if": 1, "comment": 1, "else": 1, "goto": 1, "int_var_op": 1, "set_flag": 1,
+		"data_transfer": 1, "set_attr": 1, "copy_person_word": 1}
+const PURE_EXT := {4: 1, 5: 1, 6: 1, 7: 1, 9: 1, 10: 1, 23: 1, 24: 1, 26: 1, 35: 1, 36: 1}
+var impure := false          # an op outside PURE_OPS / test_* ran since the flag was cleared
+var _handlers: Dictionary = {}
+
+
 func _call(ins: Dictionary) -> Variant:
-	var m := "op_" + str(ins["name"])
+	var n: String = ins["name"]
 	if _stats_on:
-		var key := str(ins["name"])
+		var key := n
 		if int(ins["op"]) == 0x72:
 			key += ":%d" % int(ins.get("ext", {}).get("sub", -1))
 		op_stats[key] = int(op_stats.get(key, 0)) + 1
-	if host.has_method(m):
-		return await host.call(m, ins)
-	var n: String = ins["name"]
+	if not impure and not PURE_OPS.has(n) and not n.begins_with("test_"):
+		if n != "ext_command" or not PURE_EXT.has(int(ins.get("ext", {}).get("sub", -1))):
+			impure = true
+	var h: Variant = _handlers.get(n)
+	if h == null:
+		var m := "op_" + n
+		h = Callable(host, m) if host.has_method(m) else false
+		_handlers[n] = h
+	if h is Callable:
+		return await (h as Callable).call(ins)
 	if not _warned.has(n):
 		_warned[n] = true
 		push_warning("EEX unimplemented op %s (0x%02x) args=%s in %s" % [n, int(ins["op"]), ins["args"], name])

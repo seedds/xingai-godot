@@ -10,6 +10,7 @@ extends RefCounted
 
 const ROWS_PTR := 0x500c3b      # → 0x511000: 255 rows × {4 × (u16 person, u8 value), 2 × (u8 class, u8 value)}
 const ADDED := 0x512dc0         # 附加技能 stream: FF sid {value, turns, u16 person}… FF FF (≤ 0x800 bytes)
+const STREAM_SCAN := 0x904      # bytes a keyed-list scan looks at (0x900 steps and the last entry)
 const EXCL := 0x50e000          # 专属 / 套装 rows: 2 × (u16 person, item, value), 2 × (weapon, armour, accessory, value)
 const LEARN := 0x507800         # strategies learned per person: FF strategy {level, u16 person}… FF FF
 const GROWTH_ADJ := 0x507ec0    # growth modifiers: FF stat {s8 amount, u16 person}… FF FF
@@ -80,20 +81,23 @@ static func class_matches(entry: int, cls: int) -> bool:
 ## bytes whose u16 person is at entry + extra + 1; FF FF ends the list. The scan walks byte by byte between
 ## groups, as the original does. Returns the entry address or -1.
 static func stream_find(base: int, key: int, pid: int, extra: int) -> int:
-	var p := base
+	var b := Mem.slice(base, STREAM_SCAN)
+	var p := 0
 	var guard := 0
-	while guard < 0x900:
+	key &= 0xff
+	pid &= 0xffff
+	while guard < 0x900 and p + 1 < STREAM_SCAN:
 		guard += 1
-		if Mem.r8(p) == 0xff:
+		if b[p] == 0xff:
 			p += 1
-			var k := Mem.r8(p)
+			var k := b[p]
 			if k == 0xff:
 				return -1
-			if k == (key & 0xff):
+			if k == key:
 				var e := p + 1
-				while Mem.r8(e) != 0xff:
-					if Mem.r16(e + extra + 1) == (pid & 0xffff):
-						return e
+				while e + extra + 2 < STREAM_SCAN and b[e] != 0xff:
+					if (b[e + extra + 1] | (b[e + extra + 2] << 8)) == pid:
+						return base + e
 					e += extra + 3
 				return -1
 		p += 1
@@ -118,52 +122,55 @@ static func added_set(pid: int, sid: int, value: int, turns: int, overwrite: boo
 ## Generic writer of the stream lists (0x402ac7): `data` is the entry's leading bytes (1 or 2).
 static func stream_put(base: int, key: int, pid: int, data: Array, overwrite: bool) -> void:
 	var extra: int = data.size() - 1
-	var p := base
+	var b := Mem.slice(base, STREAM_SCAN)
+	var p := 0
 	var group := false
 	var guard := 0
-	while guard < 0x900:
+	while guard < 0x900 and p + 1 < STREAM_SCAN:
 		guard += 1
-		if Mem.r8(p) == 0xff:
-			var k := Mem.r8(p + 1)
+		if b[p] == 0xff:
+			var k := b[p + 1]
 			if k == 0xff:
 				p += 1
 				break
 			if k == (key & 0xff):
 				group = true
 				var e := p + 2
-				while Mem.r8(e) != 0xff:
-					if Mem.r16(e + extra + 1) == (pid & 0xffff):
+				while e + extra + 2 < STREAM_SCAN and b[e] != 0xff:
+					if (b[e + extra + 1] | (b[e + extra + 2] << 8)) == (pid & 0xffff):
+						var a := base + e
 						if extra == 0:
-							Mem.w8(e, data[0])
+							Mem.w8(a, data[0])
 						elif overwrite:
-							Mem.w8(e, data[0])
-							Mem.w8(e + 1, data[1])
+							Mem.w8(a, data[0])
+							Mem.w8(a + 1, data[1])
 						else:
-							if Mem.r8(e + 1) < data[1]:
-								Mem.w8(e + 1, data[1])
-							if data[0] > Mem.r8(e):
-								Mem.w8(e, data[0])
+							if b[e + 1] < data[1]:
+								Mem.w8(a + 1, data[1])
+							if data[0] > b[e]:
+								Mem.w8(a, data[0])
 						return
 					e += extra + 3
 				p = e
 				break
 			p += 1
 		p += 1
-	if p - base >= 0x800:
+	if p >= 0x800:
 		return
 	var entry: Array = data.duplicate()
 	entry.append(pid & 0xff)
 	entry.append((pid >> 8) & 0xff)
+	p += base
 	if group:
 		# p = the FF that ends the group: shift the rest (from p) to make room, then write the entry
 		var end := p
 		var g2 := 0
-		while not (Mem.r8(end) == 0xff and Mem.r8(end + 1) == 0xff) and g2 < 0x900:
+		while not (b[end - base] == 0xff and b[end - base + 1] == 0xff) and g2 < 0x900 and end - base + 2 < STREAM_SCAN:
 			end += 1
 			g2 += 1
 		var tail := []
 		for a in range(p, end + 2):
-			tail.append(Mem.r8(a))
+			tail.append(b[a - base])
 		for i in entry.size():
 			Mem.w8(p + i, entry[i])
 		for i in tail.size():

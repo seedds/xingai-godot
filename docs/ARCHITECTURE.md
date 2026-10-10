@@ -18,8 +18,9 @@ are ported from the decompiled executable.
              └──────┬──────────────────┬───────┘
          even n: R_xx.json      odd n: S_xx.json
                     ▼                  ▼
-            StoryStage            BattleStage ── BattleActions · BattleAI · BattleInput
+            StoryStage            BattleStage ── BattleActions · BattleStrategy · BattleAI · BattleInput
                     └──── extends ScriptHost ──┘         BattleView · BattleHUD · DuelLayer
+                                                         Rules · Effects · Movement (formulas, 特效 query, flood)
                                │ op_<name>()
                             EexVM  (scenes → sections → bodies)
                                │
@@ -59,15 +60,17 @@ Important locations:
 | Address | Contents |
 |---|---|
 | 0x4b0770 (`GS`) | game-state block: scenario (+7), gold (+0xc), flags for story/portraits, message speed (+0x10) |
-| 0x492fc8 (`FLAGS`) | story flags, one u32 each |
-| 0x55b000 (`EV`) | the mod's 4096 integer variables |
-| 0x563000 (`PT`) | the mod's pointer table |
+| 0x492fc8 (`FLAGS`) | story flags as bits (flag i = bit 7 − i % 8 of byte i / 8) |
+| 0x502000 (`EV`) | the mod's 4096 integer variables |
+| 0x506000 (`PT`) | the mod's pointer table |
 | 0x55a000 (`BYTEVARS`) | the mod's byte variables (initialised from `person.wa`) |
-| 0x4b2c50 (`UNITS`) | 115 battle-unit records × 0x24 bytes |
-| 0x48b350 | sortie list (u32 person ids, 0xffff-terminated) |
+| 0x4a7b20 (`UNITS`) | 250 battle-unit records × 0x30 bytes (slots 0–19 player, 20–59 allies, 60–249 enemies) |
+| 0x4b3d08 | the battle object (result, round, turn limit, weather, phase, climate) |
+| 0x497af8 | the strategy context (caster, targets, values, result codes) |
+| 0x48b350 | sortie list (u16 person ids, 0xffff-terminated) |
 | 0x4b0783 | the bag (item slots) |
 | 0x4b3c80 | duel object |
-| 0x4927f0 / 0x4927f1 | attacker / defender slot of the latest attack (the scripts' 攻防 tests) |
+| 0x4927f0 | the combat context (attacker / defender of the latest attack, the scripts' 攻防 tests) |
 
 `Person` (`core/person.gd`) and `BUnit` (`battle/bunit.gd`) are **views**: thin objects whose properties read and
 write the record in `Mem`. Every change a script makes by address is therefore visible to the engine, and the
@@ -122,18 +125,26 @@ through EV variables.
 
 * **Scene 0:** deployment ops create the battlefield (map from `gfx/maps`, terrain, units), then the opening events
   run.
-* **Scene 1:** the turn loop (`battle_loop`) runs player, ally and enemy phases. Before each phase,
-  `checkpoint()` polls the event sections once (victory and defeat checks, reinforcements, scripted dialogue).
+* **Scene 1:** the turn loop (`battle_loop`, 0x44eee5) runs player, ally and enemy phases (side upkeep:
+  ailments, buffs, poison, regeneration). At each phase start and after each unit's action `checkpoint()` runs the
+  event poll 0x44c601 (victory and defeat checks, reinforcements, scripted dialogue); a section run that changed
+  nothing ends the poll early (`Mem` write journal), with the same result as the original's repeated runs.
 * **Scene 2:** the aftermath.
 
 | Class | Responsibility |
 |---|---|
-| `BattleView` | map rendering, highlight overlays, cursor, camera and scrolling |
-| `BattleInput` | player phase: select → move range → move → command menu; system menu |
-| `BattleActions` | movement with zones of control, attacks, counters, criticals, strategies, items, EXP, level-ups, retreats (formulas in `core/rules.gd`, spec in `docs/rules.md`) |
-| `BattleAI` | enemy and ally decision making, a port of the original AIAct scoring |
-| `BattleHUD` | hovered-unit panel, turn and weather, phase banners, damage numbers |
-| `EffectPlayer` | strategy and effect animations (Xben / MCALL animation sets) |
+| `BattleView` | map rendering, highlight overlays, battle tint / fog, cursor, camera and scrolling |
+| `BattleInput` | player phase (0x44e0d9): select → move range → move → command menu; system menu |
+| `BattleActions` | attacks, counters, criticals, 必杀, items, EXP, level-ups, walking, unit poses |
+| `BattleStrategy` | the strategy engine (dispatcher 0x425627, every MgID handler, 军师技, auras, `script_anim`) |
+| `BattleAI` | action order 0x44da7a and AIAct 0x43ad3b (docs/ai.md) |
+| `BattleHUD` | hovered-unit panel, turn and weather, phase banners |
+| `ResultPanel` / `RewardScreen` | the unit result window 0x450986 / the op 0x59 reward screen 0x44b5a8 |
+| `DtPicture` | the op 0x72 sub 12 map objects (DT.e5) |
+| `Rules` (`core/rules.gd`) | battle formulas: stat pipeline, damage, hit / critical rates, RNG and decks (docs/battle.md) |
+| `Effects` (`core/effects.gd`) | the 特效 query 0x4101d9 (personal, 附加技能, class, item, 专属 / 套装, 模仿 / 屏蔽; docs/skills.md) |
+| `Movement` | the flood 0x438484, zones of control, step-toward and paths |
+| `EffectPlayer` | KoeiAnim animations (Meff, Mcall, DT) |
 | `DuelLayer` | the 单挑 screen, implemented from `docs/duel.md` |
 | `SortieScreen` | 出场选择, choosing who goes into battle |
 
@@ -170,8 +181,8 @@ workflow) and the `WG_SHOTS` debug screenshots.
 | Path | Contents |
 |---|---|
 | `main.gd` | boot, title, scenario loop, game over/ending, save/load menus, window |
-| `core/` | `assets`, `audio`, `mem`, `game`, `person`, `eex_vm`, `script_host`, `rules`, `data_transfer`, `special_funcs`, `person_attrs`, `sound_map` |
+| `core/` | `assets`, `audio`, `mem`, `game`, `person`, `eex_vm`, `script_host`, `ext_command`, `text_expand`, `rules`, `effects`, `data_transfer`, `special_funcs`, `person_attrs`, `sound_map` |
 | `story/` | `story_stage`, `rpg_actor` |
-| `battle/` | `battle_stage`, `battle_view`, `battle_input`, `battle_actions`, `battle_ai`, `battle_hud`, `battle_attrs`, `bunit`, `unit_sprite`, `grid`, `shapes`, `effect_player`, `duel_layer`, `sortie_screen` |
+| `battle/` | `battle_stage`, `battle_view`, `battle_input`, `battle_actions`, `battle_strategy`, `battle_ai`, `battle_hud`, `battle_attrs`, `bunit`, `movement`, `unit_sprite`, `effect_player`, `result_panel`, `reward_screen`, `dt_picture`, `duel_layer`, `training`, `sortie_screen`; `grid` / `shapes` are wg2025 helpers still used by the input bot |
 | `ui/` | `game_ui`, `dialog_box`, `choice_menu`, `status_panel`, `party_menu`, `ui_style`, `video_layer` |
 | `debug/` | `test_runner`, `input_bot`, small test scripts such as `t_hd` (HD texture mechanism) and `t_resize` (window snapping); see [DEVELOPMENT.md](DEVELOPMENT.md) |

@@ -1213,14 +1213,15 @@ static func add_sp(pid: int, n: int, force := false) -> int:
 
 
 ## SP gain when damaged 0x410fc3: ×2 with 集气加倍; kind < 2 a quarter, else half; at least 1 for damage > 0.
-static func sp_gain(u: BUnit, dmg: int) -> void:
-	if ev(4087) != 0 or ev(4059) == 1:
-		return
+## Returns the SP gained (0x423930).
+static func sp_gain(u: BUnit, dmg: int) -> int:
+	if evb(4087) != 0 or evb(4059) == 1:
+		return 0
 	var g := dmg * (2 if u.eff(0x24, 0x41, 1, 0) != 0 else 1)
 	g = g / 2 if u.kind >= 2 else g / 4
 	if dmg > 0 and g == 0:
 		g = 1
-	add_sp(u.pid, g)
+	return add_sp(u.pid, g)
 
 
 ## SpendSP 0x423910: SP −= min(SP, cost of 必杀 k).

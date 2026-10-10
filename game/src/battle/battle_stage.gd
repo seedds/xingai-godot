@@ -1875,10 +1875,11 @@ func op_scroll_to(ins: Dictionary) -> void:
 	await view.center_on(Vector2i(arg(ins, 0), arg(ins, 1)))
 
 
-## Unit result window 0x450986 (ResultPanel): call it before writing HP / MP / SP (EXP already added).
-func result_panel(u: BUnit, kind: int, hp_loss: int, mp_loss: int, sp_gain: int, wexp: int, aexp: int,
+## Unit result window 0x450986 (ResultPanel): kind = the SP already gained (third bar SP) or 0x100 (third bar EXP
+## rising by exp_gain); call it before writing HP / MP / EXP.
+func result_panel(u: BUnit, kind: int, hp_loss: int, mp_loss: int, exp_gain: int, wexp: int, aexp: int,
 		long_wait := false) -> void:
-	await ResultPanel.show(self, u, kind, hp_loss, mp_loss, sp_gain, wexp, aexp, long_wait)
+	await ResultPanel.show(self, u, kind, hp_loss, mp_loss, exp_gain, wexp, aexp, long_wait)
 
 
 ## 0x45503f: centre the view on a cell (scrolled by 0x454cef, clamped to the map); nothing while byte EV[4087] ≠ 0.

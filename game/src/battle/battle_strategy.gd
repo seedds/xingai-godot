@@ -1209,8 +1209,13 @@ func _results() -> void:
 					hpd = hp - t.max_hp()
 				if hpd > hp:
 					hpd = hp
+			var spg := 0
 			if hpd > 0:
-				Rules.sp_gain(t, hpd)
+				spg = Rules.sp_gain(t, hpd)
+			# 0x4229e8: the result window (kind = SP gained, armour EXP of this target; long for a strategy without
+			# area, ctx +0x4fc = 0) before the values change
+			await st.result_panel(t, spg, hpd, mpd, 0, 0, Mem.r8(C + 0x50a + k) if k < 0x42 else 0,
+					Mem.r8(C + 0x4fc) == 0)
 			t.hp = t.hp - hpd
 			t.mp = (t.mp & 0xffff) - mpd
 			if hpd > 0 and t.hp != 0:
@@ -1405,6 +1410,8 @@ func _finish() -> void:
 			gain = -g
 	if mpd < 0:
 		Rules.sp_gain(caster, -mpd * 2)
+	# 0x423088: the caster's result window (EXP bar rising by the strategy EXP, weapon EXP) before HP / MP change
+	await st.result_panel(caster, 0x100, -gain, -mpd, Mem.r32(C + 0x502), Mem.r32(C + 0x506), 0, true)
 	caster.hp = hp + gain
 	caster.mp = rem
 	var x := Mem.r32(C + 0x502)

@@ -259,7 +259,7 @@ Everything from 0x501000 to 0x531000 is written to and read from saves as one bl
 | 0x502000 | u32[4096] | EV: script integer variables, EV n at 0x502000 + 4n; config EVs 4016..4095 at 0x505ec0..0x505ffc (defaults in the exe) | 0x416cfe [C] |
 | 0x506000 | u32[481] | PT: script pointer variables, index ≤ 0x1e0 | 0x416cd6 [C] |
 | 0x506464 / 0x506f84 / 0x5068c8 | arrays indexed ≥ 200 | written by 0x413618 | [C] |
-| 0x507800 | 2040 B | 兵种特效 table (6.5数据转移.txt: file 0xD9000) | [D] |
+| 0x507800 | | strategy-learning list written by op 0x72 sub 4 and by consumables (docs/skills.md) | [C] |
 | 0x507ec0 | | growth modifier table (0x436e3d) | [C] |
 | 0x508000 | u16[102][5] | per-person 功勋 per ability (persons < 0x66) | 0x408fa0 [C] |
 | 0x5083fc | u8 | 功勋 flag / value used by joins (0x4095b9) and growth (0x46209a) | [C] |
@@ -272,7 +272,9 @@ Everything from 0x501000 to 0x531000 is written to and read from saves as one bl
 | 0x510cf9 | u8 | chapter number 章节编号 (op 0x3a kind 1 sets it) | 0x4148af [C] |
 | 0x510d00 | 48 × 16 | custom person names {u16 id (0x400 = free), char[14]} (op with EV 4054, 0x4081f2); count 0x5083fe | [C] |
 | 0x512500 | 16-byte records | second custom-name table, count 0x5083ff; both are re-applied by 0x4042d5 (from 0x417038) | [C] |
-| 0x511800 | 1280 B | 必杀 table (6.5数据转移.txt: 6.4 E3000) | [D] |
+| 0x511000 | 255 × 16 | 特效 table: per 特效 id 4 × {u16 person, u8 value} + 2 × {u8 class, u8 value} (pointer 0x500c3b; op 0x72 sub 5; docs/skills.md) | [C] |
+| 0x512000 | 80 × 16 | 必杀 learners: 5 × {person, level} + family byte (pointer 0x500c37; op 0x72 sub 6) | [C] |
+| 0x512dc0 | ≤ 0x800 B | 附加技能 stream: `FF sid` then {value, turns, u16 person} entries (op 0x72 sub 35) | [C] |
 
 `tools/conv_data.py` exports the initial S/R sprite tables to `data/sprite_tables.json` and the initial SP values
 per person; the port's emulated memory gets the rest of the block from exe_image.bin.

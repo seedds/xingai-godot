@@ -112,9 +112,10 @@ Family names: pointers 0x48c570[40] → 0x48c610 (君主 步兵 … 百姓). Ter
 (平原 … 地下, then 30 地雷 31 战壕 32 掩体 33 工事 which have no column in e4).
 
 Tables in the exe after the 6.6 class data (`System.ini` UserXK = file 0xA3280):
-* **Matchup** 0x4d1a80, u8[40][40] percent: 0x426737(a, b) = table[family(b)·40 + family(a)] (then ± 0x413272);
-  the physical damage 0x43bc5a calls it with (attacker, defender), so row = defender family, column = attacker
-  family (e.g. row 弓兵, column 骑兵 = 130). Exported as `damage_taken_from[attacker_family]`.
+* **Matchup** 0x4d1a80, u8[40][40] percent: 0x426737(D, A) = table[family(A)·40 + family(D)]
+  + EffQ(A, 绝对克制) − EffQ(D, 绝对克制), at least 0; CalcDamage 0x43bc5a passes (defender, attacker), so **row =
+  attacker family, column = defender family** (步兵→弓兵 150, 弓兵→骑兵 130, 骑兵→步兵 110: the CCZ triangle; see
+  docs/battle.md §1). Exported per family as `damage_dealt_to[defender_family]`.
 * **Family attribute rows** 0x4d20c0 + 40·k, k = 0..8 (u8[40] each), exported as `attr0_move_kind` … `attr8`.
   Readers: k0 0x43f371 (3 = special move kind, else jump table 0x43f43e), k1 0x4011e8, k2 0x403d34 → [0x500e7c],
   k3 0x4281af, k4 0x43fff4, k5 0x4190e8 / AI 0x439a78, k6 0x43c16d (percent in strategy damage), k7 0x416e9c

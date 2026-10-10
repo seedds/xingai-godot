@@ -100,7 +100,7 @@ ITEM_EFFECT_NAMES = 0x4cb7a0    # 230 x 16 bytes, accessory / treasure effect id
 USE_EFFECT_NAMES = 0x4ce000     # 58 x 9 bytes, consumable effect id - 0x1a (0x4230fa, item+0x14 == 3)
 SPECIAL_NAMES = 0x4cc600        # 255 x 16 bytes, 特效 (person / class special effects) (0x41b707); desc Imsg 430+i
 STRAT_TABLES = 0x4d14e0         # 10 x u8[144] per-strategy extension tables (System.ini Mg* keys)
-MATCHUP = 0x4d1a80              # u8[40][40] percent, [defender_family*40 + attacker_family] (0x426737)
+MATCHUP = 0x4d1a80              # u8[40][40] percent, [attacker_family*40 + defender_family] (0x426737(D, A) from 0x43bc5a)
 FAMILY_ATTRS = 0x4d20c0         # 9 x u8[40] per-family attribute rows following the matchup table
 S_SPRITE = 0x501000             # u16[1024] battle (S) sprite override per person (file 0xD2800, 0x4068de)
 R_SPRITE = 0x50f800             # u16[1024] story (R) sprite per person (file 0xE1000, 0x409038)
@@ -226,7 +226,7 @@ def main():
             'name': family_names[i],
             'terrain_effect': list(r[:30]),     # PERCENT (100 = normal) per terrain 0..29 (wg2025: units of 10%)
             'move_cost': [None if b == NONE else b for b in r[30:60]],   # None = impassable
-            'damage_taken_from': list(matchup[i * 40:(i + 1) * 40]),   # % when attacked by family j (0x426737)
+            'damage_dealt_to': list(matchup[i * 40:(i + 1) * 40]),   # % of damage this family deals to family j (0x426737)
         }
         for k, (key, _) in enumerate(FAMILY_ATTR_KEYS):
             fam[key] = attrs[k * 40 + i]

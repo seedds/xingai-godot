@@ -399,16 +399,88 @@ func _battle_end(bonus: int) -> void:
 					Mem.w16(a, 0)
 
 
-## 功勋 gain 0x42ab8e (person store 0x508000 + 10·id + 2·s; not when the raw ability is 0xff).
+## The person's 功勋 store (0x42acd2): 0x508000 + 10·person for persons < 0x66 not marked 0xff (+0x2a); else −1.
+static func merit_store(pid: int) -> int:
+	if pid < 0 or pid >= 0x66 or Mem.r8(Mem.person_addr(pid) + 0x2a) == 0xff:
+		return -1
+	return 0x508000 + 10 * pid
+
+
+## 功勋 gain 0x42aa0b → 0x42ab8e(n, store, person, s) (not when the raw ability is 0xff): n, doubled during a 围攻
+## (byte 0x500e9a = 1) unless byte EV[4087] ≠ 0 — then nothing at all with byte EV[4055] ≠ 0 —, plus 获得功勋
+## (QueryAny 69, 0x3a), plus n again with 精进 (0x501b00 of the person's unit); the word wraps.
 func _merit_gain(u: BUnit, s: int, n: int) -> void:
-	var p := u.person
-	if p.get_raw(s) == 0xff or u.pid >= 0x66:
+	var a := merit_store(u.pid)
+	if a < 0 or Mem.r8(Mem.person_addr(u.pid) + 0x21 + s) == 0xff:
 		return
-	var m := n + Effects.any(u.pid, 69, 0x3a, 1, 0)
-	if Mem.r8(0x501b00 + u.slot) != 0:
+	var m := n
+	if Mem.r8(Rules.ATTACK_MODE) == 1:
+		if Rules.evb(4087) == 0:
+			m = 2 * n
+		elif Rules.evb(4055) != 0:
+			return
+	m += Effects.any(u.pid, 0x45, 0x3a, 1, 0)
+	var su := unit_of_person(u.pid)
+	if su != null and Mem.r8(0x501b00 + su.slot) != 0:
 		m += n
-	var a := 0x508000 + 10 * u.pid + 2 * s
-	Mem.w16(a, Mem.r16(a) + m)
+	Mem.w16(a + 2 * s, Mem.r16(a + 2 * s) + m)
+
+
+## 功勋 conversion 0x423f4b(store, person, s): while byte EV[4074] ≠ 0 and bit s of person +2 is set, a raw ability
+## below 110 whose 功勋 covers the cost (0x42ac8f: raw < 80 → 50, else (raw − 79)·10 + 55) gains one point and the
+## stat is recalculated with its display (0x43a409); further points only while byte 0x501a74 ≠ 0.
+func merit_convert(pid: int, s: int) -> void:
+	var a := merit_store(pid)
+	if a < 0:
+		return
+	var pb := Mem.person_addr(pid)
+	while Rules.evb(4074) != 0 and (Mem.r8(pb + 2) >> s) & 1 != 0:
+		var raw := Mem.r8(pb + 0x21 + s)
+		if raw >= 0x6e:
+			return
+		var cost := 50 if raw < 80 else (raw - 79) * 10 + 55
+		if Mem.r16(a + 2 * s) < cost:
+			return
+		Mem.w16(a + 2 * s, Mem.r16(a + 2 * s) - cost)
+		Mem.w8(pb + 0x21 + s, raw + 1)
+		await _stat_up(pid, s)
+		if Mem.r8(0x501a74) == 0:
+			return
+
+
+## 0x42ab32: conversions after an attack — attacker (mode 0) 武力, 敏捷, 运气; target (mode 1) 统率, 敏捷 (0x41a139).
+func merit_after_attack(u: BUnit, target_side: bool) -> void:
+	if u == null:
+		return
+	for s in ([1, 3] if target_side else [0, 3, 4]):
+		await merit_convert(u.pid, s)
+
+
+## 0x41d238: conversions after a strategy — 智力, and 运气 too for a strategy target (0x41a13e).
+func merit_after_strategy(u: BUnit, also_luck: bool) -> void:
+	if u == null:
+		return
+	await merit_convert(u.pid, 2)
+	if also_luck:
+		await merit_convert(u.pid, 4)
+
+
+const STAT_UP := ["武力上升", "统率上升", "智力上升", "敏捷上升", "运气上升"]
+
+
+## 0x43a409(person, s, show): the stat recalculated (Person.recalc); in a battle with byte EV[4022] = 0 the person's
+## unit gets the buff of that stat raised (0x414361: below 3 → 3, else 6, with its animation); SE 11 and
+## "%s的%s了" (0x48c538). [G] The battle box 0x419b92 also shows the grade change (0x4781c6); the port shows the
+## line in the style-2 message box (what the original uses when byte EV[4087] ≠ 0).
+func _stat_up(pid: int, s: int) -> void:
+	var p := Game.person(pid)
+	p.recalc(s)
+	if Rules.evb(4022) == 0:
+		var u := unit_of_person(pid)
+		if u != null and u.state == 2:
+			await unit_attr_op(u, s, 3 if u.buff(s) < 3 else 6, true)
+	Audio.se(11)
+	await ui_message(2, "%s的%s了" % [TextExpand.display_name(pid), STAT_UP[s]])
 
 
 # ------------------------------------------------------------------ action bookkeeping
@@ -793,15 +865,18 @@ func units_for(pid: int) -> Array[BUnit]:
 
 
 # ------------------------------------------------------------------ units: placing, removing
-## Nearest free cell 0x43f07c(c0, unit, mode 0): c0 if free, else its 4 neighbours; the probe then steps up, right,
-## down, left (each step trying the cell and its neighbours); failing that the free cell of least Manhattan distance
-## (first in row order).
-func nearest_free(c0: Vector2i, u: BUnit) -> Vector2i:
+## Nearest free cell 0x43f07c(c0, unit, mode): c0 if free (mode 0; mode 1 goes straight to the scan), else its 4
+## neighbours; the probe then steps up, right, down, left (each step trying the cell and its neighbours); failing
+## that the free cell of least Manhattan distance (first in row order), in mode 1 only among the cells the last
+## flood reached. Nothing: mode 0 → c0, mode 1 → (0xff, 0xff).
+func nearest_free(c0: Vector2i, u: BUnit, mode := 0) -> Vector2i:
 	var c := c0
 	for k in 4:
 		if Rules.in_map(c):
 			if _cell_ok(c, u):
-				return c
+				if mode == 0:
+					return c
+				break
 			for d in Rules.DIR4:
 				var n: Vector2i = c + d
 				if Rules.in_map(n) and _cell_ok(n, u):
@@ -812,12 +887,14 @@ func nearest_free(c0: Vector2i, u: BUnit) -> Vector2i:
 	for y in Rules.map_h():
 		for x in Rules.map_w():
 			var p := Vector2i(x, y)
-			if _cell_ok(p, u):
+			if (mode == 0 or Movement.grid_at(p) != 0xff) and _cell_ok(p, u):
 				var dd := absi(c0.y - y) + absi(c0.x - x)
 				if dd < bd:
 					bd = dd
 					best = p
-	return best if best.x >= 0 else c0
+	if best.x >= 0:
+		return best
+	return c0 if mode == 0 else Vector2i(0xff, 0xff)
 
 
 ## 0x41c2e6: empty and passable for the unit (0x45936d).
@@ -2130,8 +2207,7 @@ func _cast_on_points(nums: Array, pts: Array[Vector2i]) -> void:
 		var u := Rules.unit_at(c) if Rules.in_map(c) else null
 		if u == null or u.state != 2:
 			continue
-		var k := Movement.home_code(u)
-		if (side < 4 and k == side) or (side == 4 and k < 2) or (side == 5 and (k == 2 or k == 3)) or side == 6:
+		if home_code_ok(u, side):
 			tg.append(u)
 	await _script_cast(s, tg, cells, _n(nums, 0))
 
@@ -2239,45 +2315,146 @@ func _targets_rect(x1: int, y1: int, x2: int, y2: int, side: int) -> Array[BUnit
 	return out
 
 
-## op 0x4d (0x415551, eex.md §10.1): buffs, ailments (2-bit counters) and HP / MP (EV 4044) of a unit / units.
+## op 0x4d (0x415551, eex.md §10.1): buff (value 2 → 6, 1 → 3, else raw), ailments (6), HP (7, int32), MP (8) of one
+## unit — mode 0 person (0x400..0x402 = the acting person), 1 the person of unit index arg2 (on the map), others
+## person arg1 — or (mode 2) of every unit of `side` (0xffff → 6) in the rectangle (0x45ade7); then PostAction.
 func op_unit_op_4d(ins: Dictionary) -> void:
-	var mode := arg(ins, 0)
-	var tg: Array[BUnit] = []
-	if mode == 0 or mode == 0xffff:
-		var u := unit_sel_cur(arg(ins, 1))
-		if u != null and u.state == 2:
-			tg.append(u)
-	elif mode == 1:
-		var s := arg(ins, 2) & 0xff
-		if s < 250 and units[s].state == 2:
-			tg.append(units[s])
-	else:
-		tg = _targets_rect(arg(ins, 3), arg(ins, 4), arg(ins, 5), arg(ins, 6), arg(ins, 7))
-	var bi := arg(ins, 8)
-	var bv := arg(ins, 9)
-	var stv := arg(ins, 10)
+	var mode := arg(ins, 0) & 0xffff
+	var pid := arg(ins, 1) & 0xffff
+	if mode == 0 and pid >= 0x400 and pid < 0x403:
+		pid = Mem.r16(CUR_PERSON)
+	if mode == 1:
+		var su := units[arg(ins, 2) & 0xff] if (arg(ins, 2) & 0xff) < 250 else null
+		if su == null or su.state != 2:
+			return
+		pid = su.pid
+	var side := arg(ins, 7) & 0xffff
+	if mode == 2 and side == 0xffff:
+		side = 6
+	var rect := [arg(ins, 3) & 0xff, arg(ins, 4) & 0xff, arg(ins, 5) & 0xff, arg(ins, 6) & 0xff]
+	var bi := arg(ins, 8) & 0xffff
+	var bv := arg(ins, 9) & 0xffff
+	if bi != 0xffff and bv != 0xffff:
+		if bv == 2:
+			bv = 6
+		elif bv == 1:
+			bv = 3
+		await _op4d_apply(mode, pid, rect, side, bi & 0xff, bv)
+	var stv := arg(ins, 10) & 0xffff
+	if stv != 0xffff:
+		await _op4d_apply(mode, pid, rect, side, 6, stv)
 	var hpd := arg(ins, 11)
-	var mpd := arg(ins, 12)
-	for u in tg:
-		if bi != 0xffff and bi < 6 and bv != 0xffff:
-			u.set_buff(bi, 6 if bv == 2 else (3 if bv == 1 else bv & 0xff))
-		if stv != 0xffff:
-			if stv & 0x80:
-				u.cure(stv & 0x1e)
-			else:
-				u.inflict(stv & 0x1e)
-		if hpd != 0 and hpd != 0xffff:
-			u.hp = mini(hp_op(u.hp, hpd), u.max_hp())
-			if not Game.autoplay:
-				hud.popup_number(str(hpd), u.pos)
-		if mpd != 0 and mpd != 0xffff:
-			u.mp = mini(hp_op(u.mp, mpd), u.max_mp())
-		if not Game.autoplay and u.node:
-			u.node.flash = 0.6
-			await wait(0.25)
-			u.node.flash = 0.0
-	refresh_units()
+	if hpd != 0:
+		await _op4d_apply(mode, pid, rect, side, 7, hpd)
+	var mpd := arg(ins, 12) & 0xffff
+	if mpd != 0:
+		await _op4d_apply(mode, pid, rect, side, 8, mpd)
 	await post_action()
+
+
+## 0x420eb9: mode 2 → the rectangle (0x45ade7), else the person's unit with the animation (0x45aa37(…, 1, 0)).
+func _op4d_apply(mode: int, pid: int, rect: Array, side: int, idx: int, v: int) -> void:
+	if mode != 2:
+		var u := unit_sel(pid)
+		if u == null:
+			if pid > 0x400:
+				return
+			u = unit_of_person(pid)
+		await unit_attr_op(u, idx, v, true)
+		return
+	# 0x45ade7: rows y1..y2, columns x1..x2; the units (on the map, home code 0x45aed1) of buffs / ailments are
+	# collected in the strategy context for one group animation unless EV[4043] ≠ 0 (then each unit animates)
+	if idx < 7:
+		strategy._init_ctx(0, units[0x3c])
+	var each := Mem.ev(4043) != 0
+	var tg: Array[BUnit] = []
+	for y in range(rect[1], rect[3] + 1):
+		for x in range(rect[0], rect[2] + 1):
+			var c := Vector2i(x, y)
+			var u := Rules.unit_at(c) if Rules.in_map(c) else null
+			if u == null or u.state != 2 or not home_code_ok(u, side):
+				continue
+			if idx < 7:
+				Mem.w8(Rules.STRAT_CTX + 0xd + tg.size(), u.slot)
+				tg.append(u)
+			await unit_attr_op(u, idx, v, each)
+	if tg.is_empty() or each:
+		return
+	var anim := 0x2c
+	if idx == 6:
+		anim = _status_anim(v)
+	elif v == 0:
+		anim = Mem.r8(0x43e776 + 2 * idx)
+	elif v == 6:
+		anim = Mem.r8(0x43e777 + 2 * idx)
+	if anim == 0xff:
+		return
+	var cells: Array[Vector2i] = []
+	for u in tg:
+		cells.append(u.pos)
+	if await strategy.script_anim(anim, cells, [], 0x40):
+		await checkpoint()
+		await post_action()
+
+
+## 0x45aed1's side filter on the home code (0x42e2ed): < 4 equal, 4 below 2, 5 two or three, 6 any.
+static func home_code_ok(u: BUnit, side: int) -> bool:
+	var k := Movement.home_code(u)
+	return (side < 4 and k == side) or (side == 4 and k < 2) or (side == 5 and (k == 2 or k == 3)) or side == 6
+
+
+## 0x45aa37 on a unit on the map: idx 0..5 buff level = v, 6 ailments (v & 0x80 cures 0x423fb9, else inflicts
+## 0x4240d6), 7 HP / 8 MP through 0x40da4a (EV[4044]) capped at the maximum; idx ≤ 6 with `anim` first plays the
+## change on the unit (0x43e6aa).
+func unit_attr_op(u: BUnit, idx: int, v: int, anim: bool) -> void:
+	if u == null or u.state != 2 or idx > 8:
+		return
+	if idx < 7 and anim:
+		await _attr_anim(u, idx, v & 0xff)
+	match idx:
+		6:
+			if v & 0x80:
+				u.cure(v & 0xff)
+			else:
+				u.inflict(v & 0xff)
+		7: u.hp = mini(hp_op(u.hp, v & 0xffffffff), u.max_hp())
+		8: u.mp = mini(hp_op(u.mp, v & 0xffff), u.max_mp())
+		_: u.set_buff(idx, v & 0xff)
+	refresh_units()
+
+
+## 0x43e6aa(slot, idx, v): the view centres on the unit; a buff going down plays Meff [0x43e776 + 2·idx], going up
+## [0x43e777 + 2·idx], unchanged nothing; ailments the 0x40ddaf animation.
+func _attr_anim(u: BUnit, idx: int, v: int) -> void:
+	await scroll_cell(u.pos)
+	var anim := 0xff
+	if idx == 6:
+		anim = _status_anim(v)
+	else:
+		var old := u.buff(idx)
+		if v < old:
+			anim = Mem.r8(0x43e776 + 2 * idx)
+		elif v > old:
+			anim = Mem.r8(0x43e777 + 2 * idx)
+	if anim != 0xff:
+		var cells: Array[Vector2i] = [u.pos]
+		await strategy.script_anim(anim, cells, [], 0x40)
+
+
+## 0x40ddaf: 0x80 (cure) → 44; else the last of 麻痹 2 → 50, 禁咒 4 → 51, 混乱 8 → 48, 中毒 0x10 → 49; none → 0xff.
+static func _status_anim(v: int) -> int:
+	if v & 0x80:
+		return 0x2c
+	var a := 0xff
+	if v & 2:
+		a = 0x32
+	if v & 4:
+		a = 0x33
+	if v & 8:
+		a = 0x30
+	if v & 0x10:
+		a = 0x31
+	return a
 
 
 ## 0x40da4a with EV[4044] (dword): 0 subtract (never below 1), 1 add, else set.
@@ -2430,12 +2607,21 @@ func op_actor_move(ins: Dictionary) -> void:
 		if s < 20:
 			u = units[s]
 	else:
-		u = unit_sel(arg(ins, 1))
+		var sel := arg(ins, 1)
+		u = unit_sel(sel)
+		if u == null and sel == 0x401 and Mem.r16(CUR_PERSON) != 0xffff:
+			# 0x4594ea: 0x401 = the acting person's first unit (0x456079)
+			for o in units:
+				if o.pid == Mem.r16(CUR_PERSON) and o.state != 0:
+					u = o
+					break
 	await scripted_move(u, Vector2i(arg(ins, 3), arg(ins, 4)), arg(ins, 5))
 
 
-## Scripted move 0x4594ea: the unit walks to the cell through the AI (flag 0x80, code 0, target point = the cell,
-## 100 move points, no attack); target, code, flags and point are restored afterwards; then the facing.
+## Scripted move 0x4594ea: the unit walks through the AI (flags 6 cleared, 0x80 set, code 0) to the goal made
+## reachable by 0x41e6df, set as its point (0x44268c, target 0xff); afterwards the code comes back, 0x80 is cleared
+## and the saved flags (bit 3 dropped) are ORed in again, the point (0x44268c) and then the target byte are restored;
+## then the facing.
 func scripted_move(u: BUnit, goal: Vector2i, d: int) -> void:
 	if u == null or u.state != 2 or goal == u.pos or goal.x >= Rules.map_w() or goal.y >= Rules.map_h():
 		return
@@ -2445,18 +2631,38 @@ func scripted_move(u: BUnit, goal: Vector2i, d: int) -> void:
 	var pt := u.point
 	u.flags = (u.flags & ~6) | 0x80
 	u.ai = 0
-	u.point = goal
-	await view.ensure_visible(u.pos)
+	_set_point(u, _reachable_goal(u, goal))
 	await ai.act(u)
 	u.ai = code
-	u.flags = fl & ~0x80 & 0xf7
-	u.point = pt
+	u.flags = (u.flags & ~0x80) | (fl & 0xf7)
+	_set_point(u, pt)
 	u.target = tgt
 	if d != 0xffff and d < 4:
 		u.dir = d
 		if u.node:
 			u.node.dir = d
 	refresh_units()
+
+
+## 0x41e6df: while a flood without zones (mp 255, mode 2) cannot reach the goal or the goal is occupied, the next
+## goal is 0x43f07c(goal, unit, 1). [G] The original loops forever when no reachable free cell exists: the goal is
+## then kept.
+func _reachable_goal(u: BUnit, goal: Vector2i) -> Vector2i:
+	var g := goal
+	for guard in 8:
+		if Movement.flood(u, u.pos, 0xff, 2, g, 0) != Movement.NONE and Rules.slot_at(g) == 0xff:
+			return g
+		g = nearest_free(g, u, 1)
+		if g.x == 0xff:
+			break
+	return goal
+
+
+## Point setter 0x44268c: inside the map → point = c, target = 0xff.
+func _set_point(u: BUnit, c: Vector2i) -> void:
+	if c.x >= 0 and c.y >= 0 and c.x < Rules.map_w() and c.y < Rules.map_h():
+		u.point = c
+		u.target = 0xff
 
 
 ## op 0x6d (0x410d3b): move or revive a unit next to a reference unit (offsets > 40 are negative).

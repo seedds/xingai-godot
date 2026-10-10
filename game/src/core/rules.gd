@@ -1279,32 +1279,40 @@ static func can_cast(u: BUnit, s: int) -> bool:
 
 
 ## Situation check 0x46fcf8: "" if usable now, else the original's message ("-" = refused without one).
+## Effect 0 and 纵火 (34): bad weather refuses unless the weather is ignored (byte EV[4087] with [0x500af1] = 0, or
+## 0x41ff0f 策略无视天气); 20 with MgID 24: HP < 3; 25 (四神, 0x41ff6e): mask 7 of 学会策略 ≥ 0x80 passes, else the
+## item with effect 0x3a is needed, then the weather of 青龙 / 朱雀 / 玄武 (0x41ff0f only); 34 / 35: at most 10 map
+## objects, 修筑 needs 1000 gold (message at 0x500ca7).
 static func situation(s: int, u: BUnit) -> String:
 	var e := s_effect(s)
 	var w := weather()
-	var ignore_w := u.eff(0x2a, 0x3a, 1, 1) != 0 or (ev(4087) != 0 and Mem.r8(0x500af1) == 0)
+	var ignore_w := u.eff(0x2a, 0x3a, 1, 1) != 0
 	var id := mg(MG_ID, s)
-	if (e == 0 or e == 34) and w >= 2 and not ignore_w:
+	if e == 34 or e == 35:
+		if Mem.r8(0x501ae1) >= 10:
+			return "不能再添加了！"
+		if e == 35:
+			return "" if Game.gold >= 1000 else ScriptHost.read_cstr(0x500ca7, 64)
+	if e == 0 or e == 34:
+		if (ev(4087) != 0 and Mem.r8(0x500af1) == 0) or ignore_w or w < 2:
+			return ""
 		return "在恶劣天气时无法使用。"
 	if e == 20 and id == 24 and u.hp < 3:
 		return "ＨＰ不足。"
 	if e == 25:
-		if (Effects.any(u.pid, 0x50, 0x6c, 3, 0) & 0xff) > 0x7f:
+		if (Effects.any(u.pid, 0x50, 0x6c, 3, 0) & 0xff) >= 0x80:
 			return ""
 		if not Effects.has_item_effect(u.pid, 0x3a):
-			return "-"
+			var it := 0
+			while it < 0xff and int(Game.item(it).get("type", -1)) != 0x3a:
+				it += 1
+			return "使用%s需要%s。" % [str(strat(s).get("name", "")), str(Game.item(it).get("name", ""))]
 		if ignore_w:
 			return ""
 		match id:
-			26: return "" if w >= 2 else "-"
-			0: return "" if w == 0 else "-"
-			28: return "" if w == 1 else "-"
-		return ""
-	if e == 34 or e == 35:
-		if Mem.r8(0x501ae1) >= 10:
-			return "不能再添加了！"
-		if e == 35 and Game.gold < 1000:
-			return "-"
+			26: return "" if w >= 2 else "只能在恶劣天气时使用。"
+			0: return "" if w == 0 else "只能在晴天时使用。"
+			28: return "" if w == 1 else "只能在阴天时使用。"
 	return ""
 
 
@@ -1379,8 +1387,11 @@ static func strat_area(u: BUnit, s: int) -> int:
 	return a
 
 
-## Terrain / element table 0x420acc: bit 0 火 1 水 2 风 3 地 per terrain (terrains 30.. read code bytes).
+## Terrain / element table 0x420acc (0x419587): bit 0 火 1 水 2 风 3 地 per terrain (terrains 30.. read code bytes);
+## effects other than the four elements are not terrain-bound.
 static func elemental_ok(e: int, t: BUnit) -> bool:
+	if e > 3:
+		return true
 	var bit := {0: 1, 1: 2, 3: 4, 2: 8}
 	var terr := terrain_at(t.pos)
 	return (Mem.r8(0x420acc + terr) & int(bit.get(e, 0))) != 0

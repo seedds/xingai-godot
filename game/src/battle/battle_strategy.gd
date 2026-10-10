@@ -1221,6 +1221,7 @@ func _results() -> void:
 		if ae != 0:
 			await st.actions.equip_exp(t, 1, ae)
 		_merit(t, 4 if fx == 0x2d else 2)
+		await st.merit_after_strategy(t, true)       # 0x41d238(1)
 		st.refresh_units()
 		k += 1
 
@@ -1413,6 +1414,7 @@ func _finish() -> void:
 	if w > 0:
 		await st.actions.equip_exp(caster, 0, w)
 	_merit(caster, 2)
+	await st.merit_after_strategy(caster, false)     # 0x411892 → 0x41d238(0)
 	Mem.w32(TOTAL, 0)
 	Mem.w8(REPEAT, 0)
 	st.refresh_units()

@@ -555,9 +555,15 @@ func _draw_tab(c: Dictionary) -> void:
 	var body := Rect2(rr.position.x, rr.position.y + 18, rr.size.x, rr.size.y - 18)
 	bevel(body)
 	var rects := _tab_rects(c)
+	var sel := int(c["sel"])
+	var order_k := []
 	for k in rects.size():
+		if k != sel:
+			order_k.append(k)
+	order_k.append(sel)
+	for k in order_k:
 		var t: Rect2 = rects[k]
-		if k == int(c["sel"]):
+		if k == sel:
 			t = t.grow_individual(2, 2, 2, 1)
 		draw_rect(t, FACE, true)
 		draw_line(t.position, Vector2(t.end.x - 1, t.position.y), LIGHT)

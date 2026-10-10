@@ -26,7 +26,7 @@ var pid := 0
 var unit := -1              # unit record address or -1
 
 
-static func show_person(ui: CanvasLayer, p: Person) -> void:
+static func show_person(ui: Node, p: Person) -> void:
 	if p == null or Game.autoplay:
 		return
 	var d := StatusPanel.new()

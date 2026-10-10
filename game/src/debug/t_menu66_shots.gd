@@ -64,6 +64,9 @@ func run() -> void:
 		st.build()
 		st._tab(t)
 		await show(st, "status_%d" % t)
+	var ul := UnitList66.new()
+	ul.build()
+	await show(ul, "unitlist")
 	var ii := ItemInfo66.new()
 	ii.iid = 40
 	ii.lvl = 3

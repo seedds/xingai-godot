@@ -126,4 +126,11 @@ func run() -> void:
 	st._on_command(0x404)
 	check("status next", st.pid, 1)
 	st.queue_free()
+	var ul := UnitList66.new()
+	ul.build()
+	add_child(ul)
+	check("unit list rows", ul.list(0x402).rows.size(), Game.party_ids().size())
+	ul.sort_col = 2
+	ul._fill()
+	ul.queue_free()
 	print("t_menu66_shop: %s" % ("PASS" if ok else "FAIL"))

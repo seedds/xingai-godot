@@ -1135,6 +1135,7 @@ func ending_routine(mode: int, v: int) -> void:
 func op_op_6a(_ins: Dictionary) -> void:
 	Audio.stop_bgm()
 	SoundMap.stop_loop()
+	Game.ending_reached = true
 	if vm:
 		vm.abort = true
 		vm.active = false

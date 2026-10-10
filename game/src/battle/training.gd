@@ -379,6 +379,7 @@ func _fake_map() -> void:
 ## [0x500e9a] and restores the screen mode; then 0x42a214.
 func _destroy() -> void:
 	_idle_on = false
+	visible = false        # no redraw after the stand-in battle (Effects.battle) is gone
 	Mem.copy(U0, BACKUP0, 0x30)
 	Mem.copy(U60, BACKUP60, 0x30)
 	var m := Mem.MAP_BUF

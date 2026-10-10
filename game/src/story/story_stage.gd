@@ -343,12 +343,15 @@ func actor_at(p: Vector2) -> int:
 	return best
 
 
-## The original's menu bar (系统 / 功能) as one menu.
+## The original's menu bar (系统 / 功能) as one menu. 存储进度 follows the save-allowed byte 0x500fff (op 0x74).
 func _system_menu() -> void:
 	_waiting_click = false
-	var items := ["部队状态", "装备", "道具", "历史情报", "存储进度", "读取进度", "回到标题"]
-	var i := await ui.menu.choose(items, Vector2(-1, -1), true)
+	var items := ["部队状态", "装备", "道具", "历史情报", "存储进度", "读取进度", "回到标题", "练武场"]
+	var en := [true, true, true, true, Mem.r8(0x500fff) != 0, true, true, true]
+	var i := await ui.menu.choose(items, Vector2(-1, -1), true, "", en)
 	match i:
+		7:
+			await Training.menu(self)
 		0:
 			await Game.main.show_party_status()
 		1:
@@ -620,10 +623,7 @@ func on_field_written(field: int, id: int) -> void:
 # ------------------------------------------------------------------ duel outside a battle
 ## Classic duel (System A) hosted by the story scene; 0x5f restores the R scene afterwards (0x411991).
 func story_duel(a: int, b: int, backdrop: int) -> void:
-	duel = DuelLayer.new()
-	duel.set("stage", self)
-	ui.add_child(duel)
-	ui.move_child(duel, ui.dialog.get_index())
+	duel = DuelLayer.attach(self)
 	await duel.setup(a, b, backdrop)
 
 

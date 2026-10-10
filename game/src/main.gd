@@ -185,6 +185,10 @@ func _boot() -> void:
 # ------------------------------------------------------------------ title
 func to_title() -> void:
 	_stop_flow()
+	if OS.get_environment("WG_ONEFILE") != "":
+		print("== file done: back to the title (ending / game over)")
+		get_tree().quit()
+		return
 	if Game.autoplay and OS.get_environment("WG_AUTOSAVE") != "" and not Game.save_info(_autoslot()).is_empty():
 		# flow-test: retry from the last autosave instead of restarting the game
 		_retry_autosave.call_deferred()
@@ -219,8 +223,8 @@ func _retry_autosave() -> void:
 	var failed := Game.scenario            # the scenario that just ended in game over / an ending
 	var was_ending := Game.ending_reached
 	Game.ending_reached = false
-	if was_ending and failed >= 106:
-		# the endgame (R_53 / R_54 hub) ends the game: the playthrough is complete
+	if was_ending:
+		# an ending (op 0x0f, R_058) or a scripted program exit (op 0x6a, R_108 / R_116 / R_117) ends the game
 		print("== flow-test: reached an ending in %s" % scenario_file(failed))
 		get_tree().quit()
 		return
@@ -349,7 +353,7 @@ func _run_flow() -> void:
 		_autosave_checkpoint(_pending_load, true)
 		print("== scenario %d: %s" % [n, file])
 		var stop := OS.get_environment("WG_STOP")
-		if stop != "" and n >= int(stop):
+		if stop != "" and n >= int(stop) and n != 300:     # 300 = R_150, the detour R_001 takes on a new game
 			get_tree().quit()
 			return
 		if n % 2 == 0:

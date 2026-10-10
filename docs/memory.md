@@ -199,8 +199,8 @@ Init 0x42baf8 (new game / title). Copied whole into saves (0x40c482 / 0x40c49a, 
 | Address | Type | Meaning | Evidence |
 |---|---|---|---|
 | 0x492f90 | object | script Reader / VM ("R"); saved fields +4 (s16→u32), +8, +0x10 (u16), +0x14, +0x24 (0x40ffea / 0x41001f) | [C] |
-| 0x492fc8 | u32[2048] | FLAGS (Reader+0x38); saved whole | 0x405505 [C] |
-| 0x493af0 | u8[352] | zeroed by new game (0x42baf8) — inside the FLAGS array (flags 714..801) | [C] |
+| 0x492fc8 | 0x2000 bytes | FLAGS (Reader+0x38): flag i = bit 7 − i%8 of byte i/8 (get 0x40c6a9, set 0x40c6cc); saved whole | 0x405505 [C] |
+| 0x493af0 | u8[352] | zeroed by new game (0x42baf8) — inside the FLAGS bytes (flags 22848..25663) | [C] |
 | 0x494fc8 | u8[8] | saved (Reader+0x2038) | [C] |
 | 0x494fd4 | 250 × 16 | deployment entries (Reader+0x2044; 0x418dd0): +0 u16 person, +4/+5 x/y, +8 u32 flags | [C] |
 | 0x496c94 | u8[8] | saved (Reader+0x3d04; wg2025: boss config bit0 / id +0x3d06) | [C] |

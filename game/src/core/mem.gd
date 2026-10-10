@@ -27,7 +27,7 @@ const GS := 0x4b0770              # game-state block (700 bytes)
 const UNITS := 0x4a7b20           # 250 × 0x30 battle units: slots 0..19 player, 20..59 friends, 60..249 enemies
 const UNIT_SIZE := 0x30
 const UNIT_SLOTS := 250
-const FLAGS := 0x492fc8           # u32[2048] (Reader 0x492f90 + 0x38)
+const FLAGS := 0x492fc8           # flag bits, 0x2000 bytes (Reader 0x492f90 + 0x38): flag i = bit 7 − i%8 of byte i/8
 const EV := 0x502000              # script integer variables u32[4096]; config EVs 4016..4095
 const PT := 0x506000              # script pointer variables u32[481]
 const S_SPRITE := 0x501000        # u16[1024] battle sprite per person (0 = by class)
@@ -204,12 +204,15 @@ func set_pt(i: int, v: int) -> void:
 	w32(PT + 4 * i, v)
 
 
+## Story flags are bits, most significant first (get 0x40c6a9, set 0x40c6cc).
 func flag(i: int) -> bool:
-	return r32(FLAGS + 4 * i) != 0
+	return (r8(FLAGS + (i >> 3)) >> (7 - (i & 7))) & 1 != 0
 
 
 func set_flag(i: int, v: bool) -> void:
-	w32(FLAGS + 4 * i, 1 if v else 0)
+	var a := FLAGS + (i >> 3)
+	var m := 1 << (7 - (i & 7))
+	w8(a, (r8(a) | m) if v else (r8(a) & ~m))
 
 
 func person_addr(pid: int) -> int:

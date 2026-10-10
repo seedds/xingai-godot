@@ -126,7 +126,7 @@ func new_game_state() -> void:
 	inventory.clear()
 	history.clear()
 	init_bag()
-	# 0x42baf8: GS+0..3 = 1f 01 01 00 (then the settings bytes 4..7 of SV\SV.E5S), GS+4 = 0xff, flags 714..801 cleared
+	# 0x42baf8: GS+0..3 = 1f 01 01 00 (then the settings bytes 4..7 of SV\SV.E5S), GS+4 = 0xff, the bytes of flags 22848..25663 cleared
 	for k in 4:
 		Mem.w8(Mem.GS + k, [0x1f, 1, 1, 0][k])
 	Mem.w32(Mem.GS + 4, 0xff)

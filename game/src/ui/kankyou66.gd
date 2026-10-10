@@ -10,8 +10,9 @@ extends Dlg66
 ##    ↔ the window pattern byte 0x500fa0 (0x40abdc);
 ##  * track bar 0x411 音量 0..100 (TBM_SETRANGE 0x640000) ↔ GS+3, applied while dragging (WM_HSCROLL → 0x42e218:
 ##    the BGM volume ×10 via MCI 0x42f7fc), its value in static 0x412.
-## [G] Of the settings only the display options act in the port; 听背景音乐 pauses the BGM player and the volume
-## sets its level — the others are stored for the save file only.
+## [G] Of the settings the display options, 讯息显示速度 (Text66), 武将移动速度 (BattleActions.step_time) and
+## 自动显示战场缩小图 (BattleOverview) act in the port; 听背景音乐 pauses the BGM player and the volume sets its level —
+## the others (加速 included) are stored for the save file only.
 
 const OPT := 0x501a65
 const NAMES := ["5-显示生命条", "6-显示Buff状态", "7-显示部队状态", "8-显示双击暴击", "9-显示地形状态", "a-开启自动存档",

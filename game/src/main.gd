@@ -356,6 +356,8 @@ func _run_flow() -> void:
 		if stop != "" and n >= int(stop) and n != 300:     # 300 = R_150, the detour R_001 takes on a new game
 			get_tree().quit()
 			return
+		if n % 2 == 1 and OS.get_environment("WG_SKIPBATTLES") != "":
+			Game.skip_battle_scenario = n      # debug: story-only flow test, battles go straight to their aftermath
 		if n % 2 == 0:
 			stage = StoryStage.new()
 		else:
@@ -386,7 +388,14 @@ func _run_flow() -> void:
 		_flow_running = false
 
 
+## Game over 0x42c09e (battle lost, op 0x0e): GS+5 = 0, the scenario counter reset (0x418ab1(0)), music stopped, SE 40,
+## Logo.e5 [7] (GAME OVER), 50 ticks, then the yes/no box "再玩一次吗？" (0x48c808): yes → the title, no → the program
+## ends (phones: the title).
 func game_over() -> void:
+	Mem.w8(Mem.GS + 5, 0)
+	Audio.stop_bgm()
+	SoundMap.stop_loop()
+	Audio.play_se(SoundMap.se_name(0x28))
 	ui.set_black(true)
 	var s := Sprite2D.new()
 	s.centered = false
@@ -394,9 +403,16 @@ func game_over() -> void:
 	s.texture = Assets.tex("gfx/screens/07.png")
 	s.z_index = 50
 	ui.add_child(s)
-	await ui.fade_from_black()
-	await ui.popup("", 4.0)
+	ui.set_black(false)
+	if not Game.autoplay:
+		await get_tree().create_timer(2.5).timeout
+	var again := true
+	if ui.has_method("yes_no"):
+		again = await ui.yes_no("再玩一次吗？")
 	s.queue_free()
+	if not again and not OS.has_feature("mobile") and not Game.autoplay:
+		get_tree().quit()
+		return
 	to_title()
 
 

@@ -1,6 +1,7 @@
 class_name SortieScreen
 extends RefCounted
-## 出场选择: pick up to `maxn` party members (forced ones always included, excluded ones hidden).
+## 出场选择 (0x45e6b3): pick up to `maxn` army members (≤ 20 player slots); the forced ones (protagonist first, then the
+## forced list) are always included, the persons of the flag list (0x4b0a04) are not offered.
 
 
 static func choose(ui: GameUI, _stage: Node, maxn: int, forced: Array[int], excluded: Array[int]) -> Array[int]:
@@ -12,8 +13,8 @@ static func choose(ui: GameUI, _stage: Node, maxn: int, forced: Array[int], excl
 	for f in forced:
 		if not chosen.has(f):
 			chosen.append(f)
-	if maxn <= 0 or maxn > 15:
-		maxn = 15
+	if maxn <= 0 or maxn > 20:
+		maxn = 20
 	if members.size() <= maxn or Game.autoplay:
 		for m in members:
 			if chosen.size() >= maxn:

@@ -65,6 +65,18 @@ func _empty_point(box: Rect2, cells: Variant) -> Vector2:
 	return Vector2(30, 100)
 
 
+## A cell without a unit near the cursor (a right click there opens the system menu).
+func _empty_cell() -> Vector2i:
+	var c0 := st.view.cursor_cell
+	for r in 8:
+		for dy in range(-r, r + 1):
+			for dx in range(-r, r + 1):
+				var c := c0 + Vector2i(dx, dy)
+				if st.view.in_bounds(c) and st.unit_at(c) == null:
+					return c
+	return Vector2i(0, 0)
+
+
 func _key(action: String) -> void:
 	var ev := InputEventAction.new()
 	ev.action = action
@@ -91,7 +103,7 @@ func fx_test(ids: PackedStringArray) -> void:
 		var s := int(sid)
 		var target: BUnit = null
 		for e in st.units:
-			if e.active() and e.is_enemy_of(u):
+			if e.active() and e.is_enemy_of(u) == (Rules.s_side(s) == 0):
 				target = e
 				break
 		if target == null:
@@ -99,11 +111,12 @@ func fx_test(ids: PackedStringArray) -> void:
 		u.mp = 255
 		# what each target had before (printed with the outcome)
 		var before := {}
-		for t in st.actions.strategy_targets(u, s, target.pos):
+		var tg: Array = st.strategy.targets_for(s, u, target.pos) if st.strategy.has_method("targets_for") else [target]
+		for t in tg:
 			before[t.slot] = [t.hp, t.status, [t.buff(0), t.buff(1), t.buff(2), t.buff(3), t.buff(4)]]
 		var done := [false]      # lambdas capture locals by value: share a reference instead
 		var cast := func() -> void:
-			await st.actions.cast(u, s, target.pos)
+			await st.strategy.cast(s, u, target.pos)
 			done[0] = true
 		cast.call()
 		if not headless:
@@ -134,7 +147,7 @@ func touch_cancel_test() -> void:
 		ok[0] = ok[0] and cond
 	var u: BUnit = null
 	for x in st.input._player_units():
-		if x.active() and not x.acted:
+		if x.active() and (x.flags & 6) == 0:
 			u = x
 			break
 	expect.call(u != null and st.input.idle, "player phase at its top level")
@@ -142,7 +155,7 @@ func touch_cancel_test() -> void:
 		st.get_tree().quit()
 		return
 	var orig := u.pos
-	var reach := st.actions.reachable(u)
+	var reach := Movement.move_range(u, u.move_points())
 	# move next to the nearest enemy if possible (so 攻击 is available), like run_phase
 	var dest := orig
 	var best := 1 << 30
@@ -163,10 +176,10 @@ func touch_cancel_test() -> void:
 	expect.call(not st.ui.menu._active and u.pos == orig, "a tap outside the command menu undoes the move")
 	await _click_cell(dest)
 	await _wait(0.9)
-	if not st.actions.attackable_targets(u, u.pos).is_empty():
+	if not Rules.collect(u, u.pos, Rules.attack_codes(u), 0).is_empty():
 		await _key("ui_accept")
 		await _wait(0.4)
-		var cells: Array = st.actions.attack_cells(u, u.pos)
+		var cells: Array = Rules.attack_cells(u, u.pos)
 		cells.append(u.pos)
 		await _tap(_empty_point(Rect2(), cells))
 		await _wait(0.5)
@@ -198,9 +211,9 @@ func touch_cancel_test() -> void:
 func victory_test() -> void:
 	Game.set_meta("bot_owns_input", true)      # stops WG_ACCEPT_SPAM
 	await _wait(1.0)
-	await _click_cell(st.view.cursor_cell, MOUSE_BUTTON_RIGHT)
+	await _click_cell(_empty_cell(), MOUSE_BUTTON_RIGHT)
 	await _wait(0.4)
-	for k in 2:
+	for k in 3:
 		await _key("ui_down")
 	await _key("ui_accept")
 	await _wait(2.0)                           # let the text type out
@@ -238,10 +251,10 @@ func duel_test() -> void:
 ## exercising an in-game load from inside the running battle.
 func load_test() -> void:
 	await _wait(0.6)
-	await _click_cell(st.view.cursor_cell, MOUSE_BUTTON_RIGHT)
+	await _click_cell(_empty_cell(), MOUSE_BUTTON_RIGHT)
 	await _wait(0.4)
 	await shot("sysmenu")
-	for k in 4:
+	for k in 5:
 		await _key("ui_down")
 	await _key("ui_accept")
 	await _wait(0.4)
@@ -270,15 +283,16 @@ func run_phase() -> void:
 	if OS.get_environment("WG_BOTMODE") == "victory":
 		await victory_test()
 		return
+	Game.set_meta("bot_owns_input", true)      # stops WG_ACCEPT_SPAM while the bot plays the phase
 	await _wait(0.6)
 	for u in st.input._player_units():
-		if not u.active() or u.acted:
+		if not u.active() or (u.flags & 6) != 0:
 			continue
 		await _click_cell(u.pos)
 		await _wait(0.4)
 		await shot("select_%s" % u.person.name)
 		# choose destination: the reachable cell closest to the nearest enemy
-		var reach := st.actions.reachable(u)
+		var reach := Movement.move_range(u, u.move_points())
 		var target: BUnit = null
 		var bd := 1 << 30
 		for e in st.units:
@@ -291,6 +305,8 @@ func run_phase() -> void:
 		if target:
 			var best := 1 << 30
 			for c in reach:
+				if not Movement.dest_valid(u, c) and c != u.pos:
+					continue
 				var d2 := Grid.manhattan(c, target.pos)
 				if d2 >= 1 and d2 < best:
 					best = d2
@@ -299,27 +315,39 @@ func run_phase() -> void:
 		await _wait(0.9)
 		await shot("menu_%s" % u.person.name)
 		# first enabled menu entry: 攻击 if possible, else 待命 (via ui_down skipping disabled ones)
-		var can_attack := not st.actions.attackable_targets(u, u.pos).is_empty()
+		var can_attack := not Rules.collect(u, u.pos, Rules.attack_codes(u), 0).is_empty()
 		if can_attack:
 			await _key("ui_accept")
 			await _wait(0.4)
 			await shot("attackrange_%s" % u.person.name)
-			var tg := st.actions.attackable_targets(u, u.pos)
+			var tg := Rules.collect(u, u.pos, Rules.attack_codes(u), 0)
 			await _click_cell(tg[0].pos)
 			await _wait(4.0)
 			await shot("attacked_%s" % u.person.name)
 		else:
-			# menu starts on the first enabled item; move to 待命 (last)
-			for k in 4:
+			# menu starts on the first enabled item; move to 待命 (second to last)
+			for k in 8:
 				await _key("ui_down")
+			await _key("ui_up")
 			await _key("ui_accept")
 			await _wait(0.4)
-	# end turn via system menu (opened by a right click, or in the touch shell by its 菜单 button)
+	# end turn: the automatic prompt after the last unit (0x44e0d9), else via the system menu (opened by a right click
+	# on an empty cell, or in the touch shell by its 菜单 button)
+	await _wait(0.5)
+	if st.ui.menu._active:
+		await shot("autoprompt")
+		await _key("ui_accept")
+		Game.remove_meta("bot_owns_input")
+		return
 	if Game.shell:
 		await _wait(0.2)                  # the shell sees the top level on its next frame
 		Game.shell._activate(TouchShell.MENU)
 	else:
-		await _click_cell(st.units[0].pos if st.units[0].active() else Vector2i(0, 0), MOUSE_BUTTON_RIGHT)
+		await _click_cell(_empty_cell(), MOUSE_BUTTON_RIGHT)
 	await _wait(0.5)
 	await shot("sysmenu")
 	await _key("ui_accept")
+	await _wait(0.4)
+	await shot("endprompt")
+	await _key("ui_accept")
+	Game.remove_meta("bot_owns_input")

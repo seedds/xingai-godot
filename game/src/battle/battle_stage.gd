@@ -40,6 +40,7 @@ var _in_checkpoint := false
 var _resumed := false        # loaded from a save made during the player phase: its start already happened
 var duel: DuelLayer
 var pictures: Dictionary = {}     # sub-12 map objects: slot → DtPicture
+var event_slots: Dictionary = {}  # reader event slots 5 / 6 (victory / defeat latches of ops 0x42 / 0x43)
 
 ## Battle object fields.
 var result: int:
@@ -243,9 +244,10 @@ func _god_cap() -> bool:
 	if not (Game.god and Game.autoplay):
 		return false
 	if turn > 12:
+		var keep := _defeat_persons()
 		for e in range(60, 250):
 			var u := units[e]
-			if u.exists() and u.state in [1, 2]:
+			if u.exists() and u.state in [1, 2] and not keep.has(u.pid):
 				u.hp = 0
 				u.state = 3
 		refresh_units()
@@ -254,6 +256,27 @@ func _god_cap() -> bool:
 		vm.scene = mini(2, vm.scene_count() - 1)
 		return true
 	return false
+
+
+## Debug (_god_cap): persons whose death loses the battle — the lose-person (reader +0x3d0a) and the persons of
+## event sections that test "HP == 0" (op 0x36 attr 7) and end in op 0x0e.
+func _defeat_persons() -> Dictionary:
+	var out := {}
+	if Mem.r16(READER + 0x3d08) & 1:
+		out[Mem.r16(READER + 0x3d0a)] = true
+	for se in vm.sections(1):
+		var lose := false
+		for b in se.get("body", []):
+			if int(b.get("op", -1)) == 0x0e:
+				lose = true
+				break
+		if not lose:
+			continue
+		for c in se.get("conditions", []):
+			var a: Array = c.get("args", [])
+			if str(c.get("name", "")) == "test_attr" and a.size() >= 2 and (a[0] is float or a[0] is int) and int(a[1]) == 7:
+				out[int(a[0])] = true
+	return out
 
 
 ## One round 0x44ed7f.
@@ -1632,41 +1655,49 @@ func op_test_side(ins: Dictionary) -> bool:
 	return phase == (arg(ins, 0) & 0xff)
 
 
-## op 0x42 (0x428f36): a result already set, a unit 60..250 (inclusive) in state 3/4 that is the boss, or no
-## 敌军/援军 (CountUnits code 5) on the map.
+## op 0x42 (0x411bd0): VictoryTest 0x428f36, then event slot 5 == 1. While the battle has no result the test sets the
+## slot (0x44f840(1)) when a unit 60..250 (inclusive) in state 3 / 4 is the boss (reader +0x3d04 bit 0, +0x3d06) or
+## no 敌军 / 援军 is on the map (CountUnits 5); the slot keeps its value (it is not set when there is a result).
 func op_test_event5(_ins: Dictionary) -> bool:
-	if not field_ready:
-		return false
-	if result != 0:
-		return true
-	if Mem.r16(READER + 0x3d04) & 1:
-		var boss := Mem.r16(READER + 0x3d06)
-		for i in range(60, 251):
-			var a := Mem.UNITS + i * Mem.UNIT_SIZE
-			if Mem.r8(a + 0xc) in [3, 4] and Mem.r16(a) == boss:
-				return true
-	return Rules.count_units(5)[0] == 0
+	if field_ready and result == 0:
+		var hit := false
+		if Mem.r16(READER + 0x3d04) & 1:
+			var boss := Mem.r16(READER + 0x3d06)
+			for i in range(60, 251):
+				var a := Mem.UNITS + i * Mem.UNIT_SIZE
+				if Mem.r8(a + 0xc) in [3, 4] and Mem.r16(a) == boss:
+					hit = true
+					break
+		if hit or Rules.count_units(5)[0] == 0:
+			event_slots[5] = 1
+	return int(event_slots.get(5, 0)) == 1
 
 
-## op 0x43 (0x44ca6d): a unit 0..60 (inclusive) in state 3/4 that is the lose-person; else (unit 0's person ≠ 0)
-## no kind-0 unit on the map, or (person 0 in slot 0) no unit 0..20 in state 1/2.
+## op 0x43 (0x411ba5): DefeatTest 0x44ca6d, then event slot 6 == 1. Without a result the slot is set (0x44f880(1))
+## when a unit 0..60 (inclusive) in state 3 / 4 is the lose-person (reader +0x3d08 bit 0, +0x3d0a), or — unit 0's
+## person ≠ 0 — no kind-0 unit is on the map, or — person 0 in slot 0 — no unit 0..20 is in state 1 / 2.
 func op_test_event6(_ins: Dictionary) -> bool:
-	if not field_ready:
-		return false
-	if result != 0:
-		return true
-	if Mem.r16(READER + 0x3d08) & 1:
-		var lp := Mem.r16(READER + 0x3d0a)
-		for i in range(0, 61):
-			var u := units[i]
-			if u.state in [3, 4] and Mem.r16(u.addr) == lp:
-				return true
-	if Mem.r32(units[0].addr) != 0:
-		return Rules.count_units(0)[0] == 0
-	for i in range(0, 21):
-		if units[i].state in [1, 2]:
-			return false
-	return true
+	if field_ready and result == 0:
+		var lose := false
+		if Mem.r16(READER + 0x3d08) & 1:
+			var lp := Mem.r16(READER + 0x3d0a)
+			for i in range(0, 61):
+				var u := units[i]
+				if u.state in [3, 4] and Mem.r16(u.addr) == lp:
+					lose = true
+					break
+		if not lose:
+			if Mem.r32(units[0].addr) != 0:
+				lose = Rules.count_units(0)[0] == 0
+			else:
+				lose = true
+				for i in range(0, 21):
+					if units[i].state in [1, 2]:
+						lose = false
+						break
+		if lose:
+			event_slots[6] = 1
+	return int(event_slots.get(6, 0)) == 1
 
 
 ## op 0x25: a unit matching the selector stands on (x, y) (0x45b50a).
@@ -3070,6 +3101,7 @@ func op_duel_62(ins: Dictionary) -> void:
 func save_state() -> Dictionary:
 	return {"kind": "battle", "scene": vm.scene if vm else 0, "phase": phase, "map": map_id,
 		"field_ready": field_ready, "victory_text": victory_text, "goal_text": goal_text, "bgm": Audio.current_track,
+		"event_slots": event_slots.duplicate(),
 		"terrain_changes": terrain_changes.map(func(e: Dictionary) -> Dictionary:
 			var c := e.duplicate()
 			c.erase("node")
@@ -3089,6 +3121,10 @@ func _apply_restore() -> void:
 	_resumed = vm.scene == 1 and int(d.get("phase", PH_PLAYER)) == PH_PLAYER and bool(d.get("field_ready", false))
 	victory_text = str(d.get("victory_text", ""))
 	goal_text = str(d.get("goal_text", ""))
+	event_slots = {}
+	var es: Dictionary = d.get("event_slots", {})
+	for k in es:
+		event_slots[int(k)] = int(es[k])
 	if bool(d.get("field_ready", false)) and int(d.get("map", -1)) >= 0:
 		map_id = int(d["map"])
 		view.load_map(map_id, false)

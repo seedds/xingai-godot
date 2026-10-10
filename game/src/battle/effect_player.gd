@@ -78,7 +78,7 @@ func run(layer: Node, pts: Array, on_hit := Callable()) -> void:
 					on_hit.call()
 				break
 		done.emit()
-		free.call_deferred()
+		call_deferred("free")   # not `free.call_deferred()`: the exported (binary token) build rejects that form
 		return
 	layer.add_child(self)
 	var snd := int(anim.get("sound", int(anim.get("id", 0)) & 0xff))

@@ -16,6 +16,6 @@ run() {
   echo "rc=$?" >> "$OUT/$n.log"
 }
 export -f run; export OUT TMO
-printf '%s\n' "$@" | xargs -P "$JOBS" -I{} bash -c 'run {}'
+printf '%s\n' "$@" | xargs -P "$JOBS" -n 1 bash -c 'run "$0"'
 grep -h 'EEX unimplemented\|SCRIPT ERROR\|^ERROR\|Parse Error\|Invalid\|rc=1[0-9][0-9]' "$OUT"/*.log | sort | uniq -c | sort -rn | head -80
 echo "files: $(ls "$OUT"/*.log | wc -l)  done: $(grep -l '== file done' "$OUT"/*.log | wc -l)"

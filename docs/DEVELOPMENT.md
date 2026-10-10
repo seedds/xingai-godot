@@ -50,7 +50,7 @@ All options are environment variables read at start-up, for example
 | `WG_TRACE_SEC=1` | Print every script section that runs, with battle turn and phase |
 | `WG_TRACE_TEXT=1` | Print dialogue, choices, popups and autoplay clicks |
 | `WG_TRACE_OPS=1` | Print every executed instruction (very verbose) |
-| `WG_TRACE_BATTLE=1` | Print battle details (deployment, joins, area tests) |
+| `WG_TRACE_BATTLE=1` | Print battle details (deployment, joins, area tests) and one line per round (time, units per side) |
 | `WG_MEMWATCH=4b2c50-4b2c74` | Report writes to an address range (hex) in the emulated memory |
 
 **Test harness and bots**
@@ -62,6 +62,8 @@ All options are environment variables read at start-up, for example
 | `WG_BOTMODE=load`, `WG_BOTSLOT=n` | Input-bot variant: load slot *n* from the battle menu |
 | `WG_BOTMODE=duel` | Input-bot variant: stage a 单挑 between the first player unit and the first enemy, with screenshots |
 | `WG_BOTMODE=victory` | Input-bot variant: open the system menu, pick 胜利条件 and screenshot the window |
+| `WG_BOTMODE=display` | Input-bot variant: toggle the 环境设定 display options by their hotkeys and screenshot each |
+| `WG_BOTMODE=sortie` | Input-bot variant: open the sortie dialog 选择武将 over the battle with the army as candidates |
 | `WG_BOTMODE=touchcancel` | Input-bot variant for the touch shell: checks that taps on empty spots cancel and that 菜单 opens the system menu; prints `TOUCHCANCEL: PASS` and writes `touchcancel.txt` to the bot folder |
 | `WG_FXTEST=3,5` | Input-bot variant: cast these strategy ids from the first player unit at the first enemy and screenshot their animations. With `WG_AUTO=1` instead of the bot (no screenshots) it prints each target's HP, status and buffs before and after, e.g. `WG_START=1 WG_AUTO=1 WG_GOD=1 WG_FXTEST=38,66` |
 | `WG_SAVETEST=1` | Save at battle turn 2 and quit; run again with `WG_LOADSLOT=18` to check the restore |

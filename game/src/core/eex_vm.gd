@@ -64,8 +64,9 @@ static var _stats_on := OS.get_environment("WG_OPSTATS") != ""
 ## Ops that only read or write the emulated memory (no window, sound, animation or wait): a section run made of
 ## these that changed no memory leaves everything as it was (BattleStage.checkpoint stops repeating it).
 const PURE_OPS := {"end": 1, "if": 1, "comment": 1, "else": 1, "goto": 1, "int_var_op": 1, "set_flag": 1,
-		"data_transfer": 1, "set_attr": 1, "copy_person_word": 1}
-const PURE_EXT := {4: 1, 5: 1, 6: 1, 7: 1, 9: 1, 10: 1, 23: 1, 24: 1, 26: 1, 35: 1, 36: 1}
+		"data_transfer": 1, "set_attr": 1, "copy_person_word": 1, "set_equipment": 1, "level_up": 1, "op_52": 1,
+		"unit_op_4e": 1, "op_1b": 1, "op_51": 1}
+const PURE_EXT := {4: 1, 5: 1, 6: 1, 7: 1, 9: 1, 10: 1, 21: 1, 23: 1, 24: 1, 26: 1, 35: 1, 36: 1}
 var impure := false          # an op outside PURE_OPS / test_* ran since the flag was cleared
 var _handlers: Dictionary = {}
 

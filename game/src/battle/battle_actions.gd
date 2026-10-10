@@ -148,21 +148,35 @@ func was_target(u: BUnit) -> bool:
 
 
 # ------------------------------------------------------------------ movement
+## Seconds one cell of a walk takes (0x442000): the 48 px are covered in steps of {48, 12, 6} px for 武将移动速度
+## (GS+2) 快 / 普通 / 慢, or {48, 24, 12} for a family whose byte in 0x4d20e8 is 0 (0x4011e8: the fast walkers), one
+## tick (0x423971(1), 50 ms) per step; 极速移动 (byte 0x501a79 ≠ 0) jumps without a wait.
+## [G] The port slides the sprite smoothly over that time instead of in the steps.
+func step_time(u: BUnit) -> float:
+	if Mem.r8(0x501a79) != 0:
+		return 0.0
+	var spd := mini(Mem.r8(Mem.GS + 2), 2)
+	var fam := u.family()
+	var step: int = [0x30, 0x18, 0xc][spd] if fam < 0x28 and Mem.r8(0x4d20e8 + fam) == 0 else [0x30, 0xc, 6][spd]
+	return (0x30 / step) * Text66.TICK
+
+
 ## The path walker 0x43d9ed: step by step along `path` (the cells after the start); each step moves the unit
 ## (0x442000) and runs the 先制攻击 / mine test 0x428b7a with do_it, which ends the walk. False when interrupted.
 ## [0x500c48] is the planner's (Movement.path_to); the moved flag is the caller's.
 func move_unit(u: BUnit, path: Array[Vector2i]) -> bool:
 	var n := u.node
 	var ok := true
+	var cell_t := step_time(u)
 	if n and not Game.autoplay:
 		n.set_pose(UnitSprite.Pose.WALK, u.dir)
-		n.walk_speed = 8.0
+		n.walk_speed = 2.0 / maxf(cell_t, 0.05)     # the walk frame changes every 24 px (0x442000)
 	for c in path:
 		var traps := Movement.trap_count(u, c)
 		_set_dir(u, dir_to(u.pos, c))
-		if n and not Game.autoplay:
+		if n and not Game.autoplay and cell_t > 0.0:
 			var tw := n.create_tween()
-			tw.tween_property(n, "position", st.view.cell_pos(c), 0.075)
+			tw.tween_property(n, "position", st.view.cell_pos(c), cell_t)
 			await tw.finished
 		u.pos = c
 		if n and is_instance_valid(n):

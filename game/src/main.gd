@@ -147,6 +147,11 @@ func _boot() -> void:
 				for k in 2:
 					await get_tree().process_frame)
 		add_child(t)
+	if OS.get_environment("WG_ENDTEST") != "":
+		# debug: the ending show of ending v, then quit
+		await ending_show(int(OS.get_environment("WG_ENDTEST")))
+		get_tree().quit()
+		return
 	var ls := OS.get_environment("WG_LOADSLOT")
 	if ls != "":
 		var extra: Variant = Game.load_game(int(ls))
@@ -416,13 +421,14 @@ func game_over() -> void:
 	to_title()
 
 
-## Ending show 0x4317ab(v) (op 0x0f / 0x414050): BGM track 0x10, Logo.e5 [4] as the backdrop, then the credits pages
-## of Imsg 800.. (0x431543: one page per round up to ";", "//n" comments skipped, "%" lines 32 px headings at x 208,
-## other lines 64 px at x 240, the block centred in the 400-pixel view), a cast portrait per round (0x431c19, persons
-## u32 0x4b2b30[k] from 0x72 sub 9 — unused by the scripts, not shown), the closing texts (0x431967 / 0x431a0a) and the
-## KOEI logo (Logo.e5 [6]). [G] Timing: the original waits 10 ticks per round plus the portrait animation; here
-## each page stays ~3 s (a click moves on).
-func ending_show(_v: int) -> void:
+## Ending show 0x4317ab(v) (op 0x0f / 0x414050): BGM track 0x10, Logo.e5 [4] as the backdrop; per round 10 ticks, a
+## credits page of Imsg 800.. (0x431543: up to ";", "//n" skipped, "%" lines 32 px at x 208, other lines 64 px at x 240,
+## the block centred in the 400-pixel view) for the first 24 rounds; after page 22 the 中文简体版 / 天津光荣 / 软件有限公司
+## screen (0x431967, 1 s + 4 s); then 0x431a0a(v): 总制作 / EIJI FUKUZAWA (+ the ending emblem Logo [v + 1] at
+## (288, 340) for v < 2), 127 ticks; the KOEI logo (Logo [6]) 50 ticks. [G] The cast portraits of 0x431c19 (persons
+## u32 0x4b2b30[k], filled by 0x72 sub 9 which no script uses) are not shown, and each page holds 4 s (a click moves
+## on) where the original's portrait animation sets the pace.
+func ending_show(v: int) -> void:
 	Audio.play_bgm(0x10)
 	var layer := Control.new()
 	layer.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -433,9 +439,9 @@ func ending_show(_v: int) -> void:
 	back.position = Vector2(0, 40)
 	layer.add_child(back)
 	ui.set_black(false)
-	var rounds := maxi(Mem.ev(4056) & 0xff, 0x18)
 	var idx := 800
-	for k in mini(rounds, 0x18):
+	for k in 0x18:
+		await _end_wait(0.5)
 		var lines := []
 		while idx < 3000:
 			var t := Game.text(idx)
@@ -447,36 +453,81 @@ func ending_show(_v: int) -> void:
 			lines.append(t)
 		if lines.is_empty():
 			break
+		var h := 0
+		var heads := 0
+		var rows := 0
+		for t in lines:
+			if str(t).begins_with("%"):
+				h += 0x20
+				if heads > 0 and str(t).length() > 1 and str(t)[1] != " ":
+					h += 0x20
+				heads += 1
+			else:
+				h += 0x40 + (0x10 if rows > 0 or heads > 0 else 0)
+				rows += 1
 		var page := Control.new()
 		page.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		layer.add_child(page)
-		var heights := 0
-		var nh := 0
+		var y := 40 - (h / 2 - 200)
+		heads = 0
+		rows = 0
 		for t in lines:
-			heights += 32 if t.begins_with("%") else 64
-		var y := 40 - (heights / 2 - 200)
-		for t in lines:
-			var head: bool = t.begins_with("%")
-			var l := UIStyle.label(t.lstrip("%"), 26 if head else 48, Color(1, 0.95, 0.75) if head else Color(1, 1, 1))
-			l.position = Vector2(208 if head else 240, y)
-			page.add_child(l)
-			y += 32 if head else 64
-			nh += 1
-		page.modulate.a = 0.0
-		if not Game.autoplay:
-			var tw := create_tween()
-			tw.tween_property(page, "modulate:a", 1.0, 0.4)
-			await tw.finished
-			var n0 := Game.clicks
-			var t0 := Time.get_ticks_msec()
-			while Time.get_ticks_msec() - t0 < 3000 and Game.clicks == n0:
-				await get_tree().process_frame
+			var head: bool = str(t).begins_with("%")
+			if head:
+				if heads > 0 and str(t).length() > 1 and str(t)[1] != " ":
+					y += 0x20
+				_end_text(page, str(t).substr(1).lstrip("%"), Vector2(208, y), 26)
+				y += 0x20
+				heads += 1
+			else:
+				if rows > 0 or heads > 0:
+					y += 0x10
+				_end_text(page, str(t), Vector2(240, y), 52)
+				y += 0x40
+				rows += 1
+		await _end_wait(4.0)
 		page.queue_free()
+		if k == 0x16:
+			await _end_wait(0.5)
+			var p2 := Control.new()
+			layer.add_child(p2)
+			_end_text(p2, "中文简体版", Vector2(208, 160), 26)
+			await _end_wait(1.0)
+			_end_text(p2, "      天津光荣", Vector2(208, 200), 52)
+			_end_text(p2, "    软件有限公司", Vector2(208, 264), 52)
+			await _end_wait(4.0)
+			p2.queue_free()
+	var p3 := Control.new()
+	layer.add_child(p3)
+	_end_text(p3, "总制作", Vector2(64, 160), 26)
+	_end_text(p3, "EIJI FUKUZAWA", Vector2(128, 208), 52)
+	if v < 2:
+		var em := TextureRect.new()
+		em.texture = Assets.tex("gfx/screens/%02d.png" % (v + 1))
+		em.position = Vector2(288, 340)
+		p3.add_child(em)
+	await _end_wait(6.35)
+	p3.queue_free()
 	back.texture = Assets.tex("gfx/screens/06.png")
-	if not Game.autoplay:
-		await get_tree().create_timer(2.5).timeout
+	await _end_wait(2.5)
 	layer.queue_free()
 	Audio.stop_bgm()
+
+
+func _end_text(parent: Control, t: String, at: Vector2, size: int) -> void:
+	var l := UIStyle.label(t, size, Color(1, 1, 1))
+	l.position = at
+	parent.add_child(l)
+
+
+## A wait of the ending show: skipped under autoplay; a click ends it early.
+func _end_wait(sec: float) -> void:
+	if Game.autoplay:
+		return
+	var n0 := Game.clicks
+	var t0 := Time.get_ticks_msec()
+	while Time.get_ticks_msec() - t0 < sec * 1000.0 and Game.clicks == n0:
+		await get_tree().process_frame
 
 
 func ending() -> void:

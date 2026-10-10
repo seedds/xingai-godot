@@ -151,26 +151,48 @@ func run_file(file: String) -> void:
 	SoundMap.stop_loop()
 
 
-## Poll 0x44c601: up to (number of sections) selections of the event scene, while a section ran. A run made only
-## of memory ops (EexVM.PURE_OPS) that left the memory as it was (Mem journal) would repeat identically for the
-## remaining selections, so the loop stops there (same result, without re-running e.g. S_000's 12,000-op table
-## section 33 times).
+## Poll 0x44c601: up to (number of sections) selections of the event scene (the reader's byte counter R+8 only
+## drops to 0 when the scene changes). Selections depend on the memory alone, so when a run made only of memory ops
+## (EexVM.PURE_OPS) left the memory as it was, the remaining selections would repeat it: the loop stops. Likewise
+## when two such runs undo each other (S_020: a flag set by one section and cleared by the other) the rest
+## alternates: one more run if an odd number is left, then stop. Same result as the original's repeated runs.
 func checkpoint() -> void:
 	if _in_checkpoint or not vm.active or vm.scene != 1:
 		return
 	_in_checkpoint = true
-	var n: int = vm.sections(vm.scene).size()
-	for k in maxi(n, 1):
+	var n: int = maxi(vm.sections(vm.scene).size(), 1)
+	var prev := {}
+	var prev_pure := false
+	for k in n:
 		if not vm.active or vm.scene != 1:
 			break
 		vm.impure = false
 		Mem.journal_start()
 		var ran: bool = await vm.poll()
-		var changed := Mem.journal_stop()
-		if not ran or (not vm.impure and not changed and vm.active and vm.scene == 1):
+		var diff := Mem.journal_stop_diff()
+		if not ran:
 			break
+		var pure := not vm.impure and vm.active and vm.scene == 1
+		if pure and diff.is_empty():
+			break
+		if pure and prev_pure and _undoes(diff, prev):
+			if (n - k - 1) % 2 == 1 and vm.active and vm.scene == 1:
+				await vm.poll()
+			break
+		prev = diff
+		prev_pure = pure
 	refresh_units()
 	_in_checkpoint = false
+
+
+## True when the byte changes `d` exactly undo the changes `p` (same bytes, old and new swapped).
+static func _undoes(d: Dictionary, p: Dictionary) -> bool:
+	if d.size() != p.size():
+		return false
+	for a in d:
+		if not p.has(a) or p[a][0] != d[a][1] or p[a][1] != d[a][0]:
+			return false
+	return true
 
 
 ## BattleLoop 0x44eee5: rounds until a result; out of rounds → the protagonist's unit retreats and the battle is
@@ -599,32 +621,30 @@ func _status_recovery(u: BUnit) -> void:
 		if n != null and n.state == 2 and n.side() == u.side() and n.eff(0x64, 0x7b, 1, 1) != 0:
 			await unit_attr_op(u, 6, 0x9e, true)      # 0x45aa37(person, 6, 0x9e, 1, slot): cure all, animated
 			return
-	status_tick(u, Rules.recovery_chance(u, 1))
+	await status_tick(u, Rules.recovery_chance(u, 1))
 
 
-## Ailment tick 0x42402c(u, p): chance ≥ 100 cures; a counter above 1 counts down; at 1 it ends by EV 4023 (0 roll,
-## 1 the deck, 2 always).
+## Ailment tick 0x42402c(u, p), per field (麻痹, 禁咒, 混乱, 中毒): p ≥ 100 cures; a counter above 1 counts down; at 1
+## it ends by byte EV[4023] (0: Chance(p, 0); 1: the deck 0x455e25(0x501bf5, 1) — row 1 with the cursor 0x501bf6 —
+## cures when p ≥ the card; else always). A cure goes through 0x45aa37(person, 6, mask | 0x80, 1) with its animation.
 func status_tick(u: BUnit, p: int) -> void:
-	var s := u.status
 	for f in 4:
-		var v := (s >> (2 * f)) & 3
+		var mask := 2 << f
+		var v := u.status_count(mask)
 		if v == 0:
 			continue
 		var cure := false
 		if p >= 100:
 			cure = true
-		elif v >= 2:
-			s = (s & ~(3 << (2 * f))) | ((v - 1) << (2 * f))
+		elif v != 1:
+			u.status = (u.status & ~(3 << (2 * f))) | ((v - 1) << (2 * f))
 		else:
 			match Rules.evb(4023):
 				0: cure = Rules.chance2(p, 0)
-				1:
-					var r := Rules.deck(Rules.DECK_CUR + 1, 1)
-					cure = p >= r and r != 0
+				1: cure = p >= Rules.deck(Rules.DOOM_CUR + 1, 1)
 				_: cure = true
 		if cure:
-			s &= ~(3 << (2 * f))
-	u.status = s
+			await unit_attr_op(u, 6, mask | 0x80, true)
 
 
 ## BuffDecay 0x43c940: levels 5/6 count down, 4 wears off with the fade chance, debuffs recover (0 → 1 → 2 directly,

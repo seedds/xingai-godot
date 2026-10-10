@@ -116,13 +116,19 @@ func journal_start() -> void:
 
 ## Stops journaling; true when some journaled byte now differs from its old value.
 func journal_stop() -> bool:
+	return not journal_stop_diff().is_empty()
+
+
+## Stops journaling; the bytes that differ from their old values: address → [old, new].
+func journal_stop_diff() -> Dictionary:
 	journaling = false
+	var d := {}
 	for a in journal:
-		if r8(a) != journal[a]:
-			journal.clear()
-			return true
+		var v := r8(a)
+		if v != journal[a]:
+			d[a] = [journal[a], v]
 	journal.clear()
-	return false
+	return d
 
 
 func _log(addr: int, n: int) -> void:

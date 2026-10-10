@@ -11,7 +11,7 @@ fi
 JOBS=${JOBS:-6}
 run() {
   n=$1
-  WG_START=$n WG_AUTO=1 WG_NOVIDEO=1 WG_ONEFILE=1 perl -e "alarm ${TMO:-240}; exec @ARGV" \
+  WG_START=$n WG_AUTO=1 WG_NOVIDEO=1 WG_ONEFILE=1 WG_OPSTATS=1 perl -e "alarm ${TMO:-240}; exec @ARGV" \
     godot --headless --path . > "$OUT/$n.log" 2>&1
   echo "rc=$?" >> "$OUT/$n.log"
 }

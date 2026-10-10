@@ -57,8 +57,17 @@ func sections(sc: int) -> Array:
 	return scs[sc]["sections"]
 
 
+static var op_stats: Dictionary = {}       # WG_OPSTATS: executed ops by name (printed when a file ends)
+static var _stats_on := OS.get_environment("WG_OPSTATS") != ""
+
+
 func _call(ins: Dictionary) -> Variant:
 	var m := "op_" + str(ins["name"])
+	if _stats_on:
+		var key := str(ins["name"])
+		if int(ins["op"]) == 0x72:
+			key += ":%d" % int(ins.get("ext", {}).get("sub", -1))
+		op_stats[key] = int(op_stats.get(key, 0)) + 1
 	if host.has_method(m):
 		return await host.call(m, ins)
 	var n: String = ins["name"]
@@ -143,6 +152,8 @@ func _advance_scene() -> void:
 
 
 func _finish_file() -> void:
+	if _stats_on:
+		print("OPSTATS %s %s" % [name, JSON.stringify(op_stats)])
 	active = false
 	file_finished.emit()
 

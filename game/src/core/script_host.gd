@@ -149,6 +149,22 @@ func ui_yes_no(text: String) -> bool:
 
 
 func ui_choose(options: Array, pid: int) -> int:
+	var avoid := OS.get_environment("WG_CHOOSE_AVOID")
+	if (Game.autoplay or Game.demo) and avoid != "":
+		# test harness: autoplay keeps off options naming one of these words (side games, skips) when it can
+		var ok := []
+		for k in options.size():
+			var bad := false
+			for w in avoid.split(",", false):
+				if str(options[k]).contains(w):
+					bad = true
+			if not bad:
+				ok.append(k)
+		if not ok.is_empty() and ok.size() < options.size():
+			var pick: int = ok[Rules.rand(ok.size())] if OS.get_environment("WG_RANDOM") != "" else ok[0]
+			if OS.get_environment("WG_TRACE_TEXT") != "":
+				print("  [menu] %s -> %d (avoiding %s)" % [options, pick + 1, avoid])
+			return pick
 	if ui.has_method("choose_dialog"):
 		return await ui.choose_dialog(options, pid)
 	var lab := []

@@ -104,3 +104,45 @@ as `[ebp-4]`, cdecl handlers that return a second value in ECX): check decompile
 * How 特技 values combine (person slots, class slots, sub 35 grants, sub 10 专属/套装 rows: 0x413009 / 0x402cf9 inside
   0x41301e) — rules/data side.
 * Readers of 0x510c81/0x510c84 ("吃不完的米或酒" pokes), of 0x50f800 (R形象) and of u8 0x501a84[unit] (0x38 attr 15 add).
+
+## Script-track findings (port implementation, verified in the disassembly)
+
+* **block_end** (0x410738): with `next_scene` or at the body END of a one-section scene the scene advances even when
+  `goto_scenario` ran at depth 0 (status 9 is then ignored); every shipped depth-0 `goto_scenario` sits in the last
+  scene or in a multi-section scene, so it always ends the file. Each run_block level keeps its own ELSE result and
+  next-scene / end-of-file marks; a goto that leaves a level drops them.
+* **0x30 actor_appear** does nothing when the person already has an actor (0x428969 finds it → 0x80).
+* **0x0a clear_flags** zeroes 0x501b00..0x501fff (0x140 dwords), then 0x473de1 (anim records, 0x510000 × 0xc80).
+* **Talk / dialog**: 0x4137cd hides the toolbar only when [0x501fff] ≠ 0; 0x411991 re-shows it only outside a battle
+  with GS+0x10 ≠ 0, with its buttons only in sortie mode ([0x501fff] ≠ 0 → 0x419959(tb, 0)).
+* **Toolbar** (0x419959, dialog 0x129 ×4): 50×50 buttons at (w − 50(k+1), h − 90), k = 0 卖出 1 买进 2 装备 3 出征,
+  EV[4032] bit k hides one; click handler 0x4196f8: 0/1 → shop 0x461cf6(sell), 2 → 0x461c88, 3 → 0x418597(1), then
+  hide, GS+0x10 = 0, [0x4ae4c0] = 1. The first-use greetings ("%s，卖掉物资！" 0x48b49b…, answer "是！" 0x48b496 by
+  the shop person 0x40c755: shop record of min(GS+6/2,127) +4 / +0, or 0x510cfa / 0x510cfc for 127) need
+  0x40311e ([0x49cee4] ≠ 0xffff — the free-walk actor), so they never show in this mod.
+* **Sortie builder 0x418597**: membership test 0x42ac58 = person +0x2a ≠ 0xff; forced entries 0 / 0xffff skipped;
+  the protagonist leads unless the "may not sortie" ring holds a 0; param ≠ 1 counts one extra forced entry.
+* **Title** (boot loop 0x404caf): BGM track 0x12, four U_select[11] buttons 176×44 at (432, 88 + 64i) (hover = frame
+  i + 4 with SE 15): 刀兵初現 new game, 烽煙再起 load, 沙場點兵 the 環境 dialog (KANKYOU), 南山放馬 quit.
+* **BGM** 0x24: GS+4 = track (0x418c99); id 0xff stops; tracks ≥ 0xff do nothing. **SE** 0x474777: file name
+  format[id/100] % (id%100) from table 0x474878; nothing plays while a looping effect is active (wave object
+  0x4b69b0 +4) or for ids with low byte 0xff.
+* **Text** (0x417df6): escapes are only recognised at a 2-byte unit boundary; `*+N`/`*,N`/`*-N` copy at most 4 bytes.
+* **Rename** (0x72 sub 0, 0x4081f2): refused if any person (itself included) already has the name; strcpy to +0x08,
+  zero-fill to 9 bytes, tail from byte 8 to +0x3f (0x40a72c).
+* **历史情报** records: "&" + colour + text, back to back without NULs; length u32 0x508994 excludes the final NUL;
+  EV[4071] low byte 255 = 0x47826a: a text that is only the number deletes the record (and its 2 header bytes),
+  otherwise replaces its text.
+* **0x3d get_item** consumables (category 3): count table u8 0x493af0 + (id − 0xa0), + level + 1 (0x43e093);
+  others "得到了%s！" (0x48e39c) box style 2 then the bag (0x40d693; full bag → error box + discard window).
+* **0x3e set_equipment** story path 0x412db6: code 1 → take off (to the bag only when the op's weapon-level arg is 1,
+  0x406cbc), else 0x407df1; exp after equipping 0x4201d5: level < max → 0, else 0xff (0xfe for a level-9 treasure
+  at max). Auto level 0x407da3: treasures min(Lv/6 + 1, 9), others Lv ≥ 60 → 5 else (Lv%20)/4 + 1.
+* **0x3b join** default equipment 0x407fd4: tier min(Lv/20, 2), level (Lv%20)/4 + 1 (5 from Lv 60) minus one
+  (flag 1); weapon = the first usable weapon type 0..19, armour 20..25, item = byte table 0x482427[type>>1] + tier.
+* **0x52 class change** 0x414b93 replaces an unusable weapon / armour with the default equipment (the old item is
+  lost); 0x4149cf (EV[4081]) recomputes stats from growth sums, 功勋 and DATA.E5 HP/MP.
+* **SV\SV.E5S** (0x10f bytes, fresh: bytes 4..7 = 1f 01 01 64): 0..2 endings, 3 window pattern, item + 0x10 the
+  item records of 0x408b0d (item byte +0x18 bit 0).
+* **Godot 4.7 bug** met by the port: `PackedByteArray.get_string_from_multibyte_char("GBK")` hangs on an
+  unterminated buffer holding exactly one double-byte character; `TextExpand.from_gbk` appends a NUL first.

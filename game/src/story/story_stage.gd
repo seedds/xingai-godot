@@ -229,7 +229,6 @@ func run_file(file: String) -> void:
 			break
 		if not ran:
 			# nothing qualifies: wait for the player (event-loop scenes)
-			_toolbar_hidden = false
 			var pid := await _wait_for_click()
 			if pid == -2:
 				continue
@@ -273,11 +272,12 @@ func _wait_for_click() -> int:
 			vm.active = false
 			return -2
 		var sp := OS.get_environment("WG_SORTIE_P")
-		if _toolbar_on and Rules.chance(int(sp) if sp != "" else 12):
+		var bar := _toolbar_on and not _toolbar_hidden and (Mem.ev(4032) >> 3) & 1 == 0
+		if bar and Rules.chance(int(sp) if sp != "" else 12):
 			if await do_sortie():
 				return -2
 		if keys.is_empty():
-			if _toolbar_on and await do_sortie():
+			if bar and await do_sortie():
 				return -2
 			await get_tree().create_timer(0.05).timeout
 			if _auto_i > 400:
@@ -434,6 +434,7 @@ func op_change_scene(ins: Dictionary) -> void:
 	Mem.w8(0x4ac63d, 0xff if mode == 3 else v & 0xff)
 	scene_kind = mode
 	scene_image = v & 0xff
+	ui.clear_captions()      # the new picture is drawn over the whole view, map texts included
 	if mode == 3:
 		bg.texture = null
 	else:

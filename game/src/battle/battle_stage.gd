@@ -185,7 +185,7 @@ func battle_loop() -> void:
 	_resumed = false
 	while result == 0 and not _stopped():
 		if round_no >= turn_limit:
-			await ui.popup("因为战斗时间过长，撤退。")
+			await ui_message(2, "因为战斗时间过长，撤退。")      # 0x42f699(2, 0x48e220)
 			var found := false
 			for i in 60:
 				if units[i].pid == 0:
@@ -2819,29 +2819,35 @@ func op_map_mark(ins: Dictionary) -> void:
 	refresh_units()
 
 
-## op 0x59 (0x41688b): rewards: gold = arg + (L + 7)·100 (L = the army's mean level 0x40c231); up to 3 items
-## (equipment level 0 → automatic for L).
+## op 0x59 (0x41688b): gold (int32) + 3 × (item, level: 0xffff → 0, else the low byte) + mode (0xffff → 0);
+## gold += (L + 7)·100 (L = 0x40c231); the reward screen 0x44b5a8; GS gold += gold (0x40da71); each item ≠ 0xffff:
+## equipment with level 0 gets the level for L (0x407da3), then 0x459950(item, level, flag 0, 0xffff, show 0) —
+## silently into the bag — and the item record 0x408b0d.
 func op_op_59(ins: Dictionary) -> void:
-	var avg := _army_avg_level()
-	var gold := arg(ins, 0) + (avg + 7) * 100
-	Game.gold = Game.gold + gold
-	await ui.popup("得到了 %d 两黄金。" % gold, 0.0 if not Game.demo else 1.0)
+	var gold := arg(ins, 0) & 0xffffffff
+	var ids := []
+	var lv := []
 	for k in 3:
-		var iid := arg(ins, 1 + 2 * k)
-		if iid == 0xffff or iid > 0xff:
+		ids.append(arg(ins, 1 + 2 * k) & 0xffff)
+		var l := arg(ins, 2 + 2 * k) & 0xffff
+		lv.append(0 if l == 0xffff else l & 0xff)
+	var mode := arg(ins, 7) & 0xffff
+	if mode == 0xffff:
+		mode = 0
+	var avg := _army_avg_level()
+	gold += (avg + 7) * 100
+	await RewardScreen.present(self, gold, ids, mode, lv)
+	Game.change_resource(0, 1, gold)
+	for k in 3:
+		var iid: int = ids[k]
+		if iid == 0xffff:
 			continue
-		var lvl := arg(ins, 2 + 2 * k)
-		if lvl == 0xffff:
-			lvl = 0
-		var it := Game.item(iid)
-		var equip := Person.slot_of(it) < 2
-		var xp := 0
-		if equip:
-			if lvl == 0:
-				lvl = Person.auto_level_at(it, avg)
-			xp = Person.exp_at_level(lvl, Person.max_item_level(it))
-		Game.add_item(iid, maxi(lvl, 1) if equip else 0, xp)
-		await ui.popup("得到了%s%s。" % [it.get("name", "?"), ("（Lv%d）" % lvl) if equip else ""], 0.0 if not Game.demo else 1.0)
+		var it := Game.item(iid & 0xff)
+		var lvl: int = lv[k]
+		if Person.slot_of(it) <= 1 and lvl == 0:
+			lvl = Person.auto_level_at(it, avg) & 0xff
+		await story_get_item(iid & 0xff, lvl, false)
+		Game.record_item(iid)
 
 
 ## 0x40c231: mean level of the army members among persons 0..126 (≥ 1).

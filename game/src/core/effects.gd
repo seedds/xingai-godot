@@ -32,6 +32,7 @@ static func end_cache() -> void:
 	_caching = maxi(_caching - 1, 0)
 	if _caching == 0:
 		_cache.clear()
+		_flags.clear()
 
 
 ## The combine step 0x413009 → 0x40bf2f: mode 0 sum, 1 max, 3 OR; mode 2 (and others): an empty accumulator
@@ -310,13 +311,22 @@ static func query_sources(pid: int, sid: int, eid: int, mode: int, a4: int) -> A
 	sid &= 0xff
 	var s := personal_value(pid, sid)
 	s = combine(mode, added_value(pid, sid), s)
-	s = combine(mode, class_value(Mem.r8(Mem.person_addr(pid) + 0x2b), sid), s)
+	var b := Mem.person_addr(pid)
+	s = combine(mode, class_value(Mem.r8(b + 0x2b), sid), s)
+	var eq := [Mem.r8(b + 0x2e), Mem.r8(b + 0x31), Mem.r8(b + 0x34)]
 	var item := 0
-	if has_item_effect(pid, eid):
+	if eid != 0 and (eq[0] != 0xff or eq[1] != 0xff or eq[2] != 0xff) and has_item_effect(pid, eid):
 		item = 100 if a4 != 0 else item_value(pid, eid, mode)
 	var v := combine(mode, item, s)
-	v = combine(mode, v, exclusive_value(pid, sid))
-	v = combine(mode, v, set_value(pid, sid))
+	var row := EXCL + sid * 16
+	if Mem.r32(row) != 0 or Mem.r32(row + 4) != 0:
+		v = combine(mode, v, exclusive_value(pid, sid))
+	else:
+		v = combine(mode, v, 0)
+	if Mem.r32(row + 8) != 0 or Mem.r32(row + 12) != 0:
+		v = combine(mode, v, set_value(pid, sid))
+	else:
+		v = combine(mode, v, 0)
 	return [v, item]
 
 
@@ -354,11 +364,11 @@ static func _query(u: BUnit, sid: int, eid: int, mode: int, a4: int) -> Array:
 	if pid < 0:
 		return [0, 0]
 	var gate := Mem.r32(u.addr) < Mem.r32(Mem.EV + 4 * 4062)
-	if gate and not shielded(u) and enemy_shield_adjacent(u):
+	if gate and enemy_shield_adjacent(u) and not shielded(u):
 		return [0, 0]
 	var r := query_sources(pid, sid, eid, mode, a4)
 	var v: int = r[0]
-	if gate and src(pid, 88, 0x74, 1, 1) != 0:
+	if gate and _flag(pid, 88, 0x74) != 0:
 		for o in neighbours4(u):
 			var nv := src(o.pid, sid, eid, mode, a4)
 			if nv != 0:
@@ -396,18 +406,33 @@ static func neighbours4(u: BUnit) -> Array:
 ## 0x40f1ac: the unit's person has 特效屏蔽, or it has 特效模仿 and a same-side 屏蔽 holder is among its 4
 ## neighbours while no other-side one is (an other-side holder ends the scan with "no").
 static func shielded(u: BUnit) -> bool:
-	if src(u.pid, 89, 0x75, 1, 1) != 0:
+	if _flag(u.pid, 89, 0x75) != 0:
 		return true
-	if src(u.pid, 88, 0x74, 1, 1) == 0:
+	if _flag(u.pid, 88, 0x74) == 0:
 		return false
 	var sd := u.side()
 	var r := false
 	for o in neighbours4(u):
-		if src(o.pid, 89, 0x75, 1, 1) != 0:
+		if _flag(o.pid, 89, 0x75) != 0:
 			if o.side() != sd:
 				return false
 			r = true
 	return r
+
+
+static var _flags: Dictionary = {}
+
+
+## 特效模仿 / 特效屏蔽 presence (QuerySources(sid, eid, 1, 1), 0x43c414 / 0x43c426), kept for a cache scope.
+static func _flag(pid: int, sid: int, eid: int) -> int:
+	if _caching > 0:
+		var k := pid * 2 + (1 if sid == 89 else 0)
+		if _flags.has(k):
+			return _flags[k]
+		var v := src(pid, sid, eid, 1, 1)
+		_flags[k] = v
+		return v
+	return src(pid, sid, eid, 1, 1)
 
 
 ## 0x425390: an orthogonal neighbour of another side is shielded.

@@ -164,10 +164,33 @@ static func flood(u: BUnit, start: Vector2i, mp: int, mode: int, target: Vector2
 
 static func _flood(u: BUnit, start: Vector2i, mp: int, mode: int, target: Vector2i, zoc: int, layer_a: Callable,
 		cell_score: Callable, W: int, H: int, g: int, scripted: bool, zoc_on: bool) -> int:
-	var costs := {}
 	if Rules.move_cost(u, Rules.terrain_at(start)) == 0xff:
 		return NONE
+	var N := W * H
+	# per-flood tables (nothing on the map changes during a flood): grid mirror, terrain cost, units, stop cells
+	var grid := PackedByteArray()
+	grid.resize(N)
+	grid.fill(0xff)
+	grid[start.x + start.y * W] = 0
+	var cost := PackedInt32Array()
+	cost.resize(N)
+	var costs := {}
+	var occ := PackedByteArray()
+	occ.resize(N)
+	var tb := Mem.MAP_BUF + 0x640
+	var ob := Mem.MAP_BUF + 0xc80
+	for i in N:
+		var t := Mem.r8(tb + i)
+		var os := Mem.r8(ob + i)
+		occ[i] = os
+		if os != 0xff:
+			t = Rules.terrain_at(Vector2i(i % W, i / W))
+		if not costs.has(t):
+			costs[t] = Rules.move_cost(u, t)
+		cost[i] = costs[t]
+	var stop := zoc_table(u, false, occ, W, H)
 	var passing := Rules.passes(u)
+	var units: Array = Effects.battle.units
 	var cur := 0
 	var changed := true
 	var nxt := 0xff
@@ -183,13 +206,14 @@ static func _flood(u: BUnit, start: Vector2i, mp: int, mode: int, target: Vector
 		var above := 0xff
 		for y in H:
 			for x in W:
-				var c := Mem.r8(g + x + y * W)
+				var i := x + y * W
+				var c := grid[i]
 				if c > cur and c != 0xff and above > c:
 					above = c
 				if c != cur:
 					continue
 				var here := Vector2i(x, y)
-				if here != start and zoc_on and in_enemy_zoc(u, here, false):
+				if here != start and zoc_on and stop[i] != 0:
 					continue
 				for d in 4:
 					var n: Vector2i = here + Rules.DIR4[d]
@@ -197,35 +221,33 @@ static func _flood(u: BUnit, start: Vector2i, mp: int, mode: int, target: Vector
 						continue
 					if not in_move_rect(n):
 						continue
-					var ga := g + n.x + n.y * W
-					if Mem.r8(ga) != 0xff:
+					var ni := n.x + n.y * W
+					if grid[ni] != 0xff:
 						continue
-					var t := Rules.terrain_at(n)
-					if not costs.has(t):
-						costs[t] = Rules.move_cost(u, t)
-					var mc: int = costs[t]
+					var mc: int = cost[ni]
 					if mc == 0xff or c + mc > mp:
 						continue
 					if mp != 0xff and mode != 0 and zoc != 3 and not ai_area_ok(u, n):
 						continue
-					var o := Rules.unit_at(n)
-					if o != null and zoc != 2 and not passing:
-						if hostile(u, o, false) and (zoc_on or not scripted):
+					var os := occ[ni]
+					if os != 0xff and zoc != 2 and not passing:
+						if hostile(u, units[os], false) and (zoc_on or not scripted):
 							continue
 					var nc := (c + mc) & 0xff
-					Mem.w8(ga, nc)
+					grid[ni] = nc
+					Mem.w8(g + ni, nc)
 					changed = true
 					if nxt > c + mc:
 						if zoc_on and not scripted:
-							if not in_enemy_zoc(u, n, false):
+							if stop[ni] == 0:
 								nxt = nc
 								if nxt > above:
 									nxt = above
 						else:
 							nxt = nc
-					if (mode & 8) and layer_a.is_valid() and Rules.slot_at(n) == 0xff:
+					if (mode & 8) and layer_a.is_valid() and os == 0xff:
 						var a: int = layer_a.call(n)
-						if a != 0xff and Effects.battle.units[a].state == 2:
+						if a != 0xff and units[a].state == 2:
 							return a
 					if (mode & 2) and n == target:
 						return 1
@@ -239,6 +261,44 @@ static func _flood(u: BUnit, start: Vector2i, mp: int, mode: int, target: Vector
 			elif nxt > above:
 				nxt = above
 	return NONE
+
+
+## Stop-cell table of in_enemy_zoc for every cell (one pass per flood; the result per cell is the same as calling
+## in_enemy_zoc on it).
+static func zoc_table(u: BUnit, use_side: bool, occ: PackedByteArray, W: int, H: int) -> PackedByteArray:
+	var N := W * H
+	var stop := PackedByteArray()
+	stop.resize(N)
+	var units: Array = Effects.battle.units
+	# 先制攻击 interceptors (player-controlled movers only)
+	var traps: Array = []
+	if (u.flags & 0x80) == 0 and u.ai == 7:
+		for x: BUnit in units:
+			if x.state != 2 or x.side() == u.side() or x.hp == 0:
+				continue
+			var v := x.eff(0x52, 0x51, 0, 0)
+			if v != 0 and x.byte(0x22) < (v & 0xff):
+				traps.append(Rules.attack_cells(x, x.pos))
+	var ignore := Rules.passes(u) or u.eff(0x37, 0x29, 1, 1) != 0
+	for cells: Array in traps:
+		for c: Vector2i in cells:
+			var ti := c.x + c.y * W
+			if occ[ti] == 0xff:
+				stop[ti] = 1
+	if ignore:
+		return stop
+	# a hostile unit marks its 4 neighbours
+	for i in N:
+		var os := occ[i]
+		if os == 0xff or not hostile(u, units[os], use_side):
+			continue
+		var x := i % W
+		var y := i / W
+		if y > 0: stop[i - W] = 1
+		if x < W - 1: stop[i + 1] = 1
+		if y < H - 1: stop[i + W] = 1
+		if x > 0: stop[i - 1] = 1
+	return stop
 
 
 ## The cells a flood reached (grid ≠ 0xff).

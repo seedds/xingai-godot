@@ -580,6 +580,13 @@ static func weaken(opp: BUnit, k: int, v: int) -> int:
 ## StatPair 0x40d2ab: [A's stat kA, D's stat kD] with 偷梁换柱 / 批亢捣虚, auras, the opponent's 忽视能力 and (unless
 ## no_terrain) the terrain % of A's own tile (AI candidate with EV 4065) and D's real tile.
 static func stat_pair(a: BUnit, ka: int, d: BUnit, kd: int, no_terrain: bool) -> Array:
+	Effects.begin_cache()
+	var r := _stat_pair(a, ka, d, kd, no_terrain)
+	Effects.end_cache()
+	return r
+
+
+static func _stat_pair(a: BUnit, ka: int, d: BUnit, kd: int, no_terrain: bool) -> Array:
 	var va := unit_stat(a, ka, d.eff(0x6a, 0x6a, 1, 0))
 	va = auras(a, ka, va)
 	va = weaken(d, ka, va)
@@ -860,6 +867,13 @@ static func direction(a: BUnit, d: BUnit, rate: int) -> int:
 
 ## PhysHitRate 0x43b623.
 static func phys_hit_rate(a: BUnit, d: BUnit) -> int:
+	Effects.begin_cache()
+	var r := _phys_hit_rate(a, d)
+	Effects.end_cache()
+	return r
+
+
+static func _phys_hit_rate(a: BUnit, d: BUnit) -> int:
 	if attack_mode() == 2:
 		return 100
 	if is_ranged(a) and d.eff(0x2f, 0x4e, 1, 1) != 0:
@@ -905,6 +919,13 @@ static func hit_roll(rate: int, mode: int) -> bool:
 
 ## CritRate 0x40c7d8: Curve(D's 士气, A's 士气) + 100 with 致命一击 bit 1.
 static func crit_rate(a: BUnit, d: BUnit) -> int:
+	Effects.begin_cache()
+	var r := _crit_rate(a, d)
+	Effects.end_cache()
+	return r
+
+
+static func _crit_rate(a: BUnit, d: BUnit) -> int:
 	var p := stat_pair(a, 4, d, 4, false)
 	var r := crit_curve(p[1], p[0])
 	if a.eff(0x33, 0x31, 3, 0) & 1:
@@ -914,6 +935,13 @@ static func crit_rate(a: BUnit, d: BUnit) -> int:
 
 ## DoubleRate 0x405cb9: 100 with 主动连击, else Curve(D's 爆发, A's 爆发).
 static func double_rate(a: BUnit, d: BUnit) -> int:
+	Effects.begin_cache()
+	var r := _double_rate(a, d)
+	Effects.end_cache()
+	return r
+
+
+static func _double_rate(a: BUnit, d: BUnit) -> int:
 	if a.eff(0x34, 0x42, 1, 1) != 0:
 		return 100
 	var p := stat_pair(a, 3, d, 3, false)
@@ -996,6 +1024,13 @@ static func doom(a: BUnit, dmg: int, d: BUnit, kind: int) -> int:
 ## CalcDamage 0x43bc5a(A, D, preview, mode): mode 0 first strike, 1 counter, 2 second strike. Returns
 ## [damage (≤ D's HP), raw damage before that cap]; 0 = a miss (the hit roll happens here unless preview).
 static func calc_damage(a: BUnit, d: BUnit, preview: bool, mode: int) -> Array:
+	Effects.begin_cache()
+	var r := _calc_damage(a, d, preview, mode)
+	Effects.end_cache()
+	return r
+
+
+static func _calc_damage(a: BUnit, d: BUnit, preview: bool, mode: int) -> Array:
 	if Mem.r8(d.addr + 4) == 0xff:
 		return [0, 0]
 	var dmg := 0
@@ -1337,6 +1372,13 @@ static func target_valid(s: int, c: BUnit, t: BUnit) -> String:
 
 ## Strategy hit rate 0x43b730(C, T, s).
 static func strat_hit_rate(c: BUnit, t: BUnit, s: int) -> int:
+	Effects.begin_cache()
+	var r := _strat_hit_rate(c, t, s)
+	Effects.end_cache()
+	return r
+
+
+static func _strat_hit_rate(c: BUnit, t: BUnit, s: int) -> int:
 	var e := s_effect(s)
 	if e == 33 and Mem.r32(t.addr) < 210:
 		return 0
@@ -1385,6 +1427,13 @@ static func strat_hit_test(c: BUnit, t: BUnit, s: int) -> bool:
 ## critical / 末日审判); preview = no rolls (the AI's evaluation). Returns the value (MP for 吸收MP; 換血 may be
 ## negative = a heal).
 static func strat_damage(c: BUnit, t: BUnit, s: int, flag: int, preview := false) -> int:
+	Effects.begin_cache()
+	var r := _strat_damage(c, t, s, flag, preview)
+	Effects.end_cache()
+	return r
+
+
+static func _strat_damage(c: BUnit, t: BUnit, s: int, flag: int, preview := false) -> int:
 	if Mem.r8(STRAT_ITEM) == 1:
 		return -1      # attack item used as a strategy: the caller supplies the item value
 	var e := s_effect(s)
@@ -1459,6 +1508,13 @@ static func strat_crit_doom(c: BUnit, t: BUnit, d: int) -> int:
 ## Heal amount 0x43c5df(T, s, C, preview): 八阵图 / 玄武 the missing HP; MP recovery the record's MP; the 補給 and 白虎
 ## by the caster's spirit (with terrain), + rand(11) when rand(200) < T's 士气; halved under poison; capped.
 static func heal_amount(t: BUnit, s: int, c: BUnit, preview: bool) -> int:
+	Effects.begin_cache()
+	var r := _heal_amount(t, s, c, preview)
+	Effects.end_cache()
+	return r
+
+
+static func _heal_amount(t: BUnit, s: int, c: BUnit, preview: bool) -> int:
 	var id := mg(MG_ID, s)
 	var h := 0
 	if id == 12 or id == 28:

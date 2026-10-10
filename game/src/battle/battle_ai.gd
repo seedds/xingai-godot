@@ -239,6 +239,8 @@ func _act(unit: BUnit) -> void:
 			else:
 				var s := choice_strategy
 				var cell := st.units[choice_target].pos if choice_target != NONE else u.pos
+				if Rules.ev(4087) == 0:
+					await st.ai_preview(u, 2, choice_target, s)
 				if await st.strategy.cast(s, u, cell):
 					u.flags = u.flags | 6
 				Mem.w8(BattleStage.LAST_ACTION, 2)
@@ -1014,8 +1016,11 @@ func _move_along_path() -> void:
 	if cells.is_empty():
 		Mem.w8(Rules.WALKED, 0)
 		return
-	if st.view != null:
-		await st.view.ensure_visible(u.pos, not Game.autoplay)
+	# 0x43a9c0: a scripted unit only brings the camera; else the selection display 0x441488(U, 0, 0xff, 0xff)
+	if u.flags & 0x80:
+		await st.scroll_cell(u.pos)
+	else:
+		await st.ai_preview(u, 0, 0xff, 0xff)
 	await st.actions.move_unit(u, cells)
 	if (u.flags & 0x80) == 0:
 		u.flags = u.flags | 4
@@ -1053,6 +1058,7 @@ func _physical_attack() -> void:
 			t = x
 			break
 	st.actions.face(u, t.pos)
+	await st.ai_preview(u, 1, t.slot, 0xff)
 	if Rules.can_use_skill(u) != 0:
 		await st.actions.bisha_attack(u, t)
 	else:

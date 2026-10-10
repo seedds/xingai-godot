@@ -1902,9 +1902,47 @@ func result_panel(u: BUnit, kind: int, hp_loss: int, mp_loss: int, exp_gain: int
 	await ResultPanel.show(self, u, kind, hp_loss, mp_loss, exp_gain, wexp, aexp, long_wait)
 
 
+## AI action preview 0x441488(u, mode, t, s) (mode 0 move, 1 attack, 2 strategy): the view centres on the unit;
+## unless (mode 0 with 极速移动, byte 0x501a79) or the unit is hidden by the fog (0x42a67b), two frames of 4 rounds
+## (a click ends them): the cursor on the unit, the range (s = 0xff: the attack shape 0x43f8c0, else the strategy's
+## range) — for mode 0 only in the second frame — and for modes 1 / 2 the cursor on the target in the second frame.
+## [G] Mode 0's range is taken as the movement range (view flag +0x68), the action marker 0x44049e is not drawn.
+func ai_preview(u: BUnit, mode: int, t: int, s: int) -> void:
+	await scroll_cell(u.pos)
+	if Game.autoplay or view == null:
+		return
+	if mode == 0 and Mem.r8(0x501a79) != 0:
+		return
+	if Mem.r8(0x501bd2) >= 2 and Rules.evb(4087) == 0:
+		Rules.vis_update()
+		if Mem.r8(Rules.VIS + u.pos.x + u.pos.y * Rules.map_w()) & 0xd == 0:
+			return
+	view.cursor_cell = u.pos
+	for k in 2:
+		if mode == 0:
+			if k == 1:
+				var cells := {}
+				for c in Movement.move_range(u, u.move_points()):
+					cells[c] = true
+				view.set_move_cells(cells)
+		elif k == 0:
+			if s == 0xff:
+				view.set_attack_cells(Rules.attack_cells(u, u.pos))
+			else:
+				view.set_attack_cells(Rules.range_cells(Rules.strat_range(u, s), u.pos))
+		elif t >= 0 and t < 250 and units[t].state == 2:
+			view.cursor_cell = units[t].pos
+		var clicks := Game.clicks
+		await wait(0.4)
+		if Game.clicks != clicks:
+			break
+	view.clear_highlights()
+	ai.clear_ai_values()
+
+
 ## 0x45503f: centre the view on a cell (scrolled by 0x454cef, clamped to the map); nothing while byte EV[4087] ≠ 0.
 func scroll_cell(c: Vector2i) -> void:
-	if Rules.evb(4087) != 0:
+	if Rules.evb(4087) != 0 or view == null:
 		return
 	await view.center_on(c)
 

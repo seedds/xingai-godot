@@ -10,7 +10,7 @@
 #                                       simulator engine library from tools/build_ios_sim_lib.sh
 #
 # Needs Xcode, Godot 4.7.2 (GODOT=path overrides `godot`) with its iOS export template (ios.zip, see
-# docs/BUILDING.md) and the HD pack in game/assets_hd (the iOS preset leaves the original pictures out).
+# docs/BUILDING.md). The HD pack (game/assets_hd) is optional.
 # Signing is automatic with the team in the iOS preset (TEAM=… overrides). IOS_ENV='{"WG_…":"…"}' passes
 # environment variables to the launched app (debug switches, see docs/DEVELOPMENT.md), on a device or simulator.
 set -euo pipefail
@@ -34,10 +34,6 @@ preset_value() {   # option of the iOS preset in export_presets.cfg
 bundle_id="$(preset_value application/bundle_identifier)"
 team="${TEAM:-$(preset_value application/app_store_team_id)}"
 
-if [ ! -d "$root/game/assets_hd/gfx" ]; then
-  echo "game/assets_hd is missing: the iOS build ships the HD pack only (see docs/HD_GRAPHICS.md)" >&2
-  exit 1
-fi
 ver="$("$godot" --version | cut -d. -f1-3)"
 tpl="$HOME/Library/Application Support/Godot/export_templates/${ver}.stable/ios.zip"
 if [ ! -f "$tpl" ]; then

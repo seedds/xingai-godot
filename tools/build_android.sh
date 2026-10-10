@@ -7,7 +7,7 @@
 #
 # Needs Godot 4.7.2 (GODOT=path overrides `godot`) with its Android export template (android_release.apk, see
 # docs/BUILDING.md), a JDK 17+ and the Android SDK (build-tools and platform-tools) set in Godot's editor settings
-# (Export → Android), and the HD pack in game/assets_hd (the Android preset leaves the original pictures out).
+# (Export → Android). The HD pack (game/assets_hd) is optional.
 # Signing: the release key, so the build installs over the published ones and keeps their saves. By default
 # ~/.android/wagang-release.keystore (alias wagang) with its password in the login keychain (item
 # wagang-android-keystore); GODOT_ANDROID_KEYSTORE_RELEASE_PATH / _USER / _PASSWORD override it.
@@ -22,10 +22,6 @@ case "${1:-}" in
   *) sed -n '2,13p' "$0"; exit 2 ;;
 esac
 
-if [ ! -d "$root/game/assets_hd/gfx" ]; then
-  echo "game/assets_hd is missing: the Android build ships the HD pack only (see docs/HD_GRAPHICS.md)" >&2
-  exit 1
-fi
 ver="$("$godot" --version | cut -d. -f1-3)"
 data="$HOME/Library/Application Support/Godot"
 [ "$(uname)" = Darwin ] || data="${XDG_DATA_HOME:-$HOME/.local/share}/godot"

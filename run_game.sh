@@ -1,11 +1,13 @@
 #!/bin/bash
-# Run the game from source with Godot 4.7 (brew install --cask godot).
-# First run: download the HD graphics pack (game/assets_hd; without it the original art is used). Godot's import
-# cache (game/.godot) is (re)built when it is missing or older than a script, since without it the scripts' class
-# names are not registered.
+# Run the game from source with Godot 4.7 (brew install --cask godot). Arguments go to Godot (e.g. --headless).
+# Needs the converted game data in game/assets (README.md; docs/BUILDING.md, "Re-generating the game data"). Godot's
+# import cache (game/.godot) is (re)built when it is missing or older than a script, since without it the scripts'
+# class names are not registered.
 cd "$(dirname "$0")" || exit 1
-if [ ! -d game/assets_hd/gfx ]; then
-  tools/get_hd_pack.sh || echo "Could not download the HD graphics pack; using the original art."
+if [ ! -f game/assets/data/exe_image.bin ] || [ ! -d game/assets/scripts ]; then
+  echo "No converted game data in game/assets. Put the original game at orig/ and convert it" >&2
+  echo "(README.md; docs/BUILDING.md, \"Re-generating the game data\")." >&2
+  exit 1
 fi
 cd game || exit 1
 cache=.godot/global_script_class_cache.cfg

@@ -1,7 +1,12 @@
+# NOT ACTIVE YET: this workflow needs the converted game data (game/assets) in the repository, and game/assets is
+# still gitignored (it is regenerated from the original game by the converters, docs/BUILDING.md). The repository has
+# no GitHub remote either. Until both change, nothing runs this file; it is kept working in principle.
+#
 # Builds the game for macOS, Windows, iPhone and Android on every push to main and publishes them as a GitHub release.
 # The build number is the workflow's run number, so it increases with every build: tag build-N, version 1.0.N.
 # The iPhone .ipa (built on a macOS runner) and the Android .apk are added to the release after the others.
-# Only the newest KEEP_BUILDS builds are kept (each is about 4.4 GB).
+# Every build ships the original pictures (there is no HD pack for this game yet, docs/HD_GRAPHICS.md).
+# Only the newest KEEP_BUILDS builds are kept (each is about 3 GB: four packages of about 0.7 GB).
 name: Release builds
 
 on:
@@ -73,12 +78,6 @@ jobs:
             templates/windows_release_x86_64.exe -d "$templates"
           rm /tmp/templates.tpz /tmp/godot.zip
 
-      - name: Add the HD graphics pack
-        # releases ship the HD art only (see the script)
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: .github/scripts/add_hd_pack.sh
-
       - name: Stamp the version
         run: .github/scripts/stamp_version.sh "${VERSION}" "${BUILD}"
 
@@ -97,7 +96,7 @@ jobs:
 
       - name: Smoke test the exported data
         # the .pck is the same on every platform: play the first scenarios headless from the Windows build's pack
-        # and make sure no picture is missing now that the originals are left out
+        # and make sure no picture or data file is missing
         run: |
           code=0
           WG_START=0 WG_AUTO=1 WG_GOD=1 WG_STOP=3 WG_NOVIDEO=1 timeout 900 \
@@ -196,11 +195,6 @@ jobs:
           unzip -q -j /tmp/templates.tpz templates/version.txt templates/ios.zip -d "$templates"
           rm /tmp/templates.tpz /tmp/godot.zip
 
-      - name: Add the HD graphics pack
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: .github/scripts/add_hd_pack.sh
-
       - name: Stamp the version
         run: .github/scripts/stamp_version.sh "${VERSION}" "${BUILD}"
 
@@ -271,11 +265,6 @@ jobs:
           test -x "${JAVA_HOME_17_X64}/bin/java" && test -x "${ANDROID_HOME}/platform-tools/adb"
           ls "${ANDROID_HOME}/build-tools"
 
-      - name: Add the HD graphics pack
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: .github/scripts/add_hd_pack.sh
-
       - name: Stamp the version
         run: .github/scripts/stamp_version.sh "${VERSION}" "${BUILD}"
 
@@ -306,16 +295,17 @@ jobs:
           apksigner="$(ls -d "${ANDROID_HOME}"/build-tools/*/apksigner | sort -V | tail -1)"
           "$apksigner" verify --print-certs "$apk" | tee /tmp/certs.txt
           grep -q "certificate SHA-256 digest: ${ANDROID_CERT_SHA256}$" /tmp/certs.txt
-          # the engine, the scripts and the game data are in the package, the pictures in HD only
+          # the engine, the scripts, the game data, the GBK table, the bundled font and the original pictures
           unzip -l "$apk" > /tmp/apk.txt
           grep -q " lib/arm64-v8a/libgodot_android.so$" /tmp/apk.txt
           grep -q " assets/project.binary$" /tmp/apk.txt
           grep -q " assets/src/touch/touch_shell.tscn.remap$" /tmp/apk.txt
           grep -q " assets/assets/data/exe_image.bin$" /tmp/apk.txt
-          n=$(grep -c " assets/assets_hd/.*\.webp$" /tmp/apk.txt)
-          echo "HD pack: $n images"
-          test "$n" -ge 3400
-          if grep -E " assets/assets/gfx/(portraits|maps|units)/.*\.png$" /tmp/apk.txt | head -3 | grep .; then exit 1; fi
+          grep -q " assets/assets/data/gbk.bin$" /tmp/apk.txt
+          grep -q " assets/assets/fonts/NotoSerifSC-game.otf$" /tmp/apk.txt
+          n=$(grep -cE " assets/assets/gfx/.*\.(png|jpg)$" /tmp/apk.txt)
+          echo "pictures: $n"
+          test "$n" -ge 8000
           ls -la build
 
       - name: Add it to the release

@@ -95,6 +95,15 @@ func _wait(t: float) -> void:
 	await get_tree().create_timer(t).timeout
 
 
+## Wait until the player phase is back at its top level (at most `limit` seconds).
+func _wait_idle(limit := 8.0) -> void:
+	var t := 0.0
+	while not st.input.idle and t < limit:
+		await _wait(0.1)
+		t += 0.1
+	await _wait(0.2)
+
+
 func fx_test(ids: PackedStringArray) -> void:
 	await _wait(0.6)
 	var u := st.input._player_units()[0]
@@ -172,8 +181,13 @@ func touch_cancel_test() -> void:
 	await _wait(0.9)
 	expect.call(st.ui.menu._active, "command menu open after moving")
 	await _tap(_empty_point(st.ui.menu._rect, []))
-	await _wait(0.5)
-	expect.call(not st.ui.menu._active and u.pos == orig, "a tap outside the command menu undoes the move")
+	# 6.6 (0x43dde0): cancelling the menu undoes the move and returns to the top level (after the script poll
+	# 0x44c601 that follows every click on a unit)
+	await _wait_idle()
+	expect.call(not st.ui.menu._active and u.pos == orig and st.input.idle,
+		"a tap outside the command menu undoes the move, back at the top level")
+	await _click_cell(orig)
+	await _wait(0.4)
 	await _click_cell(dest)
 	await _wait(0.9)
 	if not Rules.collect(u, u.pos, Rules.attack_codes(u), 0).is_empty():
@@ -187,10 +201,13 @@ func touch_cancel_test() -> void:
 	else:
 		print("TOUCHCANCEL: no enemy in reach, attack-range check skipped")
 	await _tap(_empty_point(st.ui.menu._rect, []))
-	await _wait(0.5)
-	expect.call(u.pos == orig and not st.input.idle, "undone again, unit still selected")
+	await _wait_idle()
+	expect.call(u.pos == orig and st.input.idle, "undone again, back at the top level")
+	await _click_cell(orig)
+	await _wait(0.4)
+	expect.call(not st.input.idle, "the unit is selected again")
 	await _tap(_empty_point(Rect2(), reach))
-	await _wait(0.5)
+	await _wait_idle()
 	expect.call(st.input.idle, "a tap outside the move range drops the selection")
 	Game.shell._activate(TouchShell.MENU)
 	await _wait(0.5)
@@ -213,12 +230,85 @@ func victory_test() -> void:
 	await _wait(1.0)
 	await _click_cell(_empty_cell(), MOUSE_BUTTON_RIGHT)
 	await _wait(0.4)
-	for k in 3:
+	for k in BattleInput.SYSTEM_MENU.find("胜利条件"):
 		await _key("ui_down")
 	await _key("ui_accept")
 	await _wait(2.0)                           # let the text type out
 	await shot("victory")
 	print("== bot: victory window shown")
+	st.get_tree().quit()
+
+
+## WG_BOTMODE=display: the display options of 环境设定 (§5.6) — toggled by their hotkeys (5 6 E F G O; I, AI方针, is
+## on in the exe's initial data), then a
+## unit's move range with the path preview, its target picker, and the 环境设定 dialog from the system menu.
+func display_test() -> void:
+	Game.set_meta("bot_owns_input", true)
+	await _wait(1.0)
+	for key in [KEY_5, KEY_6, KEY_E, KEY_F, KEY_G, KEY_O]:
+		var ev := InputEventKey.new()
+		ev.keycode = key
+		ev.pressed = true
+		Input.parse_input_event(ev)
+		await get_tree().process_frame
+		ev = ev.duplicate()
+		ev.pressed = false
+		Input.parse_input_event(ev)
+		await get_tree().process_frame
+	var on := []
+	for k in 21:
+		if BattleHUD.opt(k):
+			on.append(k)
+	print("DISPLAY options on: ", on)
+	await shot("options_idle")
+	var u: BUnit = null
+	for x in st.input._player_units():
+		if x.active() and (x.flags & 6) == 0:
+			u = x
+			break
+	if u == null:
+		st.get_tree().quit()
+		return
+	await _click_cell(u.pos)
+	await _wait(0.5)
+	# hover a reachable cell towards the nearest enemy for the path preview
+	var reach := Movement.move_range(u, u.move_points())
+	var best := u.pos
+	var bd := 1 << 30
+	for e in st.units:
+		if e.active() and e.is_enemy_of(u):
+			for c in reach:
+				var d := Grid.manhattan(c, e.pos)
+				if d >= 1 and d < bd:
+					bd = d
+					best = c
+	var vp := st.view.cell_center(best) - st.view.camera.position
+	var mv := InputEventMouseMotion.new()
+	mv.position = get_viewport().get_screen_transform() * vp
+	Input.parse_input_event(mv)
+	await _wait(0.5)
+	print("DISPLAY threat: ", st.hud._threat.keys(), " path: ", st.hud._path)
+	await shot("options_move")
+	await _click_cell(best)
+	await _wait(0.9)
+	if st.ui.menu._active:
+		await _key("ui_accept")                # 攻击 (if enabled)
+		await _wait(0.5)
+		await shot("options_picker")
+		await _click_cell(u.pos, MOUSE_BUTTON_RIGHT)
+		await _wait(0.4)
+		await _click_cell(u.pos, MOUSE_BUTTON_RIGHT)
+		await _wait(0.4)
+	await _wait_idle()
+	await _click_cell(_empty_cell(), MOUSE_BUTTON_RIGHT)
+	await _wait(0.4)
+	await shot("sysmenu")
+	for k in BattleInput.SYSTEM_MENU.find("环境设定"):
+		await _key("ui_down")
+	await _key("ui_accept")
+	await _wait(0.5)
+	await shot("kankyou")
+	print("DISPLAY: done")
 	st.get_tree().quit()
 
 
@@ -247,14 +337,14 @@ func duel_test() -> void:
 	st.get_tree().quit()
 
 
-## WG_BOTMODE=load: open the system menu, pick 读取进度 and load slot WG_BOTSLOT (default 9),
+## WG_BOTMODE=load: open the system menu, pick 读取 and load slot WG_BOTSLOT (default 9),
 ## exercising an in-game load from inside the running battle.
 func load_test() -> void:
 	await _wait(0.6)
 	await _click_cell(_empty_cell(), MOUSE_BUTTON_RIGHT)
 	await _wait(0.4)
 	await shot("sysmenu")
-	for k in 5:
+	for k in BattleInput.SYSTEM_MENU.find("读取"):
 		await _key("ui_down")
 	await _key("ui_accept")
 	await _wait(0.4)
@@ -283,11 +373,17 @@ func run_phase() -> void:
 	if OS.get_environment("WG_BOTMODE") == "victory":
 		await victory_test()
 		return
+	if OS.get_environment("WG_BOTMODE") == "display":
+		await display_test()
+		return
 	Game.set_meta("bot_owns_input", true)      # stops WG_ACCEPT_SPAM while the bot plays the phase
 	await _wait(0.6)
 	for u in st.input._player_units():
 		if not u.active() or (u.flags & 6) != 0:
 			continue
+		if st.ui.menu._active:
+			break                              # the end prompt came up (no unit left to command)
+		await _wait_idle()
 		await _click_cell(u.pos)
 		await _wait(0.4)
 		await shot("select_%s" % u.person.name)
@@ -332,7 +428,11 @@ func run_phase() -> void:
 			await _key("ui_accept")
 			await _wait(0.4)
 	# end turn: the automatic prompt after the last unit (0x44e0d9), else via the system menu (opened by a right click
-	# on an empty cell, or in the touch shell by its 菜单 button)
+	# on an empty cell, or in the touch shell by its 菜单 button); first the script poll after the action
+	var t := 0.0
+	while not st.ui.menu._active and not st.input.idle and t < 8.0:
+		await _wait(0.1)
+		t += 0.1
 	await _wait(0.5)
 	if st.ui.menu._active:
 		await shot("autoprompt")

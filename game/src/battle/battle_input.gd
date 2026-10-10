@@ -4,8 +4,8 @@ extends RefCounted
 ## selection 0x43d4fc, the command menu (dialog 0x117: 攻击 策略 道具 交换 围攻 必杀 待命 取消, enable rules computed
 ## once per menu), the target picker 0x45533d, the strategy / 武将技 / item lists, 交换 0x4151fe, 围攻 0x41d693,
 ## AfterPlayerAction (再次移动 0x415d93, 大杀四方 / 二次行动, 围攻 helpers), NextUnit 0x44e706 and the end prompt.
-## The original's toolbar (结束回合, 检索未执行部队, 武将一览, 胜利条件, 保存 / 读取, 结束游戏) is a system menu
-## opened by a right click on an empty cell; a right click on a unit opens its window.
+## The original's menu bar / toolbar (结束回合, 检索未执行部队, 武将一览, 持有道具一览, 胜利条件, 环境设定, 保存 / 读取,
+## 结束游戏) is a system menu opened by a right click on an empty cell; a right click on a unit opens its window.
 
 const MSG_ENEMY := "这是敌军部队。"
 const MSG_FRIEND := "这是友军部队。"
@@ -28,6 +28,12 @@ var end_turn := false
 var picked_cell := Vector2i(-1, -1)   # the cell of the last picker result 0xfe (an empty cell accepted)
 var _bot: InputBot
 var _menu_req := false
+## What the map shows of the selection, read by the display options (§5.6, BattleHUD): 1 a move range (cursor
+## +0x64), 2 a target picker (+0x68), 0 neither; `range_up`: an attack-range overlay is up (0x4b5dd5 ≠ 0xff);
+## `shown_reach`: the move range on display (预览行动路线).
+var display := 0
+var range_up := false
+var shown_reach: Dictionary = {}
 
 
 func _init(s: BattleStage) -> void:
@@ -214,9 +220,7 @@ func move_again(u: BUnit) -> void:
 		return
 	u.flags = u.flags & ~6
 	Audio.play_se(SoundMap.se_name(0x27))
-	if Game.autoplay or Game.demo:
-		await st.ai.act(u)
-	else:
+	if not (Game.autoplay or Game.demo):     # [G] autoplay stays put (ai.act could also attack)
 		await move_select(u, [0x0b, 0xff, 0xff, 0xff], 0, 1)
 	u.flags = u.flags | 6
 	Mem.w8(Rules.WALKED, 0)
@@ -252,6 +256,7 @@ func unit_command(u: BUnit) -> bool:
 			5: await cmd_bisha(u)
 			6: await cmd_siege(u)
 			7: await cmd_exchange(u)
+		st.ai.clear_ai_values()              # 0x422386 after an attack / cast (0x441488)
 	if sel == 0xff:
 		u.flags = u.flags & ~4
 		if u.pos != save_pos:
@@ -311,6 +316,10 @@ func move_select(u: BUnit, codes: Array, mp: int, mode: int) -> bool:
 	st.view.set_move_cells(reach)
 	if codes[0] != 0xff:
 		st.view.set_attack_cells(Rules.codes_cells(codes, u.pos))
+	var shown := [display, range_up, shown_reach]
+	display = 1
+	range_up = codes[0] != 0xff
+	shown_reach = reach
 	var c := Vector2i(0xff, 0xff)
 	while why == -1 and not st.battle_finished():
 		var r := await _click()
@@ -351,6 +360,10 @@ func move_select(u: BUnit, codes: Array, mp: int, mode: int) -> bool:
 				u.dir = 1      # the right click's cell is (0xff, 0xff): Face turns the unit right (quirk)
 			st.refresh_units()
 	st.view.clear_highlights()
+	display = shown[0]
+	range_up = shown[1]
+	shown_reach = shown[2]
+	st.ai.clear_ai_values()                  # 0x422386: the AI仇恨 cache ends with the move selection
 	if why == 3:
 		Audio.play_se(SoundMap.se_name(0))
 		return true
@@ -493,6 +506,10 @@ func pick_target(u: BUnit, codes: Array, mode: int, s := -1, item_mode := 0) -> 
 		elif s >= 0 and Rules.mg(Rules.MG_ID, s) != 0x1a:
 			area = Rules.strat_area(u, s)
 	st.view.set_attack_cells(cells)
+	var shown := [display, range_up, shown_reach]
+	display = 2
+	range_up = true
+	shown_reach = {}
 	var result := 0xff
 	while not st.battle_finished():
 		var r := await _click()
@@ -545,6 +562,9 @@ func pick_target(u: BUnit, codes: Array, mode: int, s := -1, item_mode := 0) -> 
 		result = slot
 		break
 	st.view.clear_highlights()
+	display = shown[0]
+	range_up = shown[1]
+	shown_reach = shown[2]
 	return result
 
 
@@ -626,19 +646,6 @@ func strategy_list(u: BUnit) -> int:
 	return strats[i]
 
 
-## How the dispatcher picks the target of strategy s (0x4233f8 → 0x45533d): 0 none (self / whole map), 2 an enemy,
-## 3 an ally, 4 a cell.
-func strategy_pick_mode(s: int) -> int:
-	if st.strategy.has_method("pick_mode"):
-		return st.strategy.pick_mode(s)
-	match Rules.mg(Rules.MG_ID, s):
-		1, 22, 23, 24, 25, 28, 29, 31, 34, 35:
-			return 0
-		27:
-			return 4
-	return 3 if Rules.s_side(s) == 1 else 2
-
-
 ## Situation check, target choice and the cast. Returns true when the strategy was performed.
 func cast_flow(u: BUnit, s: int) -> bool:
 	var why := Rules.situation(s, u)
@@ -646,7 +653,7 @@ func cast_flow(u: BUnit, s: int) -> bool:
 		if why != "-":
 			await msg(why)
 		return false
-	var mode := strategy_pick_mode(s)
+	var mode: int = st.strategy.pick_mode(s)     # 0 none, 2 enemy, 3 ally, 4 cell
 	var cell := u.pos
 	if mode != 0:
 		var codes := [Rules.strat_range(u, s), 0xff, 0xff, 0xff]
@@ -835,31 +842,16 @@ func next_unit() -> bool:
 	return true
 
 
-## 部队一览: every unit on the field by side; picking one centres the camera and shows its status.
-func unit_list() -> void:
-	var lst: Array[BUnit] = []
-	var labels := []
-	for grp in [["我军", 0, 20], ["友军", 20, 60], ["敌军", 60, 250]]:
-		for i in range(grp[1], grp[2]):
-			var u := st.units[i]
-			if u.state == 2 and u.pid >= 0:
-				lst.append(u)
-				labels.append("%s %s　%s Lv%d　兵 %d/%d%s" % [grp[0], u.person.name, u.person.class_name_str(), u.level(), u.hp, u.max_hp(), "　（已行动）" if (u.flags & 2) and i < 60 else ""])
-	if lst.is_empty():
-		return
-	while true:
-		var k := await st.ui.menu.choose(labels, Vector2(-1, -1), true, "部队一览", [], 320)
-		if k < 0:
-			return
-		var u := lst[k]
-		await st.view.center_on(u.pos)
-		st.view.cursor_cell = u.pos
-		st.hud.set_hover(u.pos)
-		await StatusPanel.show_person(st.ui, u.person)
+## The menu bar / toolbar (WM_COMMAND 0x474c97) as one menu: 0x6d 结束回合, 0x6e 检索未执行部队 (both battle only),
+## 0x69 武将一览 (dialog 186), 0x9cd5 持有道具一览 (dialog 325), 0x6a 胜利条件 (or "现在无法显示"), 0x6b 环境设定
+## (KANKYOU), 0x65 保存 (refused with "目前禁止存档" while u8 0x500fff = 0), 0x66 读取, 0x68 结束游戏 (→ the title).
+## [G] 战场缩小图, 历史情报, 练武场 and the 地形 / 宝物 lists are not offered here.
+const SYSTEM_MENU := ["结束回合", "检索未执行部队", "武将一览", "持有道具一览", "胜利条件", "环境设定", "保存", "读取",
+	"回到标题"]
 
 
 func system_menu() -> void:
-	var i := await st.ui.menu.choose(["结束回合", "检索未执行部队", "部队一览", "胜利条件", "存储进度", "读取进度", "回到标题"], Vector2(-1, -1), true)
+	var i := await st.ui.menu.choose(SYSTEM_MENU, Vector2(-1, -1), true)
 	var main: Node = Game.main
 	match i:
 		0:
@@ -868,13 +860,20 @@ func system_menu() -> void:
 			if not await next_unit():
 				end_turn = true
 		2:
-			await unit_list()
+			await PartyMenu.unit_list(st.ui)
 		3:
+			await PartyMenu.item_menu(st.ui)
+		4:
 			var t := st.victory_text if st.victory_text != "" else st.goal_text
 			await st.ui.dialog.talk(null, "", t if t != "" else "现在无法显示", false)
-		4:
-			await main.save_menu()
 		5:
-			await main.load_menu()
+			await Kankyou66.run(st.ui)
 		6:
+			if Mem.r8(0x500fff) == 0:
+				await st.ui.popup("目前禁止存档")
+			else:
+				await main.save_menu()
+		7:
+			await main.load_menu()
+		8:
 			main.to_title()

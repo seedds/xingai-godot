@@ -1184,11 +1184,15 @@ func sortie_list() -> Array[int]:
 
 
 # ------------------------------------------------------------------ deployment ops
-## op 0x44 battle_init (0x4121e2): pages reset, hit counters and 二次行动 bytes cleared, entries 0..19 = the sortie
+## op 0x44 battle_init (0x4121e2): pages reset, hit counters and 二次行动 bytes cleared, flags 0..255 cleared
+## (0x40c6cc), entries 0..19 = the sortie
 ## list, the rest empty; accumulators = EV 4017; visibility map cleared; sortie lists reset (0x41c96d).
 func op_battle_init(_ins: Dictionary) -> void:
 	Mem.w16(0x500ad4, 0)
+	Mem.w8(Mem.person_addr(0x3ff) + 0x19, 0)
 	Mem.fill(0x508a00, 0x200, 0)
+	for i in 256:
+		Mem.set_flag(i, false)
 	var ended := false
 	for j in 250:
 		var e := _entry(j)

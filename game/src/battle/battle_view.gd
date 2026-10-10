@@ -28,6 +28,8 @@ var goal_cells: Array[Vector2i] = []:
 		goal_cells = v
 		if overlay: overlay.queue_redraw()
 var patch_layer: Node2D
+var tint: Node2D
+var _tint_key := -1
 var marks: Dictionary = {}
 var _drag_from := Vector2.ZERO
 var _dragging := false
@@ -49,6 +51,10 @@ func _init() -> void:
 	units_layer = Node2D.new()
 	units_layer.y_sort_enabled = true
 	add_child(units_layer)
+	tint = Node2D.new()
+	tint.z_index = 4
+	tint.draw.connect(_draw_tint)
+	add_child(tint)
 	fx_layer = Node2D.new()
 	fx_layer.z_index = 5
 	add_child(fx_layer)
@@ -192,6 +198,18 @@ func _draw_overlay() -> void:
 		overlay.draw_circle(cell_center(c), 4, Color(1, 1, 1, 0.7))
 
 
+## Battle tint (0x72 sub 14 → 0x42aa4a): u8 0x501bd2 mode (0 off), u8 0x501bd3 level (% dark), u32 0x501bd4 colour.
+func _draw_tint() -> void:
+	if Mem.r8(0x501bd2) == 0 or map_w == 0:
+		return
+	var lvl := clampf(Mem.r8(0x501bd3) / 100.0, 0.0, 1.0)
+	if lvl <= 0.0:
+		return
+	var c := Mem.r32(0x501bd4)
+	var col := Color8(c & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff, int(lvl * 255))
+	tint.draw_rect(Rect2(Vector2.ZERO, Vector2(map_w * CELL, map_h * CELL)), col)
+
+
 func _draw_cursor(n: Node2D) -> void:
 	if not show_cursor:
 		return
@@ -212,6 +230,10 @@ func _draw_cursor(n: Node2D) -> void:
 func _process(delta: float) -> void:
 	if not _hl_move.is_empty() or not _hl_attack.is_empty():
 		overlay.queue_redraw()
+	var key := Mem.r32(0x501bd2) ^ (Mem.r16(0x501bd6) << 7)
+	if key != _tint_key:
+		_tint_key = key
+		tint.queue_redraw()
 	get_node("Cursor").queue_redraw()
 	_edge_scroll(delta)
 

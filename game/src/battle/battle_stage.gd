@@ -1499,7 +1499,7 @@ func op_battle_equipment(ins: Dictionary) -> bool:
 func op_battle_prepare(ins: Dictionary) -> void:
 	_sortie_rings(ins, 1)
 	Mem.w8(Game.SORTIE_MAX, 1)
-	await _build_sortie(0)
+	await build_sortie(0)      # ScriptHost: 0x418597 (max = 1 here, so never the selection window)
 
 
 ## 0x415c0d: 5 × u16 into the forced ring @0x4b09dc at [0x4b0a2c], 5 into the flag ring @0x4b0a04 at [0x4b0a30];
@@ -1517,38 +1517,6 @@ func _sortie_rings(ins: Dictionary, first: int) -> void:
 		last2 = k + r2
 		Mem.w16(Game.SORTIE_EXCLUDED + 2 * (last2 % 20), arg(ins, first + 5 + k))
 	Mem.w32(Game.SORTIE_RING + 4, 0 if last2 + 1 == 20 else last2 + 1)
-
-
-## Sortie builder 0x418597(param): the protagonist first unless a flag-ring entry is 0, then the forced army
-## members; the selection screen when the maximum differs from that count (+1 for a battle); writes the u16 list.
-func _build_sortie(param: int) -> void:
-	var lst: Array[int] = []
-	var any_zero := false
-	for i in 20:
-		if Mem.r16(Game.SORTIE_EXCLUDED + 2 * i) == 0:
-			any_zero = true
-			break
-	if not any_zero:
-		lst.append(0)
-	for i in 20:
-		var f := Mem.r16(Game.SORTIE_FORCED + 2 * i)
-		if f != 0 and f != 0xffff and f < 0x400 and Game.is_member(f):
-			lst.append(f)
-	var n := lst.size() + (1 if param != 1 else 0)
-	if Mem.r8(Game.SORTIE_MAX) < n:
-		Mem.w8(Game.SORTIE_MAX, n)
-	if Mem.r8(Game.SORTIE_MAX) != n:
-		var excluded: Array[int] = []
-		for i in 20:
-			excluded.append(Mem.r16(Game.SORTIE_EXCLUDED + 2 * i))
-		lst = await SortieScreen.choose(ui, self, Mem.r8(Game.SORTIE_MAX), lst, excluded)
-	for k in lst.size():
-		Mem.w16(SORTIE + 2 * k, lst[k])
-	if param != 1 and Mem.r32(Game.SORTIE_RING + 4) == 0:
-		Game.reset_sortie_params()
-	Mem.w16(SORTIE + 2 * lst.size(), 0xffff)
-	if OS.get_environment("WG_TRACE_BATTLE") != "":
-		print("  sortie -> %s" % [lst])
 
 
 ## op 0x4b (0x415e33): slot, x, y, dir, hidden (−1 → 0). In a battle (EV 4057 = 0xffff) a player entry gets the

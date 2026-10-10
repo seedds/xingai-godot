@@ -112,9 +112,9 @@ static func ai_area_ok(u: BUnit, c: Vector2i) -> bool:
 	return true
 
 
-## Trap 0x428b7a (counting form, trigger 0): for a player-controlled mover (m = 4) entering an empty cell, the
-## hostile units whose 先制攻击 (Q(0x52, 0x51, 0, 0) > their +0x22 count) range covers it. Mines (0x4749b5,
-## modern-war maps) are not implemented [open item].
+## Trap 0x428a53 (counting form, trigger 0): for a player-controlled mover (m = 4) entering an empty cell, the
+## hostile units whose 先制攻击 (Q(0x52, 0x51, 0, 0) > their +0x22 count) range covers it. 0x428b7a adds the mine
+## test (Mines.known) when that count is 0.
 static func trap_count(u: BUnit, c: Vector2i) -> int:
 	if u.flags & 0x80 or u.ai != 7:
 		return 0
@@ -134,7 +134,7 @@ static func trap_count(u: BUnit, c: Vector2i) -> int:
 ## InEnemyZOC / StopCell 0x437d59: a 先制攻击 trap stops; 穿越移动 or 突击移动 ignore zones; otherwise a hostile unit
 ## on an orthogonal neighbour makes the cell a stop cell (enterable, not left).
 static func in_enemy_zoc(u: BUnit, c: Vector2i, use_side: bool) -> bool:
-	if trap_count(u, c) != 0:
+	if trap_count(u, c) != 0 or Mines.known(u, c):
 		return true
 	if Rules.passes(u) or u.eff(0x37, 0x29, 1, 1) != 0:
 		return false
@@ -295,6 +295,11 @@ static func zoc_table(u: BUnit, use_side: bool, occ: PackedByteArray, W: int, H:
 			var ti := c.x + c.y * W
 			if occ[ti] == 0xff:
 				stop[ti] = 1
+	# known mines (Mines.known: player units only; the layer 0x510000 is all zeros without mines)
+	if u.kind == 0 and u.family() != 0x19 and Mines.any():
+		for i in N:
+			if stop[i] == 0 and Mines.known(u, Vector2i(i % W, i / W)):
+				stop[i] = 1
 	if ignore:
 		return stop
 	# a hostile unit marks its 4 neighbours

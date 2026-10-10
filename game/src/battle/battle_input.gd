@@ -689,6 +689,23 @@ func cmd_item(u: BUnit) -> void:
 		if i < 0:
 			return
 		var iid: int = items[i][0]
+		if st.actions.has_method("use_item_at") and BattleActions.item_handler(iid) == 10:
+			# handler 10 (0x41268e) picks its own target: thrown items (code item +0x13, enemies, byte 0x500ad7 = 1),
+			# 爆破石 (code 0xd), the other mine items (code 1) on a cell (0x500ad7 = 2), 探雷器 none
+			var typ := int(Game.item(iid).get("type", 0))
+			var cell := u.pos
+			if typ != 0x42:
+				var im := 1 if typ == 0x41 else 2
+				var code := int(Game.item(iid).get("unk_13", 0)) if typ == 0x41 else (0xd if typ == 0x3f else 1)
+				Mem.w8(Rules.STRAT_ITEM, im)
+				var tt := await pick_target(u, [code, 0xff, 0xff, 0xff], 2 if typ == 0x41 else 4, iid, im)
+				if tt == 0xff:
+					Mem.w8(Rules.STRAT_ITEM, 0)
+					continue
+				cell = picked_cell if tt == 0xfe else st.units[tt].pos
+			if await st.actions.use_item_at(u, iid, cell):
+				u.flags = u.flags | 6
+			continue
 		var t := await pick_target(u, [1, 0xff, 0xff, 0xff], 4, iid)
 		if t == 0xff or t == 0xfe:
 			continue

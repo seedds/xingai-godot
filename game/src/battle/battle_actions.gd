@@ -149,7 +149,7 @@ func was_target(u: BUnit) -> bool:
 
 # ------------------------------------------------------------------ movement
 ## The path walker 0x43d9ed: step by step along `path` (the cells after the start); each step moves the unit
-## (0x442000) and runs the 先制攻击 test 0x428b7a with do_it, which ends the walk. False when interrupted.
+## (0x442000) and runs the 先制攻击 / mine test 0x428b7a with do_it, which ends the walk. False when interrupted.
 ## [0x500c48] is the planner's (Movement.path_to); the moved flag is the caller's.
 func move_unit(u: BUnit, path: Array[Vector2i]) -> bool:
 	var n := u.node
@@ -167,8 +167,14 @@ func move_unit(u: BUnit, path: Array[Vector2i]) -> bool:
 		u.pos = c
 		if n and is_instance_valid(n):
 			n.position = st.view.cell_pos(c)
+		# 0x428b7a(u, c, 1): the 先制攻击 interceptors, then — the mover still standing — the mine test (0x4749b5)
+		var stop := false
 		if traps != 0:
 			await _trap(u, c)
+			stop = true
+		if u.state == 2 and u.hp > 0 and await Mines.step(st, u, c):
+			stop = true
+		if stop:
 			ok = false
 			break
 	if n and is_instance_valid(n):
@@ -1323,6 +1329,27 @@ func use_item(user: BUnit, id: int, target: BUnit, consume := true) -> bool:
 		if consume and (int(it.get("unk_18", 0)) & 2) == 0:
 			bag_take(id)
 		st.refresh_units()
+	return used
+
+
+## Handler 10 (0x41268e) on its own target: 0x41 thrown at the chosen cell (byte 0x500ad7 = 1 during the pick), the
+## mine items 0x3e / 0x3f / 0x40 at the chosen cell and the 探雷器 0x42 around the user (0x500ad7 = 2; Mines); used
+## items are consumed as 0x44f2ac does (not with item flag 2).
+func use_item_at(user: BUnit, id: int, cell: Vector2i) -> bool:
+	var it := Game.item(id)
+	var used := false
+	match int(it.get("type", 0)):
+		0x41:
+			used = await thrown_attack(user, id, cell)
+		0x42:
+			await Mines.detect(st, user)
+			used = true
+		0x3e, 0x3f, 0x40:
+			used = await Mines.use_at(st, user, id, cell)
+	Mem.w8(Rules.STRAT_ITEM, 0)
+	if used and (int(it.get("unk_18", 0)) & 2) == 0:
+		bag_take(id)
+	st.refresh_units()
 	return used
 
 

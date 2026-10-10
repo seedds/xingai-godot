@@ -2819,7 +2819,8 @@ func op_op_58(ins: Dictionary) -> void:
 	var a6 := arg(ins, 6)
 	if a5 == 0xffff: a5 = 0
 	if a6 == 0xffff: a6 = 0
-	if x >= 40:
+	var special := x >= 40
+	if special:
 		x -= 40
 		typ = 0xcd if a5 == 1 else 0xc9
 	var origin := Mem.r16(Mem.EV + 4 * 4050)
@@ -2844,18 +2845,48 @@ func op_op_58(ins: Dictionary) -> void:
 		if revert != 0 and revert != 0xffff:
 			_revert_terrain(c, -1)
 			continue
-		var old := view.terrain_at(c)
-		view.set_terrain(c, terr)
-		var node: Node = null
-		if typ >= 4 and typ <= 200:
-			node = view.add_patch(2 * typ - 8, c)
-		else:
-			view.add_mark(typ, c)
-		terrain_changes.append({"x": c.x, "y": c.y, "new": terr, "old": old, "patch": typ, "silent": a6 == 1, "node": node})
-		_record_terrain(c, terr, old, typ)
+		place_obstacle(c, terr, typ, a6 == 1, false)
+		if special:
+			# 0x40b183: the mine record {item 0xd0 + type argument, owner a5 + 1 (0 when a5 = 0)}
+			Mem.w8(Mines.rec_addr(c), (arg(ins, 0) + 0xd0) & 0xff)
+			Mem.w8(Mines.rec_addr(c) + 1, a5 + 1 if a5 != 0 else 0)
 	if (typ == 0 or typ == 2) and a6 == 0:
 		Audio.play_se(SoundMap.se_name(0x13))
 	refresh_units()
+
+
+## One cell of 0x4560f3: the terrain becomes `terr`, types 4..200 paste the Gate patch 2·type − 8, the others are
+## kept as the cell's map object (drawn by 0x4525da); the change record 0x4b3d21. `mine` is the player's placement
+## (no sound here).
+func place_obstacle(c: Vector2i, terr: int, typ: int, silent: bool, mine: bool) -> void:
+	var old := view.terrain_at(c)
+	view.set_terrain(c, terr)
+	var node: Node = null
+	if typ >= 4 and typ <= 200:
+		node = view.add_patch(2 * typ - 8, c)
+	else:
+		view.add_mark(typ, c)
+	terrain_changes.append({"x": c.x, "y": c.y, "new": terr, "old": old, "patch": typ, "silent": silent or mine,
+		"node": node})
+	_record_terrain(c, terr, old, typ)
+
+
+## 0x456670(cell, type, 0): the change of that type on the cell is undone.
+func remove_obstacle(c: Vector2i, typ: int) -> void:
+	_revert_terrain(c, typ)
+	refresh_units()
+
+
+## The 探雷器's retyping of a change record (0x4b3d21 +4) and its map object.
+func retype_obstacle(c: Vector2i, from_t: int, to_t: int) -> void:
+	for e in terrain_changes:
+		if int(e["x"]) == c.x and int(e["y"]) == c.y and int(e["patch"]) == from_t:
+			e["patch"] = to_t
+	for k in 250:
+		var a := 0x4b3d21 + 5 * k
+		if Mem.r8(a) == c.x and Mem.r8(a + 1) == c.y:
+			Mem.w8(a + 4, to_t)
+			break
 
 
 ## Terrain change records 0x4b3d21 (250 × {x, y, new, old, type}).

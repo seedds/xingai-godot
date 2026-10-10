@@ -54,6 +54,19 @@ func goal_banner(text: String) -> void:
 	await phase_banner(text)
 
 
+## op 0x1a: the victory-condition panel (0x44be80) with the stored lines and the turn limit.
+func goal_panel(text: String, limit: int) -> void:
+	var t := text
+	if limit > 0:
+		t += "\n回合限制：%d" % limit
+	await stage.ui.dialog.talk(null, "", t, false)
+
+
+## The weather panel is redrawn when the shown weather changes (0x449f91).
+func weather_changed() -> void:
+	queue_redraw()
+
+
 func show_picture(t: Texture2D) -> void:
 	_picture = t
 	queue_redraw()
@@ -80,7 +93,7 @@ func _draw() -> void:
 	var t := "第 %d 回合" % stage.turn
 	if stage.turn_limit > 0:
 		t += " / %d" % stage.turn_limit
-	t += "　" + BattleStage.WEATHER_NAMES[stage.weather()]
+	t += "　" + BattleStage.WEATHER_NAMES[clampi(stage.weather(), 0, 4)]
 	var tw := Assets.font().get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, 14).x
 	var tr := Rect2(vs.x - tw - 20, 4, tw + 16, 22)
 	draw_rect(tr, Color(0, 0, 0, 0.55))
@@ -120,19 +133,18 @@ func _draw_info(vs: Vector2) -> void:
 	if face:
 		draw_texture_rect(face, Rect2(r.position + Vector2(6, 8), Vector2(80, 80)), false)
 	var tx := r.position.x + 92
-	var col := Color(1, 0.55, 0.5) if u.side == BUnit.Side.ENEMY else (Color(0.6, 1, 0.6) if u.side == BUnit.Side.FRIEND else UIStyle.NAME_COLOR)
+	var col := Color(1, 0.55, 0.5) if u.side() == 0 else (Color(0.6, 1, 0.6) if u.kind == 1 else UIStyle.NAME_COLOR)
 	UIStyle.draw_text(self, Vector2(tx, r.position.y + 20), p.name, col, 15)
 	UIStyle.draw_text(self, Vector2(tx, r.position.y + 38), "%s Lv%d" % [p.class_name_str(), p.level], Color(1, 1, 1), 13)
 	_bar(Vector2(tx, r.position.y + 46), 110, u.hp, u.max_hp(), Color(0.9, 0.25, 0.2), "兵")
 	_bar(Vector2(tx, r.position.y + 64), 110, u.mp, u.max_mp(), Color(0.3, 0.5, 1.0), "策")
-	var eff := Rules.terrain_effect(u, terr) * 10
+	var eff: int = Rules.terrain_pct(u, terr)[1]
 	UIStyle.draw_text(self, Vector2(tx, r.position.y + 92), "%s %d%%" % [tname, eff], Color(0.85, 0.85, 0.7), 12)
 	var st := ""
-	if u.status & BUnit.ST_POISON: st += "毒"
-	if u.status & BUnit.ST_CONFUSION: st += "乱"
-	if u.status & BUnit.ST_PARALYSIS: st += "麻"
-	if u.status & BUnit.ST_SEAL: st += "封"
-	if u.status & BUnit.ST_FEAR: st += "怯"
+	if u.poisoned(): st += "毒"
+	if u.confused(): st += "乱"
+	if u.paralysed(): st += "麻"
+	if u.sealed(): st += "禁"
 	if st != "":
 		UIStyle.draw_text(self, Vector2(r.end.x - 40, r.position.y + 20), st, Color(1, 0.4, 1), 13)
 

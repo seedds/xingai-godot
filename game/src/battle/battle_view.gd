@@ -75,17 +75,17 @@ func load_map(id: int, fill_terrain := true) -> void:
 		return
 	map_w = int(info["width"])
 	map_h = int(info["height"])
-	# terrain lives in the engine's map buffer (scripts read it through [0x4aeb44]); a restored save
-	# already holds the buffer with the battle's terrain changes
-	if fill_terrain or Mem.r32(Mem.MAP_PTR) != Mem.MAP_BUF:
+	# terrain lives in the engine's map buffer (+0x640, reached through the buffer object 0x48b140); a restored save
+	# already holds the buffer with the battle's terrain changes and the unit grid
+	Mem.w8(Mem.MAP_WH, map_w)
+	Mem.w8(Mem.MAP_WH + 1, map_h)
+	if fill_terrain:
 		var rows: Array = info["terrain"]
 		for y in map_h:
 			var row: Array = rows[y]
 			for x in map_w:
 				Mem.w8(Mem.MAP_BUF + 0x640 + y * map_w + x, int(row[x]))
-		Mem.w32(Mem.MAP_PTR, Mem.MAP_BUF)
-	Mem.w8(Mem.MAP_WH, map_w)
-	Mem.w8(Mem.MAP_WH + 1, map_h)
+		Mem.fill(Mem.MAP_BUF + 0xc80, 0x640, 0xff)     # unit grid (0x44d3ac)
 	map_sprite.texture = Assets.tex("gfx/maps/" + str(info["image"]))
 	camera.limit_left = 0
 	camera.limit_top = 0

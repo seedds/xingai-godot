@@ -283,7 +283,7 @@ Row id: 5 × {u16 person (1024 = none), u8 learn level} at +0, +3, +6, +9, +0xc;
 | 0 | 80 | 重生 | 0x451195 | own side incl. self: heal (0x43c5df) and clear status |
 | 1 | 81 | 歷精圖治 | 0x4510ba | own side: all buffs = 6 |
 | 2 | 82 | 八陣圖 | 0x451129 | enemies: all buffs = 0 |
-| 3 | 83 | 巫蠱 | 0x42ac0a | whole map, opposing side [G]: status := 0x16 (麻痹 2, 禁咒 1, 混乱 1) |
+| 3 | 83 | 巫蠱 | 0x42ac0a | 0x45ade7(0, 0, H, W, camp, 6, 0x16) — the map rectangle with width and height swapped, units of the other camp (home code 5 / 4): ailments 0x16 = 麻痹 禁咒 中毒 (status event 6, the 0x4240d6 masks), Meff 0x31 unless EV 4043 [C] |
 | 4 | 84 | 鼓舞 | 0x41dbcd | own side: 气合 up (buff code 0x35) |
 | 5 | 85 | 賣慘 | 0x422c4a | enemies: 气合 down (0x1b) |
 | 6 | 86 | 濟世 | 0x43bf2a | as 重生, then move buff 6 and MP restore 0x436ce1(50) [G] |

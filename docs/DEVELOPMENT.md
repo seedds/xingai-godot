@@ -104,7 +104,9 @@ player's own saves. Run several ranges in parallel with bash, for example
 write `niuniu.bin` (the endings record).
 
 Headless unit checks (`tools/gtest.sh NAME`): `t_parse` loads every script (catches parse errors anywhere),
-`t_equip` checks the equipment codes of ops 0x3e/0x48, `t_strat` the strategy usability rules (0x420422, 0x41fec9),
+`t_equip` checks the equipment codes of ops 0x3e/0x48, `t_rules` the battle foundation (effect query, stat
+pipeline, damage / hit curves, flood, growth), `t_ai` the AI (action order, scoring, walks), `t_strat66` (also run by
+`t_strat`) the strategy engine (hit rates, damage, heals, every strategy cast once),
 `t_touch` the touch controls (map taps and drag-panning, menu taps, slides and drag-scrolling), `t_rpgwalk` story
 walking (route order and facing per step, 0x429159), `t_dialog` the message box growing to fit long texts (the
 9-line 胜利条件 window), `t_person` prints person stats.

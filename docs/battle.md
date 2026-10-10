@@ -1203,7 +1203,7 @@ Special handlers (all [C] from disassembly/decompile unless marked):
 4. **朱雀翔天**: ordinary MgID 0 damage strategy (range 13, area 2).
 5. **玄武现世** 0x42481a(start = 60, mode = 1): scans unit indices **60..249 only** (player indices 0..59 are never
    touched — port literally); for each on-field unit passing the elemental filter: same camp as the caster →
-   status byte cleared, code 0x57 (all up); other camp → code table 0x4785c7[rand(5)] = 0x49, 0x4a, 0x4b, 0x4c,
+   status byte cleared, the five ups including 移动 (applied by its own loop, not 0x57's four); other camp → code table 0x4785c7[rand(5)] = 0x49, 0x4a, 0x4b, 0x4c,
    0x48 applied by its own loop where 0x49 → **混乱**, 0x4a → **中毒**, 0x4b → 麻痹, 0x4c → 禁咒 (mapping differs
    from 0x42269c), 0x48 → all down. No hit test.
 6. **白虎临凡** 0x4246d0: every on-field unit of the caster's camp passing the filter: `h = heal(T)` (spirit
@@ -1214,7 +1214,7 @@ Special handlers (all [C] from disassembly/decompile unless marked):
 9. **气合 / 霸气** 0x424374 (self, no hit test): 气合 → 攻击 up (and/or 精神 by attr5); 霸气 → all four up.
 10. **Weather** 0x423b0b: wanted = table 0x40dbab[MgHurt] (豪雨 → 2, 晴明 → 0, 昙天 → 1); new phase index =
     0x44a1f5(wanted): for wanted ≤ 1 the first index i in 0..5 of the current weather row (0x48e100 + 6·state[0x11])
-    with that value (6 if none); for rain the last index whose value is 2/3/4, minus 1 [C code, G intent]. If it
+    with that value (6 if none); for rain the last index whose value is 2/3/4 (0 if none) [C]. If it
     differs from the current phase (state+4) the weather changes (0x449f91), else "no effect". Always succeeds
     otherwise; EXP 20 (§2.11).
 11. **连击** 0x449c0d: `n = rand(3) + 2` physical attack actions (0x439413) in a row, stopping when no target or the

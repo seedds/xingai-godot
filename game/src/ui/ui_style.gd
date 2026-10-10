@@ -30,11 +30,11 @@ static var _panel_tex: Texture2D
 static var _panel_tried := false
 
 
-## Original window texture: Qusi.wa blue dragon pattern (400x128 / 400x296).
+## Original window background (0x473202): the 48x48 花色 tile of Mark.e5, repeated over the window.
 static func panel_texture() -> Texture2D:
 	if not _panel_tried:
 		_panel_tried = true
-		_panel_tex = Assets.tex("gfx/effects/qusi/03.png")
+		_panel_tex = Assets.tex("gfx/ui/mark/01.png")
 	return _panel_tex
 
 

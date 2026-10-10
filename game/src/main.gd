@@ -252,10 +252,20 @@ func _title_screen() -> void:
 		_title_bg.centered = false
 		_title_bg.position = Vector2(0, 40)
 		add_child(_title_bg)
-	# 0x42bd90: title picture 0, or 12 + Niuniu.wa[0] (13..15) once an ending has been recorded
+	# 0x42bd6c: title picture (Logo.e5 0) at (0,40), plus emblem 1..3 (64x64) at (188 + 100i, 340) for each ending
+	# i recorded in byte i of SV\SV.E5S (0x41a280)
+	_title_bg.texture = Assets.tex("gfx/screens/00.png")
 	var nb := SpecialFuncs.read_niuniu()
-	var v := nb[0]
-	_title_bg.texture = Assets.tex("gfx/screens/%02d.png" % (12 + v if v >= 1 and v <= 3 else 0))
+	for i in 3:
+		var em := _title_bg.get_node_or_null("Emblem%d" % i) as Sprite2D
+		if em == null:
+			em = Sprite2D.new()
+			em.name = "Emblem%d" % i
+			em.centered = false
+			em.position = Vector2(188 + 100 * i, 300)
+			em.texture = Assets.tex("gfx/screens/%02d.png" % (i + 1))
+			_title_bg.add_child(em)
+		em.visible = nb[i] != 0
 	_title_bg.visible = true
 	_show_version()
 	ui.set_black(false)

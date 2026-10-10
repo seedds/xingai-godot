@@ -155,40 +155,16 @@ func clear_highlights() -> void:
 	overlay.queue_redraw()
 
 
-## Paste a Nima.wa 3x3-cell (144x144) terrain patch centred on cell c, coloured with this map's palette.
+## Paste a Gate.e5 3x3-cell (144x144) terrain patch centred on cell c (0x4376ea / 0x437779). The original copies
+## only the cells inside the map; the colour-keyed cells of the map-edge patches lie outside it, out of view here.
 func add_patch(entry: int, c: Vector2i) -> Node:
+	var t := Assets.tex("gfx/effects/map_patches/%03d.png" % entry)
+	if t == null:
+		return null
 	var sp := Sprite2D.new()
 	sp.centered = false
 	sp.position = cell_pos(c - Vector2i(1, 1))
-	# HD pack: pre-upscaled with this map's palette (tools/upscale_assets.py patch_combos)
-	sp.texture = Assets.hd_only("gfx/effects/map_patches/map%02d/%03d.png" % [map_id, entry])
-	if sp.texture:
-		patch_layer.add_child(sp)
-		return sp
-	var idx := Assets.image("gfx/effects/map_patches/idx/%03d.png" % entry)
-	var pals: Variant = Assets.json("gfx/palettes/fei.json")
-	if idx == null or pals == null:
-		sp.free()
-		return null
-	var pal: Array = pals[map_id] if pals is Array else pals[str(map_id)]
-	var cols: Array[Color] = []
-	for h in pal:
-		cols.append(Color.html(str(h)))
-	idx.convert(Image.FORMAT_L8)
-	var img := Image.create(idx.get_width(), idx.get_height(), false, Image.FORMAT_RGBA8)
-	for y in idx.get_height():
-		for x in idx.get_width():
-			var k := int(round(idx.get_pixel(x, y).r * 255.0))
-			img.set_pixel(x, y, cols[k] if k < cols.size() else Color.BLACK)
-	if Assets.hd_active():
-		# no AI-upscaled patch for this palette: a smooth 4x resize blends in with the HD map
-		img.resize(img.get_width() * 4, img.get_height() * 4, Image.INTERPOLATE_LANCZOS)
-		img.generate_mipmaps()
-		var t := ImageTexture.create_from_image(img)
-		t.set_size_override(idx.get_size())
-		sp.texture = t
-	else:
-		sp.texture = ImageTexture.create_from_image(img)
+	sp.texture = t
 	patch_layer.add_child(sp)
 	return sp
 

@@ -696,6 +696,8 @@ func cmd_item(u: BUnit) -> void:
 		if st.actions.has_method("item_usable") and not st.actions.item_usable(iid, tu, 1):
 			await msg("不能在这里使用。")
 			continue
+		if not st.actions.has_method("use_item"):
+			return                            # BattleActions.use_item (0x40a985's use) not there yet
 		if await st.actions.use_item(u, iid, tu):
 			u.flags = u.flags | 6
 

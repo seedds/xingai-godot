@@ -312,6 +312,74 @@ func display_test() -> void:
 	st.get_tree().quit()
 
 
+## WG_BOTMODE=sortie: open the sortie dialog 选择武将 (Sortie66) over the battle with the army as candidates (the first
+## member forced, max 6), hover / add / remove / sort with the mouse, then 决定; prints the result.
+func sortie_test() -> void:
+	Game.set_meta("bot_owns_input", true)
+	await _wait(0.6)
+	var ids: Array[int] = []
+	for pid in 0x400:
+		if Mem.r8(Mem.person_addr(pid) + 0x2a) != 0xff:
+			ids.append(pid)
+	print("SORTIE members: ", ids.size())
+	var res := []
+	_sortie_run(ids, res)
+	await _wait(0.5)
+	var d: Sortie66 = null
+	for c in st.ui.get_children():
+		if c is Sortie66:
+			d = c
+	if d == null:
+		print("SORTIE: no dialog")
+		st.get_tree().quit()
+		return
+	await shot("sortie_open")
+	var cell := func(pos: int) -> Vector2:
+		return d._up.position + Vector2((pos % 8) * 64 + 32, (pos / 8) * 72 + 8 + 24) * d._k
+	for pos in [1, 2, 3]:
+		if pos < d.disp.size():
+			await _tap(cell.call(pos))
+			await _wait(0.2)
+	await _move_to(cell.call(2))
+	await _wait(0.3)
+	print("SORTIE chosen: ", d.chosen, " ok enabled: ", d.ctrl(1)["enabled"])
+	await shot("sortie_added")
+	await _tap(d._lo.position + Vector2(1 * 51 + 25, 25) * d._k)       # slot 1 → removed
+	await _wait(0.2)
+	await _tap(d._up.position + Vector2(450, 274) * d._k)              # the right sort button: takes over (等级)
+	await _wait(0.2)
+	await _tap(d._up.position + Vector2(450, 274) * d._k)              # … advances to 攻击
+	await _wait(0.3)
+	print("SORTIE after remove + sort: chosen ", d.chosen, " key ", Sortie66.sort_cur)
+	await shot("sortie_sorted")
+	for pos in d.disp.size():                                         # one more, so that 决定 is enabled (≥ 2/3)
+		if not d.chosen.has(d.disp[pos]):
+			await _tap(cell.call(pos))
+			break
+	await _wait(0.3)
+	var ok_rect: Rect2 = d.ctrl(1)["r"]
+	await _tap(ok_rect.get_center())
+	await _wait(0.4)
+	print("SORTIE result: ", res)
+	st.get_tree().quit()
+
+
+func _sortie_run(ids: Array[int], res: Array) -> void:
+	var forced: Array[int] = []
+	if not ids.is_empty():
+		forced.append(ids[0])
+	var out := await SortieScreen.choose(st.ui, st, 6, forced, [])
+	res.append_array(out)
+
+
+func _move_to(p: Vector2) -> void:
+	var mv := InputEventMouseMotion.new()
+	mv.position = get_viewport().get_screen_transform() * p
+	mv.global_position = mv.position
+	Input.parse_input_event(mv)
+	await get_tree().process_frame
+
+
 ## WG_BOTMODE=duel: run a scripted 单挑 between the first player unit and the first enemy, with screenshots.
 func duel_test() -> void:
 	await _wait(0.6)
@@ -375,6 +443,9 @@ func run_phase() -> void:
 		return
 	if OS.get_environment("WG_BOTMODE") == "display":
 		await display_test()
+		return
+	if OS.get_environment("WG_BOTMODE") == "sortie":
+		await sortie_test()
 		return
 	Game.set_meta("bot_owns_input", true)      # stops WG_ACCEPT_SPAM while the bot plays the phase
 	await _wait(0.6)

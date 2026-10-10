@@ -756,6 +756,7 @@ func op_caption(ins: Dictionary) -> void:
 func op_dialog3(ins: Dictionary) -> void:
 	var b := TextExpand.gbk(sarg(ins, 0))
 	var save4031 := Mem.ev(4031)
+	toolbar_hide_for_dialog()
 	var p := 0
 	while p < b.size():
 		if b[p] != 0x26:
@@ -803,7 +804,7 @@ func op_dialog3(ins: Dictionary) -> void:
 		Mem.set_ev(4031, int(f[1]) & 0xff)
 		var persons := [f[2], f[3], f[4]]
 		if in_battle():
-			persons = dialog3_battle_persons(persons)
+			persons = await dialog3_battle_persons(persons, int(f[0]))
 		if not persons.is_empty():
 			if ui.has_method("dialog3"):
 				await ui.dialog3(persons, int(f[0]), text)
@@ -816,14 +817,59 @@ func op_dialog3(ins: Dictionary) -> void:
 				await ui_talk(who, text, 0x20)
 		Mem.set_ev(4031, save4031)
 		p = q + 1
-	if (vm == null or vm.next_op != 0x7a) and ui.has_method("dialog3_close"):
-		ui.dialog3_close()
+	if vm == null or vm.next_op != 0x7a:
+		if ui.has_method("dialog3_close"):
+			ui.dialog3_close()
+		toolbar_reshow_if_menu()
 
 
-## Battle: f2..f4 are resolved through the unit selector (EV[4031] = f1); the dialog is skipped when none is on the map
-## unless all three are the same person (docs/eex.md §6). BattleStage refines this; [] = skip.
-func dialog3_battle_persons(persons: Array) -> Array:
-	return persons
+## Battle (0x42d8bf): f2..f4 go through the unit selector (with EV[4031] = f1 set by the caller) to persons; the first
+## one whose unit is on the map (state 2) is focused (0x4596bd, the stage's `talk_focus`); when none is on the map the
+## segment is skipped silently ([] returned) unless f2 == f3 == f4 ≠ −1, and then the slots outside the speaker mask
+## are emptied (the scripts' `837,837,837` form).
+func dialog3_battle_persons(persons: Array, mask := 7) -> Array:
+	var out := []
+	var focus := -1
+	for v in persons:
+		var u := unit_select(int(v)) if int(v) >= 0 else -1
+		var pid := -1
+		if u >= 0:
+			pid = Mem.r16(u)
+			if focus < 0 and Mem.r8(u + 0xc) == 2:
+				focus = pid
+		out.append(pid)
+	if focus < 0:
+		if int(persons[0]) >= 0 and persons[0] == persons[1] and persons[1] == persons[2]:
+			for j in 3:
+				if mask & (4 >> j) == 0:
+					out[j] = -1
+				else:
+					out[j] = persons[j]
+			return out
+		return []
+	if has_method("talk_focus"):
+		await call("talk_focus", focus)
+	return out
+
+
+## Unit selector 0x41b882(v): v ≥ 0x404 → unit v − 0x404; byte EV[4031] ≠ 0 and v < 250 → unit v; else v is a person →
+## the first unit with that person and state ≠ 0 (0x456079). Returns the unit address or −1 (empty slot / none).
+static func unit_select(v: int) -> int:
+	var slot := -1
+	if v >= 0x404:
+		slot = v - 0x404
+	elif Mem.ev(4031) & 0xff != 0 and v < 250:
+		slot = v
+	else:
+		for s in Mem.UNIT_SLOTS:
+			var a := Mem.unit_addr(s)
+			if Mem.r32(a) == v and Mem.r8(a + 0xc) != 0:
+				return a
+		return -1
+	if slot < 0 or slot >= Mem.UNIT_SLOTS:
+		return -1
+	var u := Mem.unit_addr(slot)
+	return -1 if Mem.r16(u) == 0xffff else u
 
 
 # ------------------------------------------------------------------ party / items / money

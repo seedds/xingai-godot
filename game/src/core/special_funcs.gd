@@ -34,6 +34,8 @@ static func sv_read() -> PackedByteArray:
 static func sv_write(off: int, v: int) -> void:
 	if off < 0 or off >= SV_SIZE:
 		return
+	if Game.autoplay or Game.demo:
+		return      # test runs must not change the player's endings / item record
 	var b := sv_read()
 	b[off] = v & 0xff
 	var f := FileAccess.open(SV, FileAccess.WRITE)

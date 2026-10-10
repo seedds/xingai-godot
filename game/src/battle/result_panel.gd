@@ -14,7 +14,7 @@ extends RefCounted
 ## HP, MP max MP, EXP 100, SP 255) with "%4u /%4u" ("    MAX   " for EXP 0xff) at x + 0x48; weapon / armour icons
 ## (Mark 经验) at x + 0x18 / x + 0x70, y + 0x70. The bars move in 5 steps of one tick, then 4 ticks; the item
 ## EXP in 4 steps; then 4 ticks (8 with `long`).
-## [G] Text outline colours, the bar fill colour (palette 8) and the item EXP lines are approximations.
+## [G] Text outline colours and the item EXP lines are approximations.
 
 const W := 192
 const H := 144
@@ -100,21 +100,44 @@ static func show(st: BattleStage, u: BUnit, kind: int, hp_loss: int, mp_loss: in
 
 ## The three bars 0x4509da (kinds 0 HP, 1 MP, 2 EXP / 3 SP) at y + 0x20 / 0x38 / 0x50.
 static func _bars(win: Win66, X: float, Y: float, u: BUnit, hp: int, mp: int, third: int, exp_mode: bool) -> void:
-	_bar(win, X + 0x30, Y + 0x20, maxi(hp, 0), u.max_hp(), false)
-	_bar(win, X + 0x30, Y + 0x38, maxi(mp, 0), u.max_mp(), false)
+	_bar(win, X + 0x30, Y + 0x20, maxi(hp, 0), u.max_hp(), false, 0)
+	_bar(win, X + 0x30, Y + 0x38, maxi(mp, 0), u.max_mp(), false, 1)
 	if exp_mode:
-		_bar(win, X + 0x30, Y + 0x50, third, 100, third & 0xff == 0xff)
+		_bar(win, X + 0x30, Y + 0x50, third, 100, third & 0xff == 0xff, 2)
 	else:
-		_bar(win, X + 0x30, Y + 0x50, maxi(third, 0), 0xff, false)
+		_bar(win, X + 0x30, Y + 0x50, maxi(third, 0), 0xff, false, 3)
 
 
-static func _bar(win: Win66, x: float, y: float, v: int, mx: int, full: bool) -> void:
+static func _bar(win: Win66, x: float, y: float, v: int, mx: int, full: bool, kind: int) -> void:
 	win.fill(Rect2(x, y + 8, 0x80, 8), Text66.pal(0x1f))
 	var val := 100 if full else v
 	var n := clampi(((val * 100) / maxi(mx, 1) << 7) / 100, 0, 0x80)
 	if n > 0:
-		win.fill(Rect2(x, y + 8, n, 8), Text66.pal(8))
+		win.pic(_bar_tex(kind), Vector2(x, y + 8), Rect2(0, 0, n, 8))
 	win.label(x + 24, y, "    MAX   " if full else "%4d /%4d" % [v, mx], 0x12)
+
+
+static var _bars_cache: Dictionary = {}
+
+
+## The bar fill 0x4097fc: an 8 × 8 pattern brush (0x47f83d → 0x47d38d, 8 bytes per row) from the Mark buffer at
+## [0x48e23c + 4·kind] (HP 0x80, MP 0x40, EXP 0x140, SP 0x100), i.e. 8 rows of piece 0 (条状物, 8-byte rows) from row
+## offset / 8: the green, yellow, pink and light-blue bands. [G] Drawn as those rows' colours (the brush's exact pixel
+## format is not traced).
+static func _bar_tex(kind: int) -> Texture2D:
+	if _bars_cache.has(kind):
+		return _bars_cache[kind]
+	var row: int = [0x80, 0x40, 0x140, 0x100][kind] / 8
+	var strip: Image = Assets.tex("gfx/ui/mark/00.png").get_image()
+	var img := Image.create(0x80, 8, false, Image.FORMAT_RGBA8)
+	for r in 8:
+		var col := strip.get_pixel(0, mini(row + r, strip.get_height() - 1))
+		col.a = 1.0
+		for x in 0x80:
+			img.set_pixel(x, r, col)
+	var t := ImageTexture.create_from_image(img)
+	_bars_cache[kind] = t
+	return t
 
 
 ## Weapon / armour level and EXP (gained so far) under the icons.

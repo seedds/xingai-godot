@@ -130,6 +130,11 @@ func new_game_state() -> void:
 	for k in 4:
 		Mem.w8(Mem.GS + k, [0x1f, 1, 1, 0][k])
 	Mem.w32(Mem.GS + 4, 0xff)
+	# 0x4241a3: the four settings bytes 4..7 of SV\SV.E5S replace GS+0..3 unless EV[4024] (私档) is set
+	if Mem.ev(4024) == 0:
+		var sv := SpecialFuncs.sv_read()
+		for k in 4:
+			Mem.w8(Mem.GS + k, sv[4 + k])
 	Mem.fill(0x493af0, 352, 0)
 	Mem.w8(SORTIE_MAX, 1)
 	reset_sortie_params()

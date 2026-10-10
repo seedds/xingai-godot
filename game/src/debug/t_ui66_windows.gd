@@ -76,7 +76,7 @@ func run() -> void:
 	for e in [[1, "1曹操起兵。\n讨伐董卓。"], [2, "2得到[C0D倚天剑]。"], [1, "3攻下*/5座城。"]]:
 		recs.append(0x26)
 		recs.append(e[0])
-		recs.append_array(str(e[1]).to_multibyte_char_buffer("GBK"))
+		recs.append_array(Gbk.encode(str(e[1])))
 	Mem.set_ev(5, 12)
 	for i in recs.size():
 		Mem.w8(HistoryWin66.BUF + i, recs[i])

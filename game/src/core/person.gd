@@ -120,7 +120,7 @@ static func init_record(r: Dictionary) -> Person:
 	Mem.fill(b, Mem.PERSON_SIZE, 0)
 	Mem.w32(b, p.id | 0x1000)
 	# name: 12 bytes copied to +0x08, the part from byte 8 on moved to +0x3f (0x40a72c)
-	var nb := p.name.to_multibyte_char_buffer("GBK")
+	var nb := Gbk.encode(p.name)
 	for k in mini(nb.size(), 8):
 		Mem.w8(b + 0x08 + k, nb[k])
 	for k in range(8, mini(nb.size(), 13)):

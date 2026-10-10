@@ -15,22 +15,14 @@ extends RefCounted
 const CUSTOM_NAMES := 0x512500
 
 
-## String → GBK bytes (Godot appends a NUL terminator, which is dropped here).
+## String → GBK bytes (core/gbk.gd: no iconv, which Android lacks).
 static func gbk(s: String) -> PackedByteArray:
-	var b := s.to_multibyte_char_buffer("GBK")
-	while not b.is_empty() and b[b.size() - 1] == 0:
-		b.resize(b.size() - 1)
-	return b
+	return Gbk.encode(s)
 
 
-## GBK bytes → String. A NUL is appended first: Godot 4.7's decoder hangs on an unterminated buffer that holds exactly
-## one double-byte character (e.g. C2 ED 马).
+## GBK bytes → String, up to the first NUL.
 static func from_gbk(b: PackedByteArray) -> String:
-	if b.is_empty():
-		return ""
-	var c := b.duplicate()
-	c.append(0)
-	return c.get_string_from_multibyte_char("GBK")
+	return Gbk.decode(b)
 
 
 ## 0x417df6 on a script string.

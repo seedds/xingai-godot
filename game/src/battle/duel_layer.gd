@@ -980,7 +980,7 @@ func _plain_name(s: int) -> String:
 
 
 static func _gbk_len(s: String) -> int:
-	return s.to_multibyte_char_buffer("GBK").size()
+	return Gbk.encode(s).size()
 
 
 ## 0x4403aa: white text outlined in the army colour of the fighter's unit (0x413172: side code +5 0 → 0x2a,

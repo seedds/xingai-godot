@@ -401,7 +401,7 @@ func dialog3_close() -> void:
 	pass
 
 
-## Op 0x17 (0x476612): the place name goes into the 176 × 17 field (white frame, white text centred, surface 0xf,
+## Op 0x17 (0x476612): the place name (the op handler expands it into 0x4b0758 first) goes into the 176 × 17 field (white frame, white text centred, surface 0xf,
 ## rect 0x4868d0); nothing is drawn in a battle and nothing waits.
 func place_name(text: String) -> void:
 	if Windows66.in_battle():
@@ -531,7 +531,9 @@ static func _divt(a: int, b: int) -> int:
 	return q if (a >= 0) == (b > 0) else -q
 
 
-## The title / place-name fields of ops 0x18 / 0x17: two framed fields (white 1-px frame, transparent inside —
+## The title / place-name fields of ops 0x18 / 0x17, showing the strings in memory (scenario title 0x49f1cc and
+## place / stage name 0x4b0758, both saved with the game; 0x72 sub 8 also writes 0x4b0758), else the last texts passed
+## to title_text() / place_name(): two framed fields (white 1-px frame, transparent inside —
 ## 0x4097fc fills with the key colour 8 and frames with 0x12) with the text centred on the 8-px grid
 ## (column = (w/8 − strlen) / 2, y + 1). The original's fields are child windows at (0, 34) 268 × 17 and
 ## (277, 34) 176 × 17 of an info window whose screen position was not found ([G]: shown in the 40-px band above the
@@ -544,17 +546,36 @@ class _InfoBar:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		set_anchors_preset(Control.PRESET_FULL_RECT)
 
+	var _shown := ""
+
 	func _process(_d: float) -> void:
 		var st: Variant = Game.main.stage if Game.main else null
+		var key := _mem_str(0x49f1cc, 22) + "|" + _mem_str(0x4b0758, 23) + "|" + ui.info_title + "|" + ui.info_place
 		var on: bool = st != null and is_instance_valid(st) and not (st.has_method("in_battle") and st.in_battle()) \
-				and (ui.info_title != "" or ui.info_place != "")
+				and key != "|||"
 		if on != visible:
 			visible = on
+		if on and key != _shown:
+			_shown = key
+			queue_redraw()
+
+	## The GBK string at addr (at most n bytes).
+	static func _mem_str(addr: int, n: int) -> String:
+		var b := PackedByteArray()
+		for k in n:
+			var c := Mem.r8(addr + k)
+			if c == 0:
+				break
+			b.append(c)
+		return b.get_string_from_multibyte_char("GBK") if not b.is_empty() else ""
 
 	func _draw() -> void:
 		var f := Assets.font()
 		var asc := f.get_ascent(Text66.FONT_SIZE)
-		for e in [[Rect2(0, 11, 0x10c, 0x11), ui.info_title], [Rect2(0x115, 11, 0xb0, 0x11), ui.info_place]]:
+		var t := _mem_str(0x49f1cc, 22)
+		var pl := _mem_str(0x4b0758, 23)
+		for e in [[Rect2(0, 11, 0x10c, 0x11), t if t != "" else ui.info_title],
+				[Rect2(0x115, 11, 0xb0, 0x11), pl if pl != "" else ui.info_place]]:
 			var r: Rect2 = e[0]
 			draw_rect(Rect2(r.position + Vector2(0.5, 0.5), r.size - Vector2.ONE), Text66.pal(Text66.C_WHITE), false, 1.0)
 			var s: String = e[1]

@@ -1,0 +1,778 @@
+{
+ "items": [
+  {
+   "source": "Ekd5.exe",
+   "resource_id": 106,
+   "file": "exe/106.png",
+   "size": [
+    288,
+    28
+   ],
+   "keyed_index0": false,
+   "role": "toolbar strip, 12 buttons of 24x24 (288x28)"
+  },
+  {
+   "source": "Ekd5.exe",
+   "resource_id": 302,
+   "file": "exe/302.png",
+   "size": [
+    288,
+    24
+   ],
+   "keyed_index0": false,
+   "role": "toolbar strip, 12 buttons of 24x24 (288x24)"
+  },
+  {
+   "source": "Ekd5.exe",
+   "resource_id": 341,
+   "file": "exe/341.png",
+   "size": [
+    48,
+    48
+   ],
+   "keyed_index0": true,
+   "role": "48x48 shop button 卖出"
+  },
+  {
+   "source": "Ekd5.exe",
+   "resource_id": 342,
+   "file": "exe/342.png",
+   "size": [
+    48,
+    48
+   ],
+   "keyed_index0": true,
+   "role": "48x48 shop button 买进"
+  },
+  {
+   "source": "Ekd5.exe",
+   "resource_id": 343,
+   "file": "exe/343.png",
+   "size": [
+    48,
+    48
+   ],
+   "keyed_index0": true,
+   "role": "48x48 shop button 装备"
+  },
+  {
+   "source": "Ekd5.exe",
+   "resource_id": 344,
+   "file": "exe/344.png",
+   "size": [
+    48,
+    48
+   ],
+   "keyed_index0": true,
+   "role": "48x48 shop button 出兵"
+  },
+  {
+   "source": "Ekd5.exe",
+   "resource_id": 350,
+   "file": "exe/350.png",
+   "size": [
+    16,
+    16
+   ],
+   "keyed_index0": true,
+   "role": "16x16 red bird mark"
+  },
+  {
+   "source": "Ekd5.exe",
+   "resource_id": 351,
+   "file": "exe/351.png",
+   "size": [
+    16,
+    16
+   ],
+   "keyed_index0": true,
+   "role": "16x16 blue bird mark"
+  }
+ ],
+ "mark": {
+  "source": "E5/Mark.e5 (0x52f20 bytes, raw 24-bit BGR, rows top-down padded to 4 bytes) + Mark.DEC (16-byte records: u32 offset, u16 w, u16 h, u16 bytes/pixel, 6-byte GBK name)",
+  "loader": "0x42b734 reads the whole file into buffer block 0x48b110 (getter 0x4015c5 / 0x4015da(off)); the exe addresses pieces by hard-coded offsets (exe_offsets), Mark.DEC is only the editor directory; Weather.e5 follows in the same block at +0x52f20",
+  "key": "(247,0,255) -> transparent",
+  "pieces": [
+   {
+    "index": 0,
+    "name": "条状物",
+    "offset": 0,
+    "size": [
+     2,
+     84
+    ],
+    "frame_size": [
+     2,
+     84
+    ],
+    "frames": 1,
+    "file": "mark/00.png",
+    "role": "2x84 colour bars",
+    "exe_offsets": []
+   },
+   {
+    "index": 1,
+    "name": "花色",
+    "offset": 672,
+    "size": [
+     48,
+     48
+    ],
+    "frame_size": [
+     48,
+     48
+    ],
+    "frames": 1,
+    "file": "mark/01.png",
+    "role": "window background pattern tile (dove); overwritten by Logo.e5[8+n] for pattern option n < 4, by grey (212,208,200) for n >= 4 (0x40abdc); tiled by the window filler 0x473202",
+    "exe_offsets": [
+     "0x2a0"
+    ]
+   },
+   {
+    "index": 2,
+    "name": "小遮罩",
+    "offset": 7584,
+    "size": [
+     48,
+     192
+    ],
+    "frame_size": [
+     48,
+     48
+    ],
+    "frames": 4,
+    "file": "mark/02.png",
+    "role": "4 frames 48x48 (water, tall grass, grass, snow): masks laid over the lower part of 48x48 unit frames on some terrains (unit draw 0x451347 -> 0x4302fc; 0x6ea0 = frame 3)",
+    "exe_offsets": [
+     "0x6ea0"
+    ]
+   },
+   {
+    "index": 3,
+    "name": "大遮罩",
+    "offset": 35232,
+    "size": [
+     64,
+     256
+    ],
+    "frame_size": [
+     64,
+     64
+    ],
+    "frames": 4,
+    "file": "mark/03.png",
+    "role": "4 frames 64x64: the same masks for 64x64 attack frames (0x119a0 = frame 3)",
+    "exe_offsets": [
+     "0x119a0"
+    ]
+   },
+   {
+    "index": 4,
+    "name": "小船",
+    "offset": 84384,
+    "size": [
+     48,
+     288
+    ],
+    "frame_size": [
+     48,
+     48
+    ],
+    "frames": 6,
+    "file": "mark/04.png",
+    "role": "6 frames 48x48: boat drawn under a unit standing on terrain 13 (big river) (0x451347 -> 0x403479, mirrored for the right-facing direction)",
+    "exe_offsets": []
+   },
+   {
+    "index": 5,
+    "name": "小兰船",
+    "offset": 125856,
+    "size": [
+     48,
+     288
+    ],
+    "frame_size": [
+     48,
+     48
+    ],
+    "frames": 6,
+    "file": "mark/05.png",
+    "role": "6 frames 48x48: the same boat on blue water",
+    "exe_offsets": []
+   },
+   {
+    "index": 6,
+    "name": "大兰船",
+    "offset": 167328,
+    "size": [
+     64,
+     384
+    ],
+    "frame_size": [
+     64,
+     64
+    ],
+    "frames": 6,
+    "file": "mark/06.png",
+    "role": "6 frames 64x64: boat on blue water for 64x64 attack frames",
+    "exe_offsets": []
+   },
+   {
+    "index": 7,
+    "name": "标志",
+    "offset": 241056,
+    "size": [
+     48,
+     192
+    ],
+    "frame_size": [
+     48,
+     48
+    ],
+    "frames": 4,
+    "file": "mark/07.png",
+    "role": "4 frames 48x48: sand window tile (0x473202 default), red / grey / white cell frames",
+    "exe_offsets": [
+     "0x3ada0",
+     "0x3c8a0",
+     "0x3e3a0",
+     "0x3fea0"
+    ]
+   },
+   {
+    "index": 8,
+    "name": "标志动",
+    "offset": 268704,
+    "size": [
+     48,
+     384
+    ],
+    "frame_size": [
+     48,
+     48
+    ],
+    "frames": 8,
+    "file": "mark/08.png",
+    "role": "8 frames 48x48: animated corner marks / coloured cell highlights",
+    "exe_offsets": []
+   },
+   {
+    "index": 9,
+    "name": "气泡",
+    "offset": 324000,
+    "size": [
+     24,
+     48
+    ],
+    "frame_size": [
+     24,
+     24
+    ],
+    "frames": 2,
+    "file": "mark/09.png",
+    "role": "2 frames 24x24: speech bubble",
+    "exe_offsets": [
+     "0x4f1a0",
+     "0x4f860"
+    ]
+   },
+   {
+    "index": 10,
+    "name": "经验",
+    "offset": 327456,
+    "size": [
+     16,
+     96
+    ],
+    "frame_size": [
+     16,
+     16
+    ],
+    "frames": 6,
+    "file": "mark/10.png",
+    "role": "6 icons 16x16: 0 sword / 1 armour (unit status window 0x4503cf), 2..5 fire, water, ?, earth (unit info 0x45576d: offset 0x50520 + n*0x300, greyed when the flag bit is clear)",
+    "exe_offsets": [
+     "0x4ff20",
+     "0x50220",
+     "0x50520"
+    ]
+   },
+   {
+    "index": 11,
+    "name": "单挑框",
+    "offset": 332064,
+    "size": [
+     16,
+     160
+    ],
+    "frame_size": [
+     16,
+     160
+    ],
+    "frames": 1,
+    "file": "mark/11.png",
+    "role": "duel frame (one strip): 2 triangles 16x16 (left, right) + 2 bar caps 16x64 (left, right); = wg2025 Kao.wa 0x198c0..0x1a2c0",
+    "exe_offsets": [
+     "0x51120",
+     "0x51420",
+     "0x51720",
+     "0x52320"
+    ]
+   }
+  ]
+ },
+ "u_select": {
+  "source": "E5/U_select.e5 (Ls12, 32 entries: JPEG/PNG/BMP24) = CCZ U_select.e5 (wg2025 Qusi.wa)",
+  "decode": "decode_mode = mode passed to the entry decoder 0x40e770 (10: colour key kept -> exported transparent; 0: opaque, JPEG copied as .jpg)",
+  "ui_buffer": "0x43e86d loads entries 10,9,12,15,16,17,18,19,22,23,24 back to back into block 0x48b0d0 (getter 0x401521/0x401536(off)); offsets in the roles",
+  "entries": [
+   {
+    "entry": 0,
+    "file": "u_select/00.png",
+    "size": [
+     50,
+     50
+    ],
+    "stored": "jpg",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "50x50 slot frame (stored as 100x25 JPEG = the 7500 bytes of a 50x50 picture), state 0",
+    "loader": "0x45eade"
+   },
+   {
+    "entry": 1,
+    "file": "u_select/01.png",
+    "size": [
+     50,
+     50
+    ],
+    "stored": "jpg",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "50x50 slot frame, state 1",
+    "loader": "0x45eade"
+   },
+   {
+    "entry": 2,
+    "file": "u_select/02.png",
+    "size": [
+     50,
+     50
+    ],
+    "stored": "jpg",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "50x50 slot frame, state 2",
+    "loader": "0x45eade"
+   },
+   {
+    "entry": 3,
+    "file": "u_select/03.jpg",
+    "size": [
+     512,
+     296
+    ],
+    "stored": "jpg",
+    "keyed": false,
+    "decode_mode": 0,
+    "role": "选择武将 dialog (RT_DIALOG 236) upper background 512x296 (dialog item 0x43f)",
+    "loader": "0x45eade"
+   },
+   {
+    "entry": 4,
+    "file": "u_select/04.jpg",
+    "size": [
+     512,
+     128
+    ],
+    "stored": "jpg",
+    "keyed": false,
+    "decode_mode": 0,
+    "role": "选择武将 dialog lower background 512x128 (dialog item 0x441)",
+    "loader": "0x45eade"
+   },
+   {
+    "entry": 5,
+    "file": "u_select/05.png",
+    "size": [
+     288,
+     144
+    ],
+    "stored": "png",
+    "keyed": false,
+    "decode_mode": 0,
+    "role": "288x144 landscape picture: entry 5 + [0x500ae8] (0..3); 0x41d947 copies 48x48 pieces of it",
+    "loader": "0x40a52e"
+   },
+   {
+    "entry": 6,
+    "file": "u_select/06.png",
+    "size": [
+     288,
+     144
+    ],
+    "stored": "png",
+    "keyed": false,
+    "decode_mode": 0,
+    "role": "288x144 landscape picture (variant 1)",
+    "loader": "0x40a52e"
+   },
+   {
+    "entry": 7,
+    "file": "u_select/07.jpg",
+    "size": [
+     288,
+     144
+    ],
+    "stored": "jpg",
+    "keyed": false,
+    "decode_mode": 0,
+    "role": "288x144 landscape picture (variant 2)",
+    "loader": "0x40a52e"
+   },
+   {
+    "entry": 8,
+    "file": "u_select/08.png",
+    "size": [
+     288,
+     144
+    ],
+    "stored": "png",
+    "keyed": false,
+    "decode_mode": 0,
+    "role": "288x144 landscape picture (variant 3)",
+    "loader": "0x40a52e"
+   },
+   {
+    "entry": 9,
+    "file": "u_select/09.png",
+    "size": [
+     344,
+     84
+    ],
+    "stored": "png",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "344x84 parchment message box (UI buffer 0x401521 + 0x152a0; dialog 0x42d3f5 picks +0 / +0x152a0)",
+    "loader": "0x43e86d"
+   },
+   {
+    "entry": 10,
+    "file": "u_select/10.png",
+    "size": [
+     344,
+     84
+    ],
+    "stored": "png",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "344x84 parchment message box, mirrored (UI buffer + 0)",
+    "loader": "0x43e86d"
+   },
+   {
+    "entry": 11,
+    "file": "u_select/11.png",
+    "size": [
+     176,
+     396
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "title sub-menu buttons: 9 frames 176x44 (0-3 items, 4-7 highlighted, 8 blank); 0x404c33 draws item i from +i*0x5ac0 at y = 0x58 + 64*i",
+    "loader": "0x42bc94"
+   },
+   {
+    "entry": 12,
+    "file": "u_select/12.png",
+    "size": [
+     12,
+     240
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "12x12 digits 1..20 (deployment slot numbers, colour 0); overview map 0x41e7fe",
+    "loader": "0x41e929"
+   },
+   {
+    "entry": 13,
+    "file": "u_select/13.png",
+    "size": [
+     12,
+     240
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "12x12 digits 1..20 (colour 1)",
+    "loader": "0x41e929"
+   },
+   {
+    "entry": 14,
+    "file": "u_select/14.jpg",
+    "size": [
+     12,
+     360
+    ],
+    "stored": "jpg",
+    "keyed": false,
+    "decode_mode": 0,
+    "role": "12x12 terrain tiles for the battle overview map (30 frames = terrain id) -> terrain/mini/",
+    "loader": "0x41e929"
+   },
+   {
+    "entry": 15,
+    "file": "u_select/15.png",
+    "size": [
+     48,
+     10
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "48x10 bar frame (UI buffer +0x2adb0)",
+    "loader": "0x43e86d"
+   },
+   {
+    "entry": 16,
+    "file": "u_select/16.png",
+    "size": [
+     48,
+     96
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "2 frames 48x48 (watchtower, trap) (UI buffer +0x2b350)",
+    "loader": "0x43e86d"
+   },
+   {
+    "entry": 17,
+    "file": "u_select/17.png",
+    "size": [
+     24,
+     96
+    ],
+    "stored": "png",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "4 icons 24x24 (heart, feather, sword, scroll) (UI buffer +0x2e950)",
+    "loader": "0x43e86d"
+   },
+   {
+    "entry": 18,
+    "file": "u_select/18.png",
+    "size": [
+     16,
+     48
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "3 marks 16x16 (?, red X, blue X) (UI buffer +0x30450)",
+    "loader": "0x43e86d"
+   },
+   {
+    "entry": 19,
+    "file": "u_select/19.png",
+    "size": [
+     48,
+     384
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "8 frames 48x48: fire (0-3), boat, burning boats (UI buffer +0x30d50; frame sets 0x40dd39)",
+    "loader": "0x43e86d"
+   },
+   {
+    "entry": 20,
+    "file": "u_select/20.png",
+    "size": [
+     48,
+     384
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "8 frames 48x48: small fire / burning boats (map objects, 0x40dd39)",
+    "loader": "0x40dde5"
+   },
+   {
+    "entry": 21,
+    "file": "u_select/21.png",
+    "size": [
+     12,
+     120
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "12x12 digits 0..9",
+    "loader": null
+   },
+   {
+    "entry": 22,
+    "file": "u_select/22.png",
+    "size": [
+     600,
+     84
+    ],
+    "stored": "png",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "600x84 white rounded text box (UI buffer +0x3e550; big-portrait talk 0x42d0a9)",
+    "loader": "0x43e86d"
+   },
+   {
+    "entry": 23,
+    "file": "u_select/23.png",
+    "size": [
+     48,
+     480
+    ],
+    "stored": "png",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "10 frames 48x48: green movement-path arrows and lines (UI buffer +0x633f0)",
+    "loader": "0x43e86d"
+   },
+   {
+    "entry": 24,
+    "file": "u_select/24.png",
+    "size": [
+     12,
+     144
+    ],
+    "stored": "png",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "12 arrows 12x12 (stat up/down) (UI buffer +0x741f0)",
+    "loader": "0x43e86d"
+   },
+   {
+    "entry": 25,
+    "file": "u_select/25.png",
+    "size": [
+     16,
+     16
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "16x16 sword icon",
+    "loader": null
+   },
+   {
+    "entry": 26,
+    "file": "u_select/26.png",
+    "size": [
+     16,
+     16
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "16x16 sword icon",
+    "loader": null
+   },
+   {
+    "entry": 27,
+    "file": "u_select/27.png",
+    "size": [
+     16,
+     16
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "16x16 sword icon",
+    "loader": null
+   },
+   {
+    "entry": 28,
+    "file": "u_select/28.png",
+    "size": [
+     16,
+     16
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "16x16 sword icon",
+    "loader": null
+   },
+   {
+    "entry": 29,
+    "file": "u_select/29.png",
+    "size": [
+     16,
+     16
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "16x16 sword icon",
+    "loader": null
+   },
+   {
+    "entry": 30,
+    "file": "u_select/30.png",
+    "size": [
+     16,
+     144
+    ],
+    "stored": "bmp",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "9 icons 16x16 -> icons/list16/ (ImageList 0x492e1c)",
+    "loader": "0x40b655"
+   },
+   {
+    "entry": 31,
+    "file": "u_select/31.png",
+    "size": [
+     48,
+     1440
+    ],
+    "stored": "png",
+    "keyed": true,
+    "decode_mode": 10,
+    "role": "30 terrain pictures 48x48 -> terrain/ (ImageList 0x4b68d0)",
+    "loader": "0x46c644"
+   }
+  ]
+ },
+ "compat": {
+  "note": "copies under wg2025 names for the existing Godot code; effects/items32 is not produced (the game draws item pictures from the Item.e5 ImageList = icons/items/large/)",
+  "files": [
+   {
+    "file": "effects/kao/198c0_16x16.png",
+    "from": "ui/mark/11.png rows 0..15"
+   },
+   {
+    "file": "effects/kao/199c0_16x16.png",
+    "from": "ui/mark/11.png rows 16..31"
+   },
+   {
+    "file": "effects/kao/19ac0_16x64.png",
+    "from": "ui/mark/11.png rows 32..95"
+   },
+   {
+    "file": "effects/kao/19ec0_16x64.png",
+    "from": "ui/mark/11.png rows 96..159"
+   },
+   {
+    "file": "effects/kao/1abc0_48x48.png",
+    "from": "ui/mark/01.png (花色 pattern tile, default)"
+   },
+   {
+    "file": "effects/qusi/03.jpg",
+    "from": "ui/u_select/03.jpg (same entry number as wg2025 Qusi.wa[3]: the 选择武将 dialog background)"
+   }
+  ]
+ }
+}

@@ -1,0 +1,2267 @@
+{
+ "0": {
+  "hex": "0x00",
+  "name": "end",
+  "cn": "事件结束",
+  "params": []
+ },
+ "1": {
+  "hex": "0x01",
+  "name": "if",
+  "cn": "子事件设定",
+  "params": []
+ },
+ "2": {
+  "hex": "0x02",
+  "name": "comment",
+  "cn": "内部信息",
+  "params": [
+   [
+    5,
+    "string"
+   ]
+  ]
+ },
+ "3": {
+  "hex": "0x03",
+  "name": "else",
+  "cn": "else",
+  "params": []
+ },
+ "4": {
+  "hex": "0x04",
+  "name": "test_yes_no",
+  "cn": "询问测试",
+  "params": [
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "5": {
+  "hex": "0x05",
+  "name": "test_flags",
+  "cn": "变量测试",
+  "params": "tag35 n, n*raw_u16 (flags that must be ON), tag35 m, m*raw_u16 (flags that must be OFF)"
+ },
+ "6": {
+  "hex": "0x06",
+  "name": "battle_select_units",
+  "cn": "我军出场限制",
+  "params": [
+   [
+    46,
+    "result"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    56,
+    "person_list"
+   ],
+   [
+    56,
+    "person_list"
+   ],
+   [
+    56,
+    "person_list"
+   ],
+   [
+    56,
+    "person_list"
+   ],
+   [
+    56,
+    "person_list"
+   ],
+   [
+    57,
+    "person_list2"
+   ],
+   [
+    57,
+    "person_list2"
+   ],
+   [
+    57,
+    "person_list2"
+   ],
+   [
+    57,
+    "person_list2"
+   ],
+   [
+    57,
+    "person_list2"
+   ]
+  ]
+ },
+ "7": {
+  "hex": "0x07",
+  "name": "test_pending",
+  "cn": "出战测试",
+  "params": []
+ },
+ "8": {
+  "hex": "0x08",
+  "name": "set_menu",
+  "cn": "菜单处理",
+  "params": [
+   [
+    46,
+    "result"
+   ]
+  ],
+  "wg2025_name": "set_result"
+ },
+ "9": {
+  "hex": "0x09",
+  "name": "delay",
+  "cn": "延时",
+  "params": [
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "10": {
+  "hex": "0x0a",
+  "name": "clear_flags",
+  "cn": "初始化局部变量",
+  "params": []
+ },
+ "11": {
+  "hex": "0x0b",
+  "name": "set_flag",
+  "cn": "变量赋值",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    39,
+    "bool"
+   ]
+  ]
+ },
+ "12": {
+  "hex": "0x0c",
+  "name": "exit_section",
+  "cn": "结束Section",
+  "params": []
+ },
+ "13": {
+  "hex": "0x0d",
+  "name": "next_scene",
+  "cn": "结束Scene",
+  "params": []
+ },
+ "14": {
+  "hex": "0x0e",
+  "name": "ui_0e",
+  "cn": "战斗失败",
+  "params": []
+ },
+ "15": {
+  "hex": "0x0f",
+  "name": "screen_mode",
+  "cn": "结局设定",
+  "params": [
+   [
+    18,
+    "screen_mode"
+   ]
+  ]
+ },
+ "16": {
+  "hex": "0x10",
+  "name": "nop",
+  "cn": "许子将指导",
+  "params": []
+ },
+ "17": {
+  "hex": "0x11",
+  "name": "goto_scenario",
+  "cn": "剧本跳转",
+  "params": [
+   [
+    55,
+    "scenario"
+   ]
+  ]
+ },
+ "18": {
+  "hex": "0x12",
+  "name": "choice",
+  "cn": "选择框",
+  "params": [
+   [
+    5,
+    "string"
+   ],
+   [
+    2,
+    "int16"
+   ]
+  ]
+ },
+ "19": {
+  "hex": "0x13",
+  "name": "test_choice",
+  "cn": "case",
+  "params": [
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "20": {
+  "hex": "0x14",
+  "name": "dialog",
+  "cn": "对话",
+  "params": [
+   [
+    5,
+    "string"
+   ]
+  ]
+ },
+ "21": {
+  "hex": "0x15",
+  "name": "unit_say",
+  "cn": "对话2",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    5,
+    "string"
+   ]
+  ]
+ },
+ "22": {
+  "hex": "0x16",
+  "name": "info",
+  "cn": "信息",
+  "params": [
+   [
+    5,
+    "string"
+   ]
+  ]
+ },
+ "23": {
+  "hex": "0x17",
+  "name": "place_name",
+  "cn": "场所名",
+  "params": [
+   [
+    5,
+    "string"
+   ]
+  ]
+ },
+ "24": {
+  "hex": "0x18",
+  "name": "title_text",
+  "cn": "事件名称设定",
+  "params": [
+   [
+    5,
+    "string"
+   ]
+  ]
+ },
+ "25": {
+  "hex": "0x19",
+  "name": "victory_cond_text",
+  "cn": "胜利条件",
+  "params": [
+   [
+    5,
+    "string"
+   ]
+  ]
+ },
+ "26": {
+  "hex": "0x1a",
+  "name": "battle_goal_text",
+  "cn": "显示胜利条件",
+  "params": [
+   [
+    5,
+    "string"
+   ]
+  ]
+ },
+ "27": {
+  "hex": "0x1b",
+  "name": "op_1b",
+  "cn": "撤退信息是否显示设定",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    39,
+    "bool"
+   ]
+  ]
+ },
+ "28": {
+  "hex": "0x1c",
+  "name": "fade_out",
+  "cn": "绘图",
+  "params": []
+ },
+ "29": {
+  "hex": "0x1d",
+  "name": "fade_in",
+  "cn": "调色板设定",
+  "params": []
+ },
+ "30": {
+  "hex": "0x1e",
+  "name": "wait_frame",
+  "cn": "武将重绘",
+  "params": []
+ },
+ "31": {
+  "hex": "0x1f",
+  "name": "scroll_to",
+  "cn": "地图视点切换",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "32": {
+  "hex": "0x20",
+  "name": "op_20",
+  "cn": "武将头像状态设置",
+  "params": [
+   [
+    74,
+    "arg4a"
+   ]
+  ]
+ },
+ "33": {
+  "hex": "0x21",
+  "name": "map_mark",
+  "cn": "战场物体添加",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    16,
+    "mark_type"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "34": {
+  "hex": "0x22",
+  "name": "set_weather",
+  "cn": "动画",
+  "params": [
+   [
+    27,
+    "weather"
+   ]
+  ]
+ },
+ "35": {
+  "hex": "0x23",
+  "name": "play_music",
+  "cn": "音效",
+  "params": [
+   [
+    30,
+    "music"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "36": {
+  "hex": "0x24",
+  "name": "play_sound",
+  "cn": "CD音轨",
+  "params": [
+   [
+    9,
+    "sound"
+   ]
+  ]
+ },
+ "37": {
+  "hex": "0x25",
+  "name": "test_unit_at",
+  "cn": "武将进入指定地点测试",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "38": {
+  "hex": "0x26",
+  "name": "test_unit_in_area",
+  "cn": "武将进入指定区域测试",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "39": {
+  "hex": "0x27",
+  "name": "change_scene",
+  "cn": "背景显示",
+  "params": [
+   [
+    45,
+    "scene_mode"
+   ],
+   [
+    12,
+    "scene_arg"
+   ],
+   [
+    26,
+    "scene_arg3"
+   ],
+   [
+    28,
+    "image"
+   ],
+   [
+    21,
+    "scene_arg2"
+   ]
+  ]
+ },
+ "40": {
+  "hex": "0x28",
+  "name": "op_28",
+  "cn": "自由R启动指令",
+  "params": [
+   [
+    54,
+    "toggle"
+   ]
+  ]
+ },
+ "41": {
+  "hex": "0x29",
+  "name": "op_29",
+  "cn": "地图头像显示",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "42": {
+  "hex": "0x2a",
+  "name": "op_2a",
+  "cn": "地图头像移动",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "43": {
+  "hex": "0x2b",
+  "name": "op_2b",
+  "cn": "地图头像消失",
+  "params": [
+   [
+    2,
+    "int16"
+   ]
+  ]
+ },
+ "44": {
+  "hex": "0x2c",
+  "name": "caption",
+  "cn": "地图文字显示",
+  "params": [
+   [
+    5,
+    "string"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "45": {
+  "hex": "0x2d",
+  "name": "test_clicked",
+  "cn": "武将点击测试",
+  "params": [
+   [
+    2,
+    "int16"
+   ]
+  ]
+ },
+ "46": {
+  "hex": "0x2e",
+  "name": "test_adjacent",
+  "cn": "武将相邻测试",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "47": {
+  "hex": "0x2f",
+  "name": "op_2f",
+  "cn": "清除人物",
+  "params": []
+ },
+ "48": {
+  "hex": "0x30",
+  "name": "actor_appear",
+  "cn": "武将出现",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    43,
+    "dir"
+   ],
+   [
+    13,
+    "action"
+   ]
+  ]
+ },
+ "49": {
+  "hex": "0x31",
+  "name": "actor_select",
+  "cn": "武将消失",
+  "params": [
+   [
+    44,
+    "select_mode"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    3,
+    "unit_side"
+   ]
+  ]
+ },
+ "50": {
+  "hex": "0x32",
+  "name": "actor_move",
+  "cn": "武将移动",
+  "params": [
+   [
+    64,
+    "select"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    43,
+    "dir"
+   ]
+  ]
+ },
+ "51": {
+  "hex": "0x33",
+  "name": "actor_face",
+  "cn": "武将转向",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    13,
+    "action"
+   ],
+   [
+    43,
+    "dir"
+   ]
+  ]
+ },
+ "52": {
+  "hex": "0x34",
+  "name": "actor_action",
+  "cn": "武将动作",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    13,
+    "action"
+   ]
+  ]
+ },
+ "53": {
+  "hex": "0x35",
+  "name": "set_r_image",
+  "cn": "武将形象改变",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    19,
+    "actor_state"
+   ]
+  ],
+  "wg2025_name": "actor_state"
+ },
+ "54": {
+  "hex": "0x36",
+  "name": "test_attr",
+  "cn": "武将状态测试",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    35,
+    "attr"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    36,
+    "cmp"
+   ]
+  ]
+ },
+ "55": {
+  "hex": "0x37",
+  "name": "test_resource",
+  "cn": "钱、章节编号、忠奸测试",
+  "params": [
+   [
+    40,
+    "resource"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    36,
+    "cmp"
+   ]
+  ]
+ },
+ "56": {
+  "hex": "0x38",
+  "name": "set_attr",
+  "cn": "武将能力设定",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    35,
+    "attr"
+   ],
+   [
+    52,
+    "op"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "57": {
+  "hex": "0x39",
+  "name": "level_up",
+  "cn": "武将等级提升",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ],
+  "wg2025_name": "op_39"
+ },
+ "58": {
+  "hex": "0x3a",
+  "name": "set_resource",
+  "cn": "钱、章节编号、忠奸设置",
+  "params": [
+   [
+    40,
+    "resource"
+   ],
+   [
+    52,
+    "op"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "59": {
+  "hex": "0x3b",
+  "name": "join",
+  "cn": "武将加入",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    14,
+    "join_mode"
+   ],
+   [
+    62,
+    "flag"
+   ]
+  ]
+ },
+ "60": {
+  "hex": "0x3c",
+  "name": "test_last_action",
+  "cn": "武将加入测试",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    14,
+    "join_mode"
+   ],
+   [
+    58,
+    "join_arg"
+   ]
+  ],
+  "wg2025_name": "op_3c"
+ },
+ "61": {
+  "hex": "0x3d",
+  "name": "get_item",
+  "cn": "获得物品",
+  "params": [
+   [
+    23,
+    "item"
+   ],
+   [
+    73,
+    "level"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    2,
+    "int16"
+   ]
+  ]
+ },
+ "62": {
+  "hex": "0x3e",
+  "name": "set_equipment",
+  "cn": "加入装备设定",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    59,
+    "weapon"
+   ],
+   [
+    73,
+    "level"
+   ],
+   [
+    60,
+    "armor"
+   ],
+   [
+    73,
+    "level"
+   ],
+   [
+    61,
+    "accessory"
+   ]
+  ]
+ },
+ "63": {
+  "hex": "0x3f",
+  "name": "test_turn",
+  "cn": "回合测试",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    36,
+    "cmp"
+   ]
+  ]
+ },
+ "64": {
+  "hex": "0x40",
+  "name": "test_side",
+  "cn": "行动方测试",
+  "params": [
+   [
+    72,
+    "side"
+   ]
+  ]
+ },
+ "65": {
+  "hex": "0x41",
+  "name": "test_units_in_area",
+  "cn": "战场人数测试",
+  "params": [
+   [
+    3,
+    "unit_side"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    36,
+    "cmp"
+   ],
+   [
+    63,
+    "area_mode"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "66": {
+  "hex": "0x42",
+  "name": "test_event5",
+  "cn": "战斗胜利测试",
+  "params": []
+ },
+ "67": {
+  "hex": "0x43",
+  "name": "test_event6",
+  "cn": "战斗失败测试",
+  "params": []
+ },
+ "68": {
+  "hex": "0x44",
+  "name": "battle_init",
+  "cn": "战斗初始化",
+  "params": []
+ },
+ "69": {
+  "hex": "0x45",
+  "name": "battle_settings",
+  "cn": "战场全局变量",
+  "params": [
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    62,
+    "flag"
+   ],
+   [
+    50,
+    "b_set"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    50,
+    "b_set"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    71,
+    "b_param"
+   ],
+   [
+    34,
+    "b_flag"
+   ]
+  ]
+ },
+ "70": {
+  "hex": "0x46",
+  "name": "battle_allies",
+  "cn": "友军出场设定",
+  "params": {
+   "repeat": 20,
+   "first_slot": 20,
+   "page_stride": 20,
+   "entry": [
+    [
+     2,
+     "int16"
+    ],
+    [
+     38,
+     "person"
+    ],
+    [
+     4,
+     "int32"
+    ],
+    [
+     4,
+     "int32"
+    ],
+    [
+     43,
+     "dir"
+    ],
+    [
+     62,
+     "flag"
+    ],
+    [
+     69,
+     "ai_target"
+    ],
+    [
+     7,
+     "ai_mode"
+    ],
+    [
+     2,
+     "int16"
+    ],
+    [
+     4,
+     "int32"
+    ],
+    [
+     4,
+     "int32"
+    ]
+   ]
+  }
+ },
+ "71": {
+  "hex": "0x47",
+  "name": "battle_enemies",
+  "cn": "敌军出场设定",
+  "params": {
+   "repeat": 80,
+   "first_slot": 60,
+   "page_stride": 80,
+   "entry": [
+    [
+     2,
+     "int16"
+    ],
+    [
+     38,
+     "person"
+    ],
+    [
+     38,
+     "person"
+    ],
+    [
+     4,
+     "int32"
+    ],
+    [
+     4,
+     "int32"
+    ],
+    [
+     43,
+     "dir"
+    ],
+    [
+     62,
+     "flag"
+    ],
+    [
+     69,
+     "ai_target"
+    ],
+    [
+     7,
+     "ai_mode"
+    ],
+    [
+     2,
+     "int16"
+    ],
+    [
+     4,
+     "int32"
+    ],
+    [
+     4,
+     "int32"
+    ]
+   ]
+  }
+ },
+ "72": {
+  "hex": "0x48",
+  "name": "battle_equipment",
+  "cn": "敌方装备设定",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    59,
+    "weapon"
+   ],
+   [
+    73,
+    "level"
+   ],
+   [
+    60,
+    "armor"
+   ],
+   [
+    73,
+    "level"
+   ],
+   [
+    61,
+    "accessory"
+   ]
+  ]
+ },
+ "73": {
+  "hex": "0x49",
+  "name": "ui_49",
+  "cn": "战斗结束",
+  "params": []
+ },
+ "74": {
+  "hex": "0x4a",
+  "name": "battle_prepare",
+  "cn": "我军出场强制设定",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    56,
+    "person_list"
+   ],
+   [
+    56,
+    "person_list"
+   ],
+   [
+    56,
+    "person_list"
+   ],
+   [
+    56,
+    "person_list"
+   ],
+   [
+    56,
+    "person_list"
+   ],
+   [
+    57,
+    "person_list2"
+   ],
+   [
+    57,
+    "person_list2"
+   ],
+   [
+    57,
+    "person_list2"
+   ],
+   [
+    57,
+    "person_list2"
+   ],
+   [
+    57,
+    "person_list2"
+   ]
+  ]
+ },
+ "75": {
+  "hex": "0x4b",
+  "name": "op_4b",
+  "cn": "我军出场设定",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    43,
+    "dir"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "76": {
+  "hex": "0x4c",
+  "name": "unit_op_4c",
+  "cn": "隐藏武将出现",
+  "params": [
+   [
+    64,
+    "select"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "77": {
+  "hex": "0x4d",
+  "name": "unit_op_4d",
+  "cn": "武将状态变更",
+  "params": [
+   [
+    65,
+    "select2"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    3,
+    "unit_side"
+   ],
+   [
+    47,
+    "b_dir"
+   ],
+   [
+    24,
+    "b_action"
+   ],
+   [
+    48,
+    "b_arg"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "78": {
+  "hex": "0x4e",
+  "name": "unit_op_4e",
+  "cn": "武将方针变更",
+  "params": [
+   [
+    44,
+    "select_mode"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    3,
+    "unit_side"
+   ],
+   [
+    7,
+    "ai_mode"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "79": {
+  "hex": "0x4f",
+  "name": "unit_op_4f",
+  "cn": "战场转向设置",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    43,
+    "dir"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "80": {
+  "hex": "0x50",
+  "name": "unit_status",
+  "cn": "战场动作设定",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    70,
+    "status"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "81": {
+  "hex": "0x51",
+  "name": "op_51",
+  "cn": "战场恢复行动权",
+  "params": []
+ },
+ "82": {
+  "hex": "0x52",
+  "name": "op_52",
+  "cn": "兵种改变",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    3,
+    "unit_side"
+   ]
+  ]
+ },
+ "83": {
+  "hex": "0x53",
+  "name": "unit_op_53",
+  "cn": "战场撤退",
+  "params": [
+   [
+    44,
+    "select_mode"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    3,
+    "unit_side"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "84": {
+  "hex": "0x54",
+  "name": "ui_54",
+  "cn": "战场撤退确认",
+  "params": []
+ },
+ "85": {
+  "hex": "0x55",
+  "name": "unit_move",
+  "cn": "战场复活",
+  "params": [
+   [
+    64,
+    "select"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    43,
+    "dir"
+   ]
+  ]
+ },
+ "86": {
+  "hex": "0x56",
+  "name": "op_56",
+  "cn": "天气类别设定",
+  "params": [
+   [
+    71,
+    "b_param"
+   ]
+  ]
+ },
+ "87": {
+  "hex": "0x57",
+  "name": "op_57",
+  "cn": "当前天气设定",
+  "params": [
+   [
+    34,
+    "b_flag"
+   ]
+  ]
+ },
+ "88": {
+  "hex": "0x58",
+  "name": "op_58",
+  "cn": "战场障碍设定",
+  "params": [
+   [
+    66,
+    "eff_a"
+   ],
+   [
+    67,
+    "eff_b"
+   ],
+   [
+    68,
+    "eff_c"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "89": {
+  "hex": "0x59",
+  "name": "op_59",
+  "cn": "战利品",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    23,
+    "item"
+   ],
+   [
+    73,
+    "level"
+   ],
+   [
+    23,
+    "item"
+   ],
+   [
+    73,
+    "level"
+   ],
+   [
+    23,
+    "item"
+   ],
+   [
+    73,
+    "level"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "90": {
+  "hex": "0x5a",
+  "name": "ui_5a",
+  "cn": "战场操作开始",
+  "params": []
+ },
+ "91": {
+  "hex": "0x5b",
+  "name": "op_5b",
+  "cn": "战场高亮区域",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "92": {
+  "hex": "0x5c",
+  "name": "op_5c",
+  "cn": "战场高亮人物",
+  "params": [
+   [
+    2,
+    "int16"
+   ]
+  ]
+ },
+ "93": {
+  "hex": "0x5d",
+  "name": "op_5d",
+  "cn": "回合上限设定",
+  "params": [
+   [
+    52,
+    "op"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "94": {
+  "hex": "0x5e",
+  "name": "test_action_pair",
+  "cn": "武将不同测试",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    2,
+    "int16"
+   ]
+  ],
+  "wg2025_name": "mod_5e"
+ },
+ "95": {
+  "hex": "0x5f",
+  "name": "duel_start",
+  "cn": "单挑结束",
+  "params": []
+ },
+ "96": {
+  "hex": "0x60",
+  "name": "duel_say",
+  "cn": "单挑武将出场",
+  "params": [
+   [
+    38,
+    "person"
+   ],
+   [
+    5,
+    "string"
+   ],
+   [
+    76,
+    "duel_act"
+   ]
+  ]
+ },
+ "97": {
+  "hex": "0x61",
+  "name": "duel_end",
+  "cn": "单挑胜负显示",
+  "params": []
+ },
+ "98": {
+  "hex": "0x62",
+  "name": "duel_62",
+  "cn": "单挑阵亡",
+  "params": [
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "99": {
+  "hex": "0x63",
+  "name": "duel_say2",
+  "cn": "单挑对话",
+  "params": [
+   [
+    38,
+    "person"
+   ],
+   [
+    5,
+    "string"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "100": {
+  "hex": "0x64",
+  "name": "duel_action",
+  "cn": "单挑动作",
+  "params": [
+   [
+    38,
+    "person"
+   ],
+   [
+    76,
+    "duel_act"
+   ]
+  ]
+ },
+ "101": {
+  "hex": "0x65",
+  "name": "duel_action2",
+  "cn": "单挑攻击1",
+  "params": [
+   [
+    38,
+    "person"
+   ],
+   [
+    77,
+    "duel_act2"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "102": {
+  "hex": "0x66",
+  "name": "duel_action3",
+  "cn": "单挑攻击2",
+  "params": [
+   [
+    38,
+    "person"
+   ],
+   [
+    78,
+    "duel_act3"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "103": {
+  "hex": "0x67",
+  "name": "chapter_title",
+  "cn": "章名",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    5,
+    "string"
+   ]
+  ]
+ },
+ "104": {
+  "hex": "0x68",
+  "name": "duel_setup",
+  "cn": "单挑开始",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    79,
+    "duel_arg"
+   ]
+  ]
+ },
+ "105": {
+  "hex": "0x69",
+  "name": "popup",
+  "cn": "旁白",
+  "params": [
+   [
+    5,
+    "string"
+   ]
+  ]
+ },
+ "106": {
+  "hex": "0x6a",
+  "name": "op_6a",
+  "cn": "Game Over指令",
+  "params": []
+ },
+ "107": {
+  "hex": "0x6b",
+  "name": "op_6b",
+  "cn": "法术",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    75,
+    "effect"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "108": {
+  "hex": "0x6c",
+  "name": "op_6c",
+  "cn": "武将能力复制",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    2,
+    "int16"
+   ]
+  ]
+ },
+ "109": {
+  "hex": "0x6d",
+  "name": "op_6d",
+  "cn": "相对复活或移动",
+  "params": [
+   [
+    64,
+    "select"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    43,
+    "dir"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "110": {
+  "hex": "0x6e",
+  "name": "test_random",
+  "cn": "概率测试",
+  "params": [
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "111": {
+  "hex": "0x6f",
+  "name": "lose_item",
+  "cn": "丢弃物品",
+  "params": [
+   [
+    23,
+    "item"
+   ]
+  ]
+ },
+ "112": {
+  "hex": "0x70",
+  "name": "copy_person_word",
+  "cn": "能力选择复制",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ],
+  "wg2025_name": "copy_person_byte"
+ },
+ "113": {
+  "hex": "0x71",
+  "name": "special_func",
+  "cn": "特效请求",
+  "params": [
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "114": {
+  "hex": "0x72",
+  "name": "ext_command",
+  "cn": "信息传送",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    5,
+    "string"
+   ]
+  ],
+  "wg2025_name": "rewind"
+ },
+ "115": {
+  "hex": "0x73",
+  "name": "test_sum",
+  "cn": "人物五围和测试",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    36,
+    "cmp"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ],
+   [
+    38,
+    "person"
+   ]
+  ]
+ },
+ "116": {
+  "hex": "0x74",
+  "name": "set_save_enabled",
+  "cn": "开/禁存档",
+  "params": [
+   [
+    38,
+    "person"
+   ]
+  ],
+  "wg2025_name": "set_4ce004"
+ },
+ "117": {
+  "hex": "0x75",
+  "name": "set_s_image",
+  "cn": "S特殊形象指定",
+  "params": [
+   [
+    2,
+    "int16"
+   ],
+   [
+    80,
+    "byte"
+   ]
+  ],
+  "wg2025_name": "set_byte_var"
+ },
+ "118": {
+  "hex": "0x76",
+  "name": "goto",
+  "cn": "无条件跳转",
+  "params": [
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "119": {
+  "hex": "0x77",
+  "name": "int_var_op",
+  "cn": "变量运算",
+  "params": [
+   [
+    81,
+    "var_kind"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    83,
+    "arith_op"
+   ],
+   [
+    82,
+    "val_kind"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "120": {
+  "hex": "0x78",
+  "name": "data_transfer",
+  "cn": "整型变量赋值",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    84,
+    "direction"
+   ],
+   [
+    2,
+    "int16"
+   ],
+   [
+    85,
+    "var_index"
+   ]
+  ]
+ },
+ "121": {
+  "hex": "0x79",
+  "name": "test_int_var",
+  "cn": "变量测试",
+  "params": [
+   [
+    82,
+    "val_kind"
+   ],
+   [
+    4,
+    "int32"
+   ],
+   [
+    86,
+    "cmp_mode"
+   ],
+   [
+    82,
+    "val_kind"
+   ],
+   [
+    4,
+    "int32"
+   ]
+  ]
+ },
+ "122": {
+  "hex": "0x7a",
+  "name": "dialog3",
+  "cn": "对话3",
+  "params": [
+   [
+    5,
+    "string"
+   ]
+  ],
+  "wg2025_name": null
+ },
+ "123": {
+  "hex": "0x7b",
+  "name": "test_ext_command",
+  "cn": "信息传送测试",
+  "params": [
+   [
+    4,
+    "int32"
+   ],
+   [
+    5,
+    "string"
+   ]
+  ],
+  "wg2025_name": null
+ }
+}

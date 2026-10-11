@@ -1,0 +1,9630 @@
+{
+ "_doc": "docs/skills.md. specials = 特效 ids (names 0x4cc600, desc Imsg 430+id); item_effects = equipment effect ids (names 0x4cb7a0[id-0x1a], kind 0x4cb6ba, lv10 0x4cb5ca); queries = the fixed (sid, eid, mode, a4) pairs the engine asks 0x4101d9 / 0x41301e; mode 0 sum, 1 max, 2 first-nonzero (7 dominant), 3 OR; a4 != 0: a matching item counts 100.",
+ "specials": [
+  {
+   "id": 0,
+   "name": "每回合恢复HP",
+   "desc": "每回合恢复HP",
+   "template_value": 30,
+   "initial_class_skills": [
+    {
+     "class": 72,
+     "class_name": "蛮骑兵",
+     "value": 30
+    },
+    {
+     "class": 75,
+     "class_name": "石像鬼",
+     "value": 20
+    }
+   ]
+  },
+  {
+   "id": 1,
+   "name": "每回合恢复MP",
+   "desc": "每回合恢复MP",
+   "template_value": 10,
+   "initial_class_skills": [
+    {
+     "class": 70,
+     "class_name": "辎重队",
+     "value": 10
+    },
+    {
+     "class": 69,
+     "class_name": "阴阳师",
+     "value": 10
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "name": "每回合恢复状态",
+   "desc": "每回合解除不良狀態",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 29,
+     "class_name": "神医",
+     "value": 1
+    },
+    {
+     "class": 19,
+     "class_name": "拳师",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "name": "每回合获得exp",
+   "desc": "每回合武將经验增加",
+   "template_value": 30,
+   "initial_class_skills": []
+  },
+  {
+   "id": 4,
+   "name": "每回合武器exp",
+   "desc": "每回合武器经验增加",
+   "template_value": 3,
+   "initial_class_skills": []
+  },
+  {
+   "id": 5,
+   "name": "每回合护具exp",
+   "desc": "每回合護具经验增加",
+   "template_value": 3,
+   "initial_class_skills": []
+  },
+  {
+   "id": 6,
+   "name": "破坏攻击",
+   "desc": "攻擊時造成對手攻擊力Debuff",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 58,
+     "class_name": "女弩兵",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "name": "破坏防御",
+   "desc": "攻擊時造成對手防禦力Debuff",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 67,
+     "class_name": "海盗",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "name": "破坏精神",
+   "desc": "攻擊時造成對手精神力Debuff",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 54,
+     "class_name": "女騎士",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "name": "破坏爆发",
+   "desc": "攻擊時造成對手爆發力Debuff",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 77,
+     "class_name": "土偶",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "name": "破坏士气",
+   "desc": "攻擊時造成對手士氣Debuff",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 39,
+     "class_name": "西凉轻骑",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "name": "破坏移动",
+   "desc": "攻擊時造成對手移動力Debuff",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 12,
+   "name": "随机破坏能力",
+   "desc": "攻擊時隨機造成對手的能力Debuff",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 66,
+     "class_name": "閹兵",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "name": "麻痹攻击",
+   "desc": "攻擊命中後對手陷入無法移動的狀態",
+   "template_value": 60,
+   "initial_class_skills": [
+    {
+     "class": 60,
+     "class_name": "蠻族兵",
+     "value": 60
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "name": "禁咒攻击",
+   "desc": "攻擊命中後對手陷入無法使用策略的狀態",
+   "template_value": 30,
+   "initial_class_skills": [
+    {
+     "class": 65,
+     "class_name": "飛行者",
+     "value": 30
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "name": "混乱攻击",
+   "desc": "攻擊命中後對手陷入無法行動的狀態",
+   "template_value": 60,
+   "initial_class_skills": [
+    {
+     "class": 77,
+     "class_name": "土偶",
+     "value": 60
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "name": "中毒攻击",
+   "desc": "攻擊命中後對手陷入每回合扣血的狀態",
+   "template_value": 80,
+   "initial_class_skills": [
+    {
+     "class": 76,
+     "class_name": "木人",
+     "value": 80
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "name": "随机异常状态",
+   "desc": "攻擊命中後對手隨機陷入异常狀態",
+   "template_value": 60,
+   "initial_class_skills": []
+  },
+  {
+   "id": 18,
+   "name": "反弹异常攻击",
+   "desc": "受到攻擊時會將來自對手的异常狀態反弹回去",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 53,
+     "class_name": "咒术士",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "name": "反弹伤害",
+   "desc": "受到物理傷害時會將自身的損傷按照特定比例反弹給對手",
+   "template_value": 30,
+   "initial_class_skills": [
+    {
+     "class": 76,
+     "class_name": "木人",
+     "value": 30
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "name": "吸血攻击",
+   "desc": "攻擊命中後會將對手受到的物理傷害按照特定比例轉換成自己的血量",
+   "template_value": 30,
+   "initial_class_skills": [
+    {
+     "class": 21,
+     "class_name": "贼兵",
+     "value": 50
+    },
+    {
+     "class": 62,
+     "class_name": "猛獸",
+     "value": 30
+    }
+   ]
+  },
+  {
+   "id": 21,
+   "name": "吸收金钱",
+   "desc": "攻擊命中後金錢增加",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 23,
+     "class_name": "豪杰",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 22,
+   "name": "破甲攻击",
+   "desc": "攻擊對手時，對手損失的血量為固定值或是固定的比例",
+   "template_value": 30,
+   "initial_class_skills": []
+  },
+  {
+   "id": 23,
+   "name": "奋战攻击",
+   "desc": "攻擊後自動攻擊范圍內的其他敵军，最多可發動攻擊三次",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 77,
+     "class_name": "土偶",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 24,
+   "name": "引导攻击",
+   "desc": "物理擊敗敵军後，會自動攻擊范圍內的其他敵军，最多可發動攻擊三次",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 25,
+   "name": "冲锋攻击",
+   "desc": "每移動一格，攻擊時造成的物理損傷會按照特定比例上升",
+   "template_value": 5,
+   "initial_class_skills": [
+    {
+     "class": 34,
+     "class_name": "驍騎兵",
+     "value": 5
+    }
+   ]
+  },
+  {
+   "id": 26,
+   "name": "先手攻击",
+   "desc": "對手發動發攻擊時，如果對手位於己方的攻擊范圍以內，可抢先攻擊對手",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 45,
+     "class_name": "統領",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 27,
+   "name": "策略绝对命中",
+   "desc": "策略命中率强制為100%",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 71,
+     "class_name": "仙人",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 28,
+   "name": "辅助策略命中",
+   "desc": "策略命中率上升",
+   "template_value": 10,
+   "initial_class_skills": []
+  },
+  {
+   "id": 29,
+   "name": "辅助策略防御",
+   "desc": "對策略的隔檔率提高",
+   "template_value": 10,
+   "initial_class_skills": []
+  },
+  {
+   "id": 30,
+   "name": "攻击绝对命中",
+   "desc": "攻擊命中率强制為100%，但是對特殊防禦或防禦遠程無效",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 31,
+   "name": "辅助攻击命中",
+   "desc": "物理攻擊的命中率提高",
+   "template_value": 10,
+   "initial_class_skills": [
+    {
+     "class": 17,
+     "class_name": "霹雳车",
+     "value": 10
+    }
+   ]
+  },
+  {
+   "id": 32,
+   "name": "辅助攻击防御",
+   "desc": "對物理攻擊的隔檔率上升",
+   "template_value": 15,
+   "initial_class_skills": []
+  },
+  {
+   "id": 33,
+   "name": "辅助全防御",
+   "desc": "對物理與策略攻擊的隔檔率上升",
+   "template_value": 10,
+   "initial_class_skills": [
+    {
+     "class": 19,
+     "class_name": "拳师",
+     "value": 10
+    }
+   ]
+  },
+  {
+   "id": 34,
+   "name": "减轻远距损伤",
+   "desc": "受到的遠程傷害減低",
+   "template_value": 40,
+   "initial_class_skills": [
+    {
+     "class": 32,
+     "class_name": "异士",
+     "value": 40
+    }
+   ]
+  },
+  {
+   "id": 35,
+   "name": "减轻物理损伤",
+   "desc": "受到的物理傷害減低",
+   "template_value": 20,
+   "initial_class_skills": []
+  },
+  {
+   "id": 36,
+   "name": "集气加倍",
+   "desc": "集SP的速度加快",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 11,
+     "class_name": "亲卫队",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 37,
+   "name": "反击后反击",
+   "desc": "攻擊後若對方進行反擊，己方可再攻擊一次",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 43,
+     "class_name": "重矛兵",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 38,
+   "name": "无反击攻击",
+   "desc": "攻擊後對手不反擊，與先手攻擊搭配有妙用",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 39,
+   "name": "辅助妨碍策略",
+   "desc": "誘惑與毒烟等策略的威力上升",
+   "template_value": 25,
+   "initial_class_skills": []
+  },
+  {
+   "id": 40,
+   "name": "辅助四类策略",
+   "desc": "地火風水等策略的威力上升",
+   "template_value": 20,
+   "initial_class_skills": [
+    {
+     "class": 26,
+     "class_name": "军师",
+     "value": 20
+    }
+   ]
+  },
+  {
+   "id": 41,
+   "name": "减轻策略损伤",
+   "desc": "受到的策略傷害降低",
+   "template_value": 20,
+   "initial_class_skills": [
+    {
+     "class": 28,
+     "class_name": "名医",
+     "value": 20
+    }
+   ]
+  },
+  {
+   "id": 42,
+   "name": "策略无视天气",
+   "desc": "使用策略時不受到天氣的限制",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 52,
+     "class_name": "禁术士",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 43,
+   "name": "策略无视地形",
+   "desc": "使用策略時不受到地形的限制",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 49,
+     "class_name": "督军",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 44,
+   "name": "仇恨攻击",
+   "desc": "受到敵方攻擊的攻擊次數越多，己方下一次發動的攻擊威力就會越强",
+   "template_value": 10,
+   "initial_class_skills": [
+    {
+     "class": 9,
+     "class_name": "轻骑兵",
+     "value": 10
+    }
+   ]
+  },
+  {
+   "id": 45,
+   "name": "策略模仿",
+   "desc": "可模仿相邻部队的策略",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 38,
+     "class_name": "巾帼",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 46,
+   "name": "节约MP",
+   "desc": "使用策略時消耗的MP量會減少",
+   "template_value": 50,
+   "initial_class_skills": []
+  },
+  {
+   "id": 47,
+   "name": "防御远距攻击",
+   "desc": "100%防禦遠程部队的物理攻擊，除了必殺",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 66,
+     "class_name": "閹兵",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 48,
+   "name": "防御致命攻击",
+   "desc": "絕對隔檔對手的爆擊",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 55,
+     "class_name": "女戰騎",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 49,
+   "name": "防御二次攻击",
+   "desc": "絕對隔檔對手連擊的第二下",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 68,
+     "class_name": "井栏",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 50,
+   "name": "MP防御",
+   "desc": "受到物理攻擊時會降低自身MP來代替物理傷害",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 51,
+   "name": "致命一击",
+   "desc": "攻擊時必定爆擊",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 14,
+     "class_name": "连弩骑兵",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 52,
+   "name": "主动连击",
+   "desc": "主動攻擊時必定連擊，反擊則無效",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 53,
+   "name": "双枪攻击",
+   "desc": "主動攻擊與反擊都必是雙擊",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 65,
+     "class_name": "飛行者",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 54,
+   "name": "穿越移动",
+   "desc": "移動時可忽略地形與敵军所造成的限制",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 65,
+     "class_name": "飛行者",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 55,
+   "name": "突击移动",
+   "desc": "移動時可忽略敵军造成的限制，但是被包圍則無效",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 65,
+     "class_name": "飛行者",
+     "value": 1
+    },
+    {
+     "class": 75,
+     "class_name": "石像鬼",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 56,
+   "name": "二次行动",
+   "desc": "可連續行動兩次",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 60,
+     "class_name": "蠻族兵",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 57,
+   "name": "唯我独尊",
+   "desc": "以最强能力作為基準，强化其餘四樣能力",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 78,
+     "class_name": "皇帝",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 58,
+   "name": "策略连击",
+   "desc": "策略可連續使用兩次",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 59,
+   "name": "同仇敌忾",
+   "desc": "同伴攻擊時，會主動幫忙補刀",
+   "template_value": 3,
+   "initial_class_skills": [
+    {
+     "class": 63,
+     "class_name": "白马骑",
+     "value": 3
+    }
+   ]
+  },
+  {
+   "id": 60,
+   "name": "众志成城",
+   "desc": "相邻的同伴越多，自己與同伴的能力越强，也可以使相邻的敵军变弱",
+   "template_value": 2,
+   "initial_class_skills": [
+    {
+     "class": 2,
+     "class_name": "霸王",
+     "value": 2
+    }
+   ]
+  },
+  {
+   "id": 61,
+   "name": "神魔附体",
+   "desc": "能力檔次至少以特定值為基準",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 62,
+   "name": "辅助地形状态",
+   "desc": "每回合得到全能力Buff",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 63,
+   "name": "恶路移动",
+   "desc": "每回合得到攻擊力Buff",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 64,
+   "name": "大杀四方",
+   "desc": "擊退敵人時，恢復行動力",
+   "template_value": 2,
+   "initial_class_skills": []
+  },
+  {
+   "id": 65,
+   "name": "增加视野",
+   "desc": "每回合得到精神力Buff",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 66,
+   "name": "策略反伤",
+   "desc": "反傷遭受的策略傷害",
+   "template_value": 30,
+   "initial_class_skills": []
+  },
+  {
+   "id": 67,
+   "name": "策略吸血",
+   "desc": "進行策略攻擊時，可吸取敵人的部分HP",
+   "template_value": 20,
+   "initial_class_skills": [
+    {
+     "class": 69,
+     "class_name": "阴阳师",
+     "value": 20
+    }
+   ]
+  },
+  {
+   "id": 68,
+   "name": "洪荒之力",
+   "desc": "每回合得到移動力Buff",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 69,
+   "name": "获得功勋",
+   "desc": "得到的功勳值增加",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 70,
+   "name": "深入敌后",
+   "desc": "我方回合是友军，敵方回合為敵军。但是仍會被第三方勢力攻擊",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 71,
+   "name": "一夫当关",
+   "desc": "周圍沒有同伴時，戰鬥力上升",
+   "template_value": 20,
+   "initial_class_skills": []
+  },
+  {
+   "id": 72,
+   "name": "强化反击",
+   "desc": "反擊時造成的傷害不減弱",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 73,
+   "name": "学会策略-四系",
+   "desc": "學會諸多四系策略",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 74,
+   "name": "学会策略-降能力",
+   "desc": "學會諸多降能力的策略",
+   "template_value": 2,
+   "initial_class_skills": []
+  },
+  {
+   "id": 75,
+   "name": "学会策略-妨碍",
+   "desc": "學會妨礙系的策略",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 76,
+   "name": "学会策略-补给",
+   "desc": "學會補給策略",
+   "template_value": 8,
+   "initial_class_skills": []
+  },
+  {
+   "id": 77,
+   "name": "学会策略-升能力",
+   "desc": "學會加Buff的策略",
+   "template_value": 16,
+   "initial_class_skills": []
+  },
+  {
+   "id": 78,
+   "name": "学会策略-气候",
+   "desc": "學會改变天氣的策略",
+   "template_value": 32,
+   "initial_class_skills": []
+  },
+  {
+   "id": 79,
+   "name": "学会策略-绝",
+   "desc": "學會特殊性質或是威力强大的策略",
+   "template_value": 64,
+   "initial_class_skills": []
+  },
+  {
+   "id": 80,
+   "name": "学会策略-四神",
+   "desc": "學會四神策略",
+   "template_value": 128,
+   "initial_class_skills": []
+  },
+  {
+   "id": 81,
+   "name": "鬼神之勇",
+   "desc": "將損血比例的一半强化到五維上",
+   "template_value": 20,
+   "initial_class_skills": [
+    {
+     "class": 66,
+     "class_name": "閹兵",
+     "value": 20
+    }
+   ]
+  },
+  {
+   "id": 82,
+   "name": "先制攻击",
+   "desc": "敵人靠近會立刻攻擊，並令敵人失去行動力",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 83,
+   "name": "众矢之的",
+   "desc": "將自己作為誘餌，吸引敵军的進攻",
+   "template_value": 3,
+   "initial_class_skills": [
+    {
+     "class": 79,
+     "class_name": "百姓",
+     "value": 3
+    }
+   ]
+  },
+  {
+   "id": 84,
+   "name": "批亢捣虚",
+   "desc": "攻擊時以對手精神力與防禦力中較弱的一项作為基準，可用來克制唯我独尊",
+   "template_value": 6,
+   "initial_class_skills": [
+    {
+     "class": 61,
+     "class_name": "驯獸师",
+     "value": 6
+    }
+   ]
+  },
+  {
+   "id": 85,
+   "name": "万夫莫敌",
+   "desc": "相邻的敵军越多，己方的戰力就越强",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 86,
+   "name": "限制伤害",
+   "desc": "將基本傷害壓制在特殊值以內",
+   "template_value": 200,
+   "initial_class_skills": []
+  },
+  {
+   "id": 87,
+   "name": "转移伤害",
+   "desc": "將受到的一部份物理傷害轉移給相邻的其他敵军",
+   "template_value": 20,
+   "initial_class_skills": [
+    {
+     "class": 71,
+     "class_name": "仙人",
+     "value": 20
+    }
+   ]
+  },
+  {
+   "id": 88,
+   "name": "特效模仿",
+   "desc": "模仿相邻部队的特效",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 89,
+   "name": "特效屏蔽",
+   "desc": "相邻的敵军特效失效",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 78,
+     "class_name": "皇帝",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 90,
+   "name": "再次移动",
+   "desc": "移動後可再次移動",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 14,
+     "class_name": "连弩骑兵",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 91,
+   "name": "远距攻击-攻击",
+   "desc": "物理攻擊的范圍增加",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 92,
+   "name": "远距攻击-策略",
+   "desc": "使用策略的范圍增加",
+   "template_value": 2,
+   "initial_class_skills": []
+  },
+  {
+   "id": 93,
+   "name": "策略追击",
+   "desc": "進行物理攻擊後，會使用策略攻擊。如果MP不夠，就用物理攻擊代替",
+   "template_value": 31,
+   "initial_class_skills": [
+    {
+     "class": 69,
+     "class_name": "阴阳师",
+     "value": 31
+    }
+   ]
+  },
+  {
+   "id": 94,
+   "name": "策略先手",
+   "desc": "即將受到攻擊時，會率先使用策略進行攻擊",
+   "template_value": 31,
+   "initial_class_skills": [
+    {
+     "class": 69,
+     "class_name": "阴阳师",
+     "value": 31
+    }
+   ]
+  },
+  {
+   "id": 95,
+   "name": "策略反击",
+   "desc": "受到傷害後，會用策略進行反擊",
+   "template_value": 9,
+   "initial_class_skills": [
+    {
+     "class": 50,
+     "class_name": "都督",
+     "value": 9
+    }
+   ]
+  },
+  {
+   "id": 96,
+   "name": "左天羅右地網",
+   "desc": "令相邻的敵军無法移動",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 97,
+   "name": "突破攻击",
+   "desc": "攻擊後可令對方後退，如果對方的背後有人或障礙，則加强攻擊威力",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 73,
+     "class_name": "陷阵营",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 98,
+   "name": "加强攻击",
+   "desc": "物理攻擊的威力上升",
+   "template_value": 20,
+   "initial_class_skills": []
+  },
+  {
+   "id": 99,
+   "name": "策略免疫",
+   "desc": "必定擋住敵人發動的策略",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 100,
+   "name": "健康光环",
+   "desc": "每回合幫助身旁的同伴恢復狀態",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 36,
+     "class_name": "女兵",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 101,
+   "name": "HP光环",
+   "desc": "每回合幫身旁的同伴恢復體力",
+   "template_value": 15,
+   "initial_class_skills": [
+    {
+     "class": 70,
+     "class_name": "辎重队",
+     "value": 15
+    }
+   ]
+  },
+  {
+   "id": 102,
+   "name": "MP光环",
+   "desc": "每回合幫身旁的同伴恢復MP",
+   "template_value": 10,
+   "initial_class_skills": [
+    {
+     "class": 70,
+     "class_name": "辎重队",
+     "value": 10
+    }
+   ]
+  },
+  {
+   "id": 103,
+   "name": "SP光环",
+   "desc": "忽略對方爆發力的20%",
+   "template_value": 8,
+   "initial_class_skills": []
+  },
+  {
+   "id": 104,
+   "name": "诅咒光环",
+   "desc": "忽略對方士氣的20%",
+   "template_value": 16,
+   "initial_class_skills": []
+  },
+  {
+   "id": 105,
+   "name": "每回合恢复SP",
+   "desc": "用兩成的精神力來强化攻擊力",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 106,
+   "name": "偷梁换柱",
+   "desc": "用兩成的精神力來强化防禦力",
+   "template_value": 2,
+   "initial_class_skills": []
+  },
+  {
+   "id": 107,
+   "name": "金钱防御",
+   "desc": "消耗金錢來進行防禦",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 108,
+   "name": "自动使用",
+   "desc": "受到傷害時自動使用補品",
+   "template_value": 190,
+   "initial_class_skills": []
+  },
+  {
+   "id": 109,
+   "name": "6D",
+   "desc": "6D",
+   "template_value": 2,
+   "initial_class_skills": []
+  },
+  {
+   "id": 110,
+   "name": "斩杀攻击",
+   "desc": "敵人血量低時可以直接斬殺",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 111,
+   "name": "末日审判",
+   "desc": "提高物理傷害，提升幅度是敵军HP最大值的10%到15%",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 112,
+   "name": "忽视暴防",
+   "desc": "可忽略敵军的防禦爆擊特效",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 113,
+   "name": "戮力同心",
+   "desc": "同伴受到攻擊時，如果敵军位於攻擊范圍內，會進行補刀",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 56,
+     "class_name": "女武神",
+     "value": 5
+    },
+    {
+     "class": 8,
+     "class_name": "连弩兵",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 114,
+   "name": "猛击",
+   "desc": "如果敵军擋住攻擊，他就會陷入混亂狀態，並且扣血",
+   "template_value": 15,
+   "initial_class_skills": []
+  },
+  {
+   "id": 115,
+   "name": "盾反",
+   "desc": "若是敵军攻擊落空，那麼他就會陷入麻痺狀態，並且扣血",
+   "template_value": 15,
+   "initial_class_skills": [
+    {
+     "class": 5,
+     "class_name": "近卫兵",
+     "value": 15
+    }
+   ]
+  },
+  {
+   "id": 116,
+   "name": "状态强化",
+   "desc": "Buff的威力上升，Debuff造成的影响減弱。這个特效对相邻的同伴也有效果。",
+   "template_value": 11,
+   "initial_class_skills": [
+    {
+     "class": 78,
+     "class_name": "皇帝",
+     "value": 11
+    }
+   ]
+  },
+  {
+   "id": 117,
+   "name": "疾风攻击",
+   "desc": "强化攻擊威力，對付移動力越低者效果越好。",
+   "template_value": 13,
+   "initial_class_skills": [
+    {
+     "class": 64,
+     "class_name": "特種兵",
+     "value": 13
+    }
+   ]
+  },
+  {
+   "id": 118,
+   "name": "绝对克制",
+   "desc": "克制效果加强，被克效果減弱",
+   "template_value": 10,
+   "initial_class_skills": [
+    {
+     "class": 35,
+     "class_name": "虎豹騎",
+     "value": 10
+    }
+   ]
+  },
+  {
+   "id": 119,
+   "name": "77",
+   "desc": "特效120",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 120,
+   "name": "78",
+   "desc": "特效121",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 121,
+   "name": "79",
+   "desc": "特效122",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 122,
+   "name": "7A",
+   "desc": "特效123",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 123,
+   "name": "7B",
+   "desc": "特效124",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 124,
+   "name": "7C",
+   "desc": "特效125",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 125,
+   "name": "7D",
+   "desc": "特效126",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 126,
+   "name": "7E",
+   "desc": "特效127",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 127,
+   "name": "7F",
+   "desc": "特效128",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 128,
+   "name": "能力替换",
+   "desc": "用精神力取代攻擊力",
+   "template_value": 65,
+   "initial_class_skills": []
+  },
+  {
+   "id": 129,
+   "name": "能力替换",
+   "desc": "用精神力取代防禦力",
+   "template_value": 66,
+   "initial_class_skills": []
+  },
+  {
+   "id": 130,
+   "name": "能力替换",
+   "desc": "用攻擊力取代精神力",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 131,
+   "name": "能力替换",
+   "desc": "特效132",
+   "template_value": 36,
+   "initial_class_skills": []
+  },
+  {
+   "id": 132,
+   "name": "能力替换",
+   "desc": "特效133",
+   "template_value": 40,
+   "initial_class_skills": []
+  },
+  {
+   "id": 133,
+   "name": "能力辅助",
+   "desc": "用兩成的攻擊力輔助精神力",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 134,
+   "name": "能力辅助",
+   "desc": "用兩成的精神力輔助防禦力",
+   "template_value": 66,
+   "initial_class_skills": []
+  },
+  {
+   "id": 135,
+   "name": "能力辅助",
+   "desc": "特效136",
+   "template_value": 36,
+   "initial_class_skills": []
+  },
+  {
+   "id": 136,
+   "name": "能力辅助",
+   "desc": "特效137",
+   "template_value": 98,
+   "initial_class_skills": []
+  },
+  {
+   "id": 137,
+   "name": "能力辅助",
+   "desc": "特效138",
+   "template_value": 136,
+   "initial_class_skills": []
+  },
+  {
+   "id": 138,
+   "name": "忽视能力",
+   "desc": "忽略對方攻擊力的20%",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 2,
+     "class_name": "霸王",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 139,
+   "name": "忽视能力",
+   "desc": "忽略對方防禦力的20%",
+   "template_value": 2,
+   "initial_class_skills": [
+    {
+     "class": 8,
+     "class_name": "连弩兵",
+     "value": 2
+    }
+   ]
+  },
+  {
+   "id": 140,
+   "name": "忽视能力",
+   "desc": "忽略對方精神力的20%",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 141,
+   "name": "忽视能力",
+   "desc": "忽略對方爆發力的20%",
+   "template_value": 8,
+   "initial_class_skills": []
+  },
+  {
+   "id": 142,
+   "name": "忽视能力",
+   "desc": "忽略對方士氣的20%",
+   "template_value": 16,
+   "initial_class_skills": []
+  },
+  {
+   "id": 143,
+   "name": "忽视能力",
+   "desc": "忽略對方全能力的20%",
+   "template_value": 31,
+   "initial_class_skills": []
+  },
+  {
+   "id": 144,
+   "name": "自动提升",
+   "desc": "每回合自動提升攻擊力",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 20,
+     "class_name": "拳圣",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 145,
+   "name": "自动提升",
+   "desc": "每回合自動提升防禦力",
+   "template_value": 2,
+   "initial_class_skills": [
+    {
+     "class": 41,
+     "class_name": "西凉铁骑",
+     "value": 2
+    }
+   ]
+  },
+  {
+   "id": 146,
+   "name": "自动提升",
+   "desc": "每回合自動提升精神力",
+   "template_value": 4,
+   "initial_class_skills": [
+    {
+     "class": 1,
+     "class_name": "英雄",
+     "value": 4
+    }
+   ]
+  },
+  {
+   "id": 147,
+   "name": "自动提升",
+   "desc": "每回合自動提升爆發力",
+   "template_value": 8,
+   "initial_class_skills": [
+    {
+     "class": 38,
+     "class_name": "巾帼",
+     "value": 8
+    }
+   ]
+  },
+  {
+   "id": 148,
+   "name": "自动提升",
+   "desc": "每回合自動提升士氣",
+   "template_value": 16,
+   "initial_class_skills": [
+    {
+     "class": 5,
+     "class_name": "近卫兵",
+     "value": 16
+    }
+   ]
+  },
+  {
+   "id": 149,
+   "name": "自动提升",
+   "desc": "每回合自動提升移動力",
+   "template_value": 32,
+   "initial_class_skills": [
+    {
+     "class": 33,
+     "class_name": "驃騎兵",
+     "value": 32
+    }
+   ]
+  },
+  {
+   "id": 150,
+   "name": "自动提升",
+   "desc": "每回合自動提升全能力",
+   "template_value": 63,
+   "initial_class_skills": [
+    {
+     "class": 59,
+     "class_name": "連弩孃",
+     "value": 63
+    }
+   ]
+  },
+  {
+   "id": 151,
+   "name": "Buff光环",
+   "desc": "給予周圍同伴攻擊力Buff",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 152,
+   "name": "Buff光环",
+   "desc": "給予周圍同伴防禦力Buff",
+   "template_value": 2,
+   "initial_class_skills": []
+  },
+  {
+   "id": 153,
+   "name": "Buff光环",
+   "desc": "給予周圍同伴精神力Buff",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 154,
+   "name": "Buff光环",
+   "desc": "給予周圍同伴爆發力Buff",
+   "template_value": 8,
+   "initial_class_skills": []
+  },
+  {
+   "id": 155,
+   "name": "Buff光环",
+   "desc": "給予周圍同伴防禦與士氣Buff",
+   "template_value": 18,
+   "initial_class_skills": [
+    {
+     "class": 0,
+     "class_name": "群雄",
+     "value": 18
+    }
+   ]
+  },
+  {
+   "id": 156,
+   "name": "Buff光环",
+   "desc": "給予周圍同伴全能力Buff",
+   "template_value": 63,
+   "initial_class_skills": [
+    {
+     "class": 78,
+     "class_name": "皇帝",
+     "value": 63
+    }
+   ]
+  },
+  {
+   "id": 157,
+   "name": "HP辅助",
+   "desc": "特效158",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 158,
+   "name": "HP辅助",
+   "desc": "特效159",
+   "template_value": 2,
+   "initial_class_skills": []
+  },
+  {
+   "id": 159,
+   "name": "HP辅助",
+   "desc": "特效160",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 160,
+   "name": "HP辅助",
+   "desc": "特效161",
+   "template_value": 8,
+   "initial_class_skills": []
+  },
+  {
+   "id": 161,
+   "name": "HP辅助",
+   "desc": "特效162",
+   "template_value": 16,
+   "initial_class_skills": []
+  },
+  {
+   "id": 162,
+   "name": "MP辅助",
+   "desc": "特效163",
+   "template_value": 1,
+   "initial_class_skills": [
+    {
+     "class": 62,
+     "class_name": "猛獸",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": 163,
+   "name": "MP辅助",
+   "desc": "特效164",
+   "template_value": 2,
+   "initial_class_skills": []
+  },
+  {
+   "id": 164,
+   "name": "MP辅助",
+   "desc": "特效165",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 165,
+   "name": "MP辅助",
+   "desc": "特效166",
+   "template_value": 8,
+   "initial_class_skills": []
+  },
+  {
+   "id": 166,
+   "name": "MP辅助",
+   "desc": "特效167",
+   "template_value": 16,
+   "initial_class_skills": []
+  },
+  {
+   "id": 167,
+   "name": "辅助穿透-攻击",
+   "desc": "特效168",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 168,
+   "name": "辅助穿透-策略",
+   "desc": "特效169",
+   "template_value": 2,
+   "initial_class_skills": [
+    {
+     "class": 70,
+     "class_name": "辎重队",
+     "value": 2
+    }
+   ]
+  },
+  {
+   "id": 169,
+   "name": "龙巡四海",
+   "desc": "特效170",
+   "template_value": 1,
+   "initial_class_skills": []
+  },
+  {
+   "id": 170,
+   "name": "虎啸山林",
+   "desc": "特效171",
+   "template_value": 2,
+   "initial_class_skills": []
+  },
+  {
+   "id": 171,
+   "name": "万里龙城",
+   "desc": "特效172",
+   "template_value": 4,
+   "initial_class_skills": []
+  },
+  {
+   "id": 172,
+   "name": "AC",
+   "desc": "特效173",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 173,
+   "name": "AD",
+   "desc": "特效174",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 174,
+   "name": "AE",
+   "desc": "特效175",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 175,
+   "name": "AF",
+   "desc": "特效176",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 176,
+   "name": "B0",
+   "desc": "特效177",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 177,
+   "name": "B1",
+   "desc": "特效178",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 178,
+   "name": "B2",
+   "desc": "特效179",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 179,
+   "name": "B3",
+   "desc": "最后一个特效说明180",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 180,
+   "name": "B4",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 181,
+   "name": "B5",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 182,
+   "name": "B6",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 183,
+   "name": "B7",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 184,
+   "name": "B8",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 185,
+   "name": "B9",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 186,
+   "name": "BA",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 187,
+   "name": "BB",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 188,
+   "name": "BC",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 189,
+   "name": "BD",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 190,
+   "name": "BE",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 191,
+   "name": "BF",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 192,
+   "name": "C0",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 193,
+   "name": "C1",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 194,
+   "name": "C2",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 195,
+   "name": "C3",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 196,
+   "name": "C4",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 197,
+   "name": "C5",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 198,
+   "name": "C6",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 199,
+   "name": "C7",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 200,
+   "name": "C8",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 201,
+   "name": "C9",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 202,
+   "name": "CA",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 203,
+   "name": "CB",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 204,
+   "name": "CC",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 205,
+   "name": "CD",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 206,
+   "name": "CE",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 207,
+   "name": "CF",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 208,
+   "name": "D0",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 209,
+   "name": "D1",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 210,
+   "name": "D2",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 211,
+   "name": "D3",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 212,
+   "name": "D4",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 213,
+   "name": "D5",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 214,
+   "name": "D6",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 215,
+   "name": "D7",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 216,
+   "name": "D8",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 217,
+   "name": "D9",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 218,
+   "name": "DA",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 219,
+   "name": "DB",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 220,
+   "name": "DC",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 221,
+   "name": "DD",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 222,
+   "name": "DE",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 223,
+   "name": "DF",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 224,
+   "name": "E0",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 225,
+   "name": "E1",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 226,
+   "name": "E2",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 227,
+   "name": "E3",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 228,
+   "name": "E4",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 229,
+   "name": "E5",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 230,
+   "name": "E6",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 231,
+   "name": "E7",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 232,
+   "name": "E8",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 233,
+   "name": "E9",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 234,
+   "name": "EA",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 235,
+   "name": "EB",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 236,
+   "name": "EC",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 237,
+   "name": "ED",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 238,
+   "name": "EE",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 239,
+   "name": "EF",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 240,
+   "name": "F0",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 241,
+   "name": "F1",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 242,
+   "name": "F2",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 243,
+   "name": "F3",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 244,
+   "name": "F4",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 245,
+   "name": "F5",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 246,
+   "name": "F6",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 247,
+   "name": "F7",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 248,
+   "name": "F8",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 249,
+   "name": "F9",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 250,
+   "name": "FA",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 251,
+   "name": "FB",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 252,
+   "name": "FC",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 253,
+   "name": "FD",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  },
+  {
+   "id": 254,
+   "name": "FE特效",
+   "desc": "",
+   "template_value": 0,
+   "initial_class_skills": []
+  }
+ ],
+ "item_effects": [
+  {
+   "id": 26,
+   "name": "每回合恢复HP",
+   "kind": 4,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    66,
+    67,
+    68,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101
+   ]
+  },
+  {
+   "id": 27,
+   "name": "每回合恢复MP",
+   "kind": 5,
+   "lv10": 200,
+   "stat": null,
+   "grants_specials": [
+    1,
+    27
+   ],
+   "items": [
+    90,
+    145
+   ]
+  },
+  {
+   "id": 28,
+   "name": "每回合恢复状态",
+   "kind": 0,
+   "lv10": 3,
+   "stat": null,
+   "grants_specials": [
+    2,
+    60
+   ],
+   "items": [
+    144
+   ]
+  },
+  {
+   "id": 29,
+   "name": "随机异常状态",
+   "kind": 0,
+   "lv10": 10,
+   "stat": null,
+   "grants_specials": [
+    17
+   ],
+   "items": [
+    43
+   ]
+  },
+  {
+   "id": 30,
+   "name": "回合获得装备Exp",
+   "kind": 5,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 31,
+   "name": "同仇破甲",
+   "kind": 1,
+   "lv10": 200,
+   "stat": null,
+   "grants_specials": [
+    22,
+    59
+   ],
+   "items": [
+    33
+   ]
+  },
+  {
+   "id": 32,
+   "name": "輔攻擊妨礙",
+   "kind": 2,
+   "lv10": 50,
+   "stat": "攻击%",
+   "grants_specials": [
+    39
+   ],
+   "items": [
+    49,
+    139
+   ]
+  },
+  {
+   "id": 33,
+   "name": "辅助防御力",
+   "kind": 2,
+   "lv10": 50,
+   "stat": "防御%",
+   "grants_specials": [],
+   "items": [
+    119
+   ]
+  },
+  {
+   "id": 34,
+   "name": "辅精神加格檔",
+   "kind": 2,
+   "lv10": 50,
+   "stat": "精神%",
+   "grants_specials": [
+    33
+   ],
+   "items": [
+    32,
+    155
+   ]
+  },
+  {
+   "id": 35,
+   "name": "辅助爆发力",
+   "kind": 2,
+   "lv10": 75,
+   "stat": "爆发%",
+   "grants_specials": [],
+   "items": [
+    37,
+    88
+   ]
+  },
+  {
+   "id": 36,
+   "name": "辅士破防必中",
+   "kind": 2,
+   "lv10": 75,
+   "stat": "士气%",
+   "grants_specials": [
+    30
+   ],
+   "items": [
+    133
+   ]
+  },
+  {
+   "id": 37,
+   "name": "辅助與恢復HP",
+   "kind": 2,
+   "lv10": 100,
+   "stat": "HP%",
+   "grants_specials": [
+    0
+   ],
+   "items": [
+    69,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    118,
+    143,
+    151,
+    159
+   ]
+  },
+  {
+   "id": 38,
+   "name": "辅MP與策略命中",
+   "kind": 2,
+   "lv10": 100,
+   "stat": "MP%",
+   "grants_specials": [
+    28
+   ],
+   "items": [
+    138
+   ]
+  },
+  {
+   "id": 39,
+   "name": "辅助获得Exp",
+   "kind": 2,
+   "lv10": 255,
+   "stat": "exp+",
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 40,
+   "name": "辅助移动力",
+   "kind": 1,
+   "lv10": 10,
+   "stat": "移动+",
+   "grants_specials": [],
+   "items": [
+    111
+   ]
+  },
+  {
+   "id": 41,
+   "name": "先手突擊閃避",
+   "kind": 4,
+   "lv10": 50,
+   "stat": null,
+   "grants_specials": [
+    26,
+    29,
+    32,
+    55
+   ],
+   "items": [
+    94,
+    114,
+    125
+   ]
+  },
+  {
+   "id": 42,
+   "name": "化險為夷",
+   "kind": 19,
+   "lv10": 4,
+   "stat": null,
+   "grants_specials": [
+    18,
+    62,
+    63
+   ],
+   "items": [
+    95,
+    115
+   ]
+  },
+  {
+   "id": 43,
+   "name": "混乱攻击",
+   "kind": 4,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    141
+   ]
+  },
+  {
+   "id": 44,
+   "name": "遠程中毒破士",
+   "kind": 4,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    158
+   ]
+  },
+  {
+   "id": 45,
+   "name": "麻痹破爆",
+   "kind": 4,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    39
+   ]
+  },
+  {
+   "id": 46,
+   "name": "封杀策略",
+   "kind": 4,
+   "lv10": 255,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 47,
+   "name": "辅助攻击命中",
+   "kind": 2,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 48,
+   "name": "反击后反击",
+   "kind": 0,
+   "lv10": 255,
+   "stat": null,
+   "grants_specials": [
+    37
+   ],
+   "items": [
+    30,
+    42
+   ]
+  },
+  {
+   "id": 49,
+   "name": "致命一击",
+   "kind": 16,
+   "lv10": 3,
+   "stat": null,
+   "grants_specials": [
+    51
+   ],
+   "items": [
+    45,
+    60,
+    130
+   ]
+  },
+  {
+   "id": 50,
+   "name": "远距攻击",
+   "kind": 0,
+   "lv10": 10,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    109,
+    137,
+    157
+   ]
+  },
+  {
+   "id": 51,
+   "name": "穿透攻击",
+   "kind": 12,
+   "lv10": 2,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    35,
+    40,
+    56,
+    110,
+    135
+   ]
+  },
+  {
+   "id": 52,
+   "name": "无反破攻忽防爆",
+   "kind": 0,
+   "lv10": 254,
+   "stat": null,
+   "grants_specials": [
+    38,
+    112
+   ],
+   "items": [
+    34
+   ]
+  },
+  {
+   "id": 53,
+   "name": "加强攻击",
+   "kind": 2,
+   "lv10": 150,
+   "stat": null,
+   "grants_specials": [
+    97,
+    98
+   ],
+   "items": [
+    41,
+    132
+   ]
+  },
+  {
+   "id": 54,
+   "name": "引导攻击",
+   "kind": 0,
+   "lv10": 254,
+   "stat": null,
+   "grants_specials": [
+    23,
+    24
+   ],
+   "items": [
+    36
+   ]
+  },
+  {
+   "id": 55,
+   "name": "辅助妨碍策略",
+   "kind": 4,
+   "lv10": 50,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 56,
+   "name": "辅助四系策略",
+   "kind": 4,
+   "lv10": 50,
+   "stat": null,
+   "grants_specials": [
+    40,
+    43
+   ],
+   "items": [
+    48
+   ]
+  },
+  {
+   "id": 57,
+   "name": "节约MP",
+   "kind": 3,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [
+    46
+   ],
+   "items": [
+    50,
+    122
+   ]
+  },
+  {
+   "id": 58,
+   "name": "可以禁咒",
+   "kind": 0,
+   "lv10": 254,
+   "stat": null,
+   "grants_specials": [
+    42
+   ],
+   "items": [
+    129
+   ]
+  },
+  {
+   "id": 59,
+   "name": "仿策連擊",
+   "kind": 0,
+   "lv10": 254,
+   "stat": null,
+   "grants_specials": [
+    45,
+    58
+   ],
+   "items": [
+    146
+   ]
+  },
+  {
+   "id": 60,
+   "name": "辅助策略命中",
+   "kind": 2,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 61,
+   "name": "減輕物理傷害",
+   "kind": 3,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [
+    35
+   ],
+   "items": [
+    85
+   ]
+  },
+  {
+   "id": 62,
+   "name": "辅助策略防御",
+   "kind": 4,
+   "lv10": 50,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 63,
+   "name": "辅助全防御",
+   "kind": 4,
+   "lv10": 50,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 64,
+   "name": "防御远距攻击",
+   "kind": 0,
+   "lv10": 254,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 65,
+   "name": "防御特殊攻击",
+   "kind": 0,
+   "lv10": 254,
+   "stat": null,
+   "grants_specials": [
+    36,
+    48,
+    49
+   ],
+   "items": [
+    80
+   ]
+  },
+  {
+   "id": 66,
+   "name": "主动连击",
+   "kind": 0,
+   "lv10": 16,
+   "stat": null,
+   "grants_specials": [
+    19,
+    52,
+    53
+   ],
+   "items": [
+    81
+   ]
+  },
+  {
+   "id": 67,
+   "name": "减轻策略损伤",
+   "kind": 3,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [
+    41
+   ],
+   "items": [
+    82
+   ]
+  },
+  {
+   "id": 68,
+   "name": "MP辅助防御",
+   "kind": 5,
+   "lv10": 254,
+   "stat": null,
+   "grants_specials": [
+    50
+   ],
+   "items": [
+    83,
+    89
+   ]
+  },
+  {
+   "id": 69,
+   "name": "减轻远距损伤",
+   "kind": 3,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [
+    34
+   ],
+   "items": [
+    86,
+    121
+   ]
+  },
+  {
+   "id": 70,
+   "name": "自动使用",
+   "kind": 18,
+   "lv10": 173,
+   "stat": null,
+   "grants_specials": [
+    108
+   ],
+   "items": [
+    93,
+    148,
+    149
+   ]
+  },
+  {
+   "id": 71,
+   "name": "铁索横江",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 72,
+   "name": "末日审判",
+   "kind": 16,
+   "lv10": 3,
+   "stat": null,
+   "grants_specials": [
+    111
+   ],
+   "items": [
+    65,
+    136
+   ]
+  },
+  {
+   "id": 73,
+   "name": "斩杀攻击",
+   "kind": 4,
+   "lv10": 99,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 74,
+   "name": "仇恨猛擊盾反",
+   "kind": 4,
+   "lv10": 50,
+   "stat": null,
+   "grants_specials": [
+    44,
+    114,
+    115
+   ],
+   "items": [
+    47,
+    53
+   ]
+  },
+  {
+   "id": 75,
+   "name": "盾反",
+   "kind": 4,
+   "lv10": 50,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 76,
+   "name": "状态强化",
+   "kind": 2,
+   "lv10": 22,
+   "stat": null,
+   "grants_specials": [
+    116,
+    117
+   ],
+   "items": [
+    117
+   ]
+  },
+  {
+   "id": 77,
+   "name": "疾风攻击",
+   "kind": 4,
+   "lv10": 16,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 78,
+   "name": "防遠克制",
+   "kind": 4,
+   "lv10": 50,
+   "stat": null,
+   "grants_specials": [
+    47,
+    118
+   ],
+   "items": [
+    58,
+    79
+   ]
+  },
+  {
+   "id": 79,
+   "name": "策略免疫",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [
+    99
+   ],
+   "items": []
+  },
+  {
+   "id": 80,
+   "name": "健康光环",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 81,
+   "name": "先制攻击",
+   "kind": 6,
+   "lv10": 3,
+   "stat": null,
+   "grants_specials": [
+    82
+   ],
+   "items": [
+    62
+   ]
+  },
+  {
+   "id": 82,
+   "name": "生命光环",
+   "kind": 4,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [
+    101
+   ],
+   "items": []
+  },
+  {
+   "id": 83,
+   "name": "魔力光环",
+   "kind": 4,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [
+    102
+   ],
+   "items": []
+  },
+  {
+   "id": 84,
+   "name": "大杀四方",
+   "kind": 6,
+   "lv10": 3,
+   "stat": null,
+   "grants_specials": [
+    64
+   ],
+   "items": [
+    44
+   ]
+  },
+  {
+   "id": 85,
+   "name": "策略反伤",
+   "kind": 4,
+   "lv10": 200,
+   "stat": null,
+   "grants_specials": [
+    66
+   ],
+   "items": []
+  },
+  {
+   "id": 86,
+   "name": "策略吸血",
+   "kind": 4,
+   "lv10": 200,
+   "stat": null,
+   "grants_specials": [
+    67
+   ],
+   "items": []
+  },
+  {
+   "id": 87,
+   "name": "辅助穿透",
+   "kind": 16,
+   "lv10": 3,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    61,
+    64
+   ]
+  },
+  {
+   "id": 88,
+   "name": "戮力同心",
+   "kind": 6,
+   "lv10": 5,
+   "stat": null,
+   "grants_specials": [
+    113
+   ],
+   "items": [
+    52,
+    54
+   ]
+  },
+  {
+   "id": 89,
+   "name": "反弹异常攻击",
+   "kind": 0,
+   "lv10": 1,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 90,
+   "name": "二次行动",
+   "kind": 0,
+   "lv10": 1,
+   "stat": null,
+   "grants_specials": [
+    56
+   ],
+   "items": [
+    113
+   ]
+  },
+  {
+   "id": 91,
+   "name": "金钱防御",
+   "kind": 0,
+   "lv10": 1,
+   "stat": null,
+   "grants_specials": [
+    21,
+    107
+   ],
+   "items": [
+    124
+   ]
+  },
+  {
+   "id": 92,
+   "name": "神魔附体",
+   "kind": 5,
+   "lv10": 10,
+   "stat": "(9: 神魔附体)",
+   "grants_specials": [],
+   "items": [
+    31
+   ]
+  },
+  {
+   "id": 93,
+   "name": "穿越移动",
+   "kind": 0,
+   "lv10": 1,
+   "stat": null,
+   "grants_specials": [
+    54
+   ],
+   "items": [
+    116
+   ]
+  },
+  {
+   "id": 94,
+   "name": "随机破坏能力",
+   "kind": 5,
+   "lv10": 6,
+   "stat": null,
+   "grants_specials": [
+    12
+   ],
+   "items": [
+    150
+   ]
+  },
+  {
+   "id": 95,
+   "name": "冲锋攻击",
+   "kind": 4,
+   "lv10": 10,
+   "stat": null,
+   "grants_specials": [
+    25,
+    90
+   ],
+   "items": [
+    112
+   ]
+  },
+  {
+   "id": 96,
+   "name": "反弹伤害",
+   "kind": 4,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 97,
+   "name": "唯我独尊",
+   "kind": 0,
+   "lv10": 1,
+   "stat": null,
+   "grants_specials": [
+    57
+   ],
+   "items": [
+    46
+   ]
+  },
+  {
+   "id": 98,
+   "name": "策略连击",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 99,
+   "name": "同仇敌忾",
+   "kind": 6,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 100,
+   "name": "众志成城",
+   "kind": 4,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 101,
+   "name": "吸血攻击",
+   "kind": 4,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [
+    20
+   ],
+   "items": [
+    38
+   ]
+  },
+  {
+   "id": 102,
+   "name": "自动提升",
+   "kind": 10,
+   "lv10": 63,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    156
+   ]
+  },
+  {
+   "id": 103,
+   "name": "获得功勋",
+   "kind": 1,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 104,
+   "name": "深入敌后",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [
+    70
+   ],
+   "items": [
+    126,
+    127
+   ]
+  },
+  {
+   "id": 105,
+   "name": "一夫当关",
+   "kind": 4,
+   "lv10": 25,
+   "stat": null,
+   "grants_specials": [
+    71
+   ],
+   "items": [
+    87
+   ]
+  },
+  {
+   "id": 106,
+   "name": "偷梁换柱",
+   "kind": 8,
+   "lv10": 6,
+   "stat": null,
+   "grants_specials": [
+    72,
+    106
+   ],
+   "items": []
+  },
+  {
+   "id": 107,
+   "name": "仇恨攻击",
+   "kind": 4,
+   "lv10": 100,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 108,
+   "name": "学会策略",
+   "kind": 17,
+   "lv10": 255,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    140
+   ]
+  },
+  {
+   "id": 109,
+   "name": "鬼神之勇",
+   "kind": 4,
+   "lv10": 30,
+   "stat": null,
+   "grants_specials": [
+    81
+   ],
+   "items": [
+    147
+   ]
+  },
+  {
+   "id": 110,
+   "name": "洪荒之力",
+   "kind": 0,
+   "lv10": 3,
+   "stat": null,
+   "grants_specials": [
+    68
+   ],
+   "items": []
+  },
+  {
+   "id": 111,
+   "name": "众矢之的",
+   "kind": 16,
+   "lv10": 3,
+   "stat": null,
+   "grants_specials": [
+    83
+   ],
+   "items": [
+    123
+   ]
+  },
+  {
+   "id": 112,
+   "name": "批亢捣虚",
+   "kind": 8,
+   "lv10": 6,
+   "stat": null,
+   "grants_specials": [
+    84
+   ],
+   "items": [
+    134
+   ]
+  },
+  {
+   "id": 113,
+   "name": "万夫莫敌",
+   "kind": 4,
+   "lv10": 4,
+   "stat": null,
+   "grants_specials": [
+    85
+   ],
+   "items": []
+  },
+  {
+   "id": 114,
+   "name": "限制伤害",
+   "kind": 5,
+   "lv10": 1,
+   "stat": null,
+   "grants_specials": [
+    86
+   ],
+   "items": [
+    120
+   ]
+  },
+  {
+   "id": 115,
+   "name": "裝備Exp與轉傷",
+   "kind": 4,
+   "lv10": 50,
+   "stat": null,
+   "grants_specials": [
+    87
+   ],
+   "items": [
+    142
+   ]
+  },
+  {
+   "id": 116,
+   "name": "特效模仿",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    59
+   ]
+  },
+  {
+   "id": 117,
+   "name": "特效屏蔽",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 118,
+   "name": "远距攻击",
+   "kind": 16,
+   "lv10": 3,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    84
+   ]
+  },
+  {
+   "id": 119,
+   "name": "策略追击",
+   "kind": 7,
+   "lv10": 29,
+   "stat": null,
+   "grants_specials": [
+    93
+   ],
+   "items": [
+    55,
+    57
+   ]
+  },
+  {
+   "id": 120,
+   "name": "策略先手",
+   "kind": 7,
+   "lv10": 29,
+   "stat": null,
+   "grants_specials": [
+    94
+   ],
+   "items": [
+    63,
+    154
+   ]
+  },
+  {
+   "id": 121,
+   "name": "策略反击",
+   "kind": 7,
+   "lv10": 29,
+   "stat": null,
+   "grants_specials": [
+    95
+   ],
+   "items": [
+    153
+   ]
+  },
+  {
+   "id": 122,
+   "name": "忽视能力",
+   "kind": 11,
+   "lv10": 31,
+   "stat": null,
+   "grants_specials": [
+    96
+   ],
+   "items": [
+    51
+   ]
+  },
+  {
+   "id": 123,
+   "name": "能力辅助",
+   "kind": 9,
+   "lv10": 31,
+   "stat": null,
+   "grants_specials": [
+    100
+   ],
+   "items": [
+    92,
+    152
+   ]
+  },
+  {
+   "id": 124,
+   "name": "能力替换",
+   "kind": 9,
+   "lv10": 31,
+   "stat": null,
+   "grants_specials": [],
+   "items": [
+    91
+   ]
+  },
+  {
+   "id": 125,
+   "name": "HP辅助",
+   "kind": 11,
+   "lv10": 31,
+   "stat": null,
+   "grants_specials": [
+    110
+   ],
+   "items": [
+    131
+   ]
+  },
+  {
+   "id": 126,
+   "name": "MP辅助",
+   "kind": 11,
+   "lv10": 31,
+   "stat": null,
+   "grants_specials": [
+    31
+   ],
+   "items": [
+    128
+   ]
+  },
+  {
+   "id": 127,
+   "name": "Buff光环",
+   "kind": 10,
+   "lv10": 63,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 128,
+   "name": "80空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 129,
+   "name": "81空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 130,
+   "name": "82空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 131,
+   "name": "83空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 132,
+   "name": "84空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 133,
+   "name": "85空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 134,
+   "name": "86空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 135,
+   "name": "87空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 136,
+   "name": "88空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 137,
+   "name": "89空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 138,
+   "name": "8A空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 139,
+   "name": "8B空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 140,
+   "name": "8C空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 141,
+   "name": "8D空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 142,
+   "name": "8E空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 143,
+   "name": "8F空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 144,
+   "name": "90空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 145,
+   "name": "91空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 146,
+   "name": "92空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 147,
+   "name": "93空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 148,
+   "name": "94空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 149,
+   "name": "95空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 150,
+   "name": "96空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 151,
+   "name": "97空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 152,
+   "name": "98空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 153,
+   "name": "99空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 154,
+   "name": "9A空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 155,
+   "name": "9B空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 156,
+   "name": "9C空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 157,
+   "name": "9D空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 158,
+   "name": "9E空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 159,
+   "name": "9F空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 160,
+   "name": "A0空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 161,
+   "name": "A1空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 162,
+   "name": "A2空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 163,
+   "name": "A3空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 164,
+   "name": "A4空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 165,
+   "name": "A5空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 166,
+   "name": "A6空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 167,
+   "name": "A7空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 168,
+   "name": "A8空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 169,
+   "name": "A9空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 170,
+   "name": "AA空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 171,
+   "name": "AB空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 172,
+   "name": "AC空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 173,
+   "name": "AD空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 174,
+   "name": "AE空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 175,
+   "name": "AF空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 176,
+   "name": "B0空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 177,
+   "name": "B1空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 178,
+   "name": "B2空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 179,
+   "name": "B3空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 180,
+   "name": "B4空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 181,
+   "name": "B5空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 182,
+   "name": "B6空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 183,
+   "name": "B7空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 184,
+   "name": "B8空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 185,
+   "name": "B9空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 186,
+   "name": "BA空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 187,
+   "name": "BB空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 188,
+   "name": "BC空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 189,
+   "name": "BD空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 190,
+   "name": "BE空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 191,
+   "name": "BF空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 192,
+   "name": "C0空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 193,
+   "name": "C1空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 194,
+   "name": "C2空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 195,
+   "name": "C3空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 196,
+   "name": "C4空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 197,
+   "name": "C5空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 198,
+   "name": "C6空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 199,
+   "name": "C7空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 200,
+   "name": "C8空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 201,
+   "name": "C9空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 202,
+   "name": "CA空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 203,
+   "name": "CB空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 204,
+   "name": "CC空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 205,
+   "name": "CD空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 206,
+   "name": "CE空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 207,
+   "name": "CF空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 208,
+   "name": "D0空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 209,
+   "name": "D1空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 210,
+   "name": "D2空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 211,
+   "name": "D3空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 212,
+   "name": "D4空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 213,
+   "name": "D5空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 214,
+   "name": "D6空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 215,
+   "name": "D7空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 216,
+   "name": "D8空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 217,
+   "name": "D9空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 218,
+   "name": "DA空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 219,
+   "name": "DB空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 220,
+   "name": "DC空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 221,
+   "name": "DD空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 222,
+   "name": "DE空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 223,
+   "name": "DF空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 224,
+   "name": "E0空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 225,
+   "name": "E1空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 226,
+   "name": "E2空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 227,
+   "name": "E3空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 228,
+   "name": "E4空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 229,
+   "name": "E5空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 230,
+   "name": "E6空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 231,
+   "name": "E7空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 232,
+   "name": "E8空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 233,
+   "name": "E9空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 234,
+   "name": "EA空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 235,
+   "name": "EB空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 236,
+   "name": "EC空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 237,
+   "name": "ED空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 238,
+   "name": "EE空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 239,
+   "name": "EF空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 240,
+   "name": "F0空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 241,
+   "name": "F1空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 242,
+   "name": "F2空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 243,
+   "name": "F3空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 244,
+   "name": "F4空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 245,
+   "name": "F5空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 246,
+   "name": "F6空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 247,
+   "name": "F7空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 248,
+   "name": "F8空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 249,
+   "name": "F9空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 250,
+   "name": "FA空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 251,
+   "name": "FB空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 252,
+   "name": "FC空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 253,
+   "name": "FD空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 254,
+   "name": "FE空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  },
+  {
+   "id": 255,
+   "name": "FF空效果",
+   "kind": 0,
+   "lv10": 0,
+   "stat": null,
+   "grants_specials": [],
+   "items": []
+  }
+ ],
+ "queries": [
+  {
+   "sid": 0,
+   "eid": 37,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x4210f4"
+   ],
+   "call_sites": [
+    "0x43ce37"
+   ]
+  },
+  {
+   "sid": 1,
+   "eid": 27,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x421106"
+   ],
+   "call_sites": [
+    "0x43ce8f"
+   ]
+  },
+  {
+   "sid": 2,
+   "eid": 28,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x43c749"
+   ]
+  },
+  {
+   "sid": 3,
+   "eid": 29,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43cef7"
+   ]
+  },
+  {
+   "sid": 4,
+   "eid": 115,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43cef7"
+   ]
+  },
+  {
+   "sid": 5,
+   "eid": 115,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43cef7"
+   ]
+  },
+  {
+   "sid": 6,
+   "eid": 52,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x4039d5"
+   ]
+  },
+  {
+   "sid": 7,
+   "eid": 36,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x4039d5"
+   ]
+  },
+  {
+   "sid": 8,
+   "eid": 84,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x4039d5"
+   ]
+  },
+  {
+   "sid": 9,
+   "eid": 45,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x4039d5"
+   ]
+  },
+  {
+   "sid": 10,
+   "eid": 44,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x4039d5"
+   ]
+  },
+  {
+   "sid": 11,
+   "eid": 95,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x4039d5"
+   ]
+  },
+  {
+   "sid": 12,
+   "eid": 94,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x472d5c"
+   ],
+   "call_sites": [
+    "0x472d85"
+   ]
+  },
+  {
+   "sid": 13,
+   "eid": 45,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x403a34"
+   ]
+  },
+  {
+   "sid": 14,
+   "eid": 38,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x403a34"
+   ]
+  },
+  {
+   "sid": 15,
+   "eid": 43,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x403a34"
+   ]
+  },
+  {
+   "sid": 16,
+   "eid": 44,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x403a34"
+   ]
+  },
+  {
+   "sid": 17,
+   "eid": 29,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x472c41"
+   ],
+   "call_sites": [
+    "0x405a59"
+   ]
+  },
+  {
+   "sid": 18,
+   "eid": 42,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x472c53"
+   ],
+   "call_sites": [
+    "0x42207a",
+    "0x4220bc",
+    "0x42bc43"
+   ]
+  },
+  {
+   "sid": 19,
+   "eid": 66,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x440e6d"
+   ],
+   "call_sites": [
+    "0x440e32"
+   ]
+  },
+  {
+   "sid": 20,
+   "eid": 101,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x406b90"
+   ]
+  },
+  {
+   "sid": 21,
+   "eid": 91,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x406be1"
+   ]
+  },
+  {
+   "sid": 22,
+   "eid": 31,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43bcb7"
+   ]
+  },
+  {
+   "sid": 23,
+   "eid": 54,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x478e5d"
+   ],
+   "call_sites": [
+    "0x436421"
+   ]
+  },
+  {
+   "sid": 24,
+   "eid": 54,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x4210d0"
+   ],
+   "call_sites": [
+    "0x4212fa"
+   ]
+  },
+  {
+   "sid": 25,
+   "eid": 95,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43be31"
+   ]
+  },
+  {
+   "sid": 26,
+   "eid": 41,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x410f0a"
+   ],
+   "call_sites": [
+    "0x410f64"
+   ]
+  },
+  {
+   "sid": 27,
+   "eid": 27,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x43b7d7"
+   ]
+  },
+  {
+   "sid": 28,
+   "eid": 38,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43b9ad"
+   ]
+  },
+  {
+   "sid": 29,
+   "eid": 41,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43b8ba"
+   ]
+  },
+  {
+   "sid": 30,
+   "eid": 36,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x43b680"
+   ]
+  },
+  {
+   "sid": 31,
+   "eid": 126,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43b698"
+   ]
+  },
+  {
+   "sid": 32,
+   "eid": 41,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43b6bd"
+   ]
+  },
+  {
+   "sid": 33,
+   "eid": 34,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x410edb"
+   ],
+   "call_sites": [
+    "0x408f15"
+   ]
+  },
+  {
+   "sid": 34,
+   "eid": 69,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43bdf3"
+   ]
+  },
+  {
+   "sid": 35,
+   "eid": 61,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43be5f"
+   ]
+  },
+  {
+   "sid": 36,
+   "eid": 65,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x410fec"
+   ]
+  },
+  {
+   "sid": 37,
+   "eid": 48,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x4063e9"
+   ],
+   "call_sites": [
+    "0x406477"
+   ]
+  },
+  {
+   "sid": 38,
+   "eid": 52,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x4063fb"
+   ],
+   "call_sites": [
+    "0x406492"
+   ]
+  },
+  {
+   "sid": 39,
+   "eid": 32,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x405dbd"
+   ],
+   "call_sites": [
+    "0x43b9ca",
+    "0x43c22d"
+   ]
+  },
+  {
+   "sid": 40,
+   "eid": 56,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43c25f"
+   ]
+  },
+  {
+   "sid": 41,
+   "eid": 67,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43c27f"
+   ]
+  },
+  {
+   "sid": 42,
+   "eid": 58,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x41ff0f"
+   ],
+   "call_sites": [
+    "0x41ffe3",
+    "0x46fd3c"
+   ]
+  },
+  {
+   "sid": 43,
+   "eid": 56,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x41d936"
+   ]
+  },
+  {
+   "sid": 44,
+   "eid": 74,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x478f13"
+   ]
+  },
+  {
+   "sid": 45,
+   "eid": 59,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x4210be"
+   ],
+   "call_sites": [
+    "0x43e02e",
+    "0x465a2a"
+   ]
+  },
+  {
+   "sid": 46,
+   "eid": 57,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x44df49"
+   ],
+   "call_sites": [
+    "0x417b3b"
+   ]
+  },
+  {
+   "sid": 47,
+   "eid": 78,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x41cddc"
+   ],
+   "call_sites": [
+    "0x47ef4c"
+   ]
+  },
+  {
+   "sid": 48,
+   "eid": 65,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x405dcf"
+   ],
+   "call_sites": [
+    "0x401e4a",
+    "0x42aa3d"
+   ]
+  },
+  {
+   "sid": 49,
+   "eid": 65,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x405f3b"
+   ]
+  },
+  {
+   "sid": 50,
+   "eid": 68,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x4210ac"
+   ],
+   "call_sites": [
+    "0x41ab0e",
+    "0x405fb3"
+   ]
+  },
+  {
+   "sid": 50,
+   "eid": 68,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x4210a5"
+   ]
+  },
+  {
+   "sid": 51,
+   "eid": 49,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x44f9a9"
+   ],
+   "call_sites": [
+    "0x401db6",
+    "0x401e3e",
+    "0x40c809"
+   ]
+  },
+  {
+   "sid": 52,
+   "eid": 66,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x405cee"
+   ]
+  },
+  {
+   "sid": 53,
+   "eid": 66,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x4060e9"
+   ]
+  },
+  {
+   "sid": 54,
+   "eid": 93,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x403a83"
+   ]
+  },
+  {
+   "sid": 55,
+   "eid": 41,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x472c65"
+   ],
+   "call_sites": [
+    "0x437d8e"
+   ]
+  },
+  {
+   "sid": 56,
+   "eid": 90,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x421175"
+   ],
+   "call_sites": [
+    "0x412d7b",
+    "0x43d522"
+   ]
+  },
+  {
+   "sid": 57,
+   "eid": 97,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x43c3cc"
+   ],
+   "call_sites": [
+    "0x414cdd"
+   ]
+  },
+  {
+   "sid": 58,
+   "eid": 59,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x4390c2"
+   ]
+  },
+  {
+   "sid": 59,
+   "eid": 31,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x405942"
+   ],
+   "call_sites": [
+    "0x438f28 (table 0x415e2b)"
+   ]
+  },
+  {
+   "sid": 60,
+   "eid": 28,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x43cb59"
+   ]
+  },
+  {
+   "sid": 61,
+   "eid": 92,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x436df0"
+   ],
+   "call_sites": [
+    "0x436e0d"
+   ]
+  },
+  {
+   "sid": 62,
+   "eid": 42,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x478e39"
+   ],
+   "call_sites": [
+    "0x43f868"
+   ]
+  },
+  {
+   "sid": 63,
+   "eid": 42,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x478e4b"
+   ],
+   "call_sites": [
+    "0x43f880"
+   ]
+  },
+  {
+   "sid": 64,
+   "eid": 84,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x45d3be"
+   ],
+   "call_sites": [
+    "0x45d3c6",
+    "0x4290cd"
+   ]
+  },
+  {
+   "sid": 65,
+   "eid": 0,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x42b1f1"
+   ],
+   "call_sites": [
+    "0x42a7e4",
+    "0x42a2af"
+   ]
+  },
+  {
+   "sid": 66,
+   "eid": 85,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x440e7f"
+   ],
+   "call_sites": [
+    "0x42bbe9"
+   ]
+  },
+  {
+   "sid": 67,
+   "eid": 86,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x440e91"
+   ],
+   "call_sites": [
+    "0x422fee"
+   ]
+  },
+  {
+   "sid": 68,
+   "eid": 110,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x45d37e"
+   ],
+   "call_sites": [
+    "0x406e47"
+   ]
+  },
+  {
+   "sid": 69,
+   "eid": 58,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x42abae"
+   ]
+  },
+  {
+   "sid": 70,
+   "eid": 104,
+   "mode": 0,
+   "a4": 1,
+   "wrappers": [
+    "0x478e6f"
+   ],
+   "call_sites": [
+    "0x416f55"
+   ]
+  },
+  {
+   "sid": 71,
+   "eid": 105,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x478eb6"
+   ]
+  },
+  {
+   "sid": 72,
+   "eid": 106,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [],
+   "call_sites": [
+    "0x43bea0"
+   ]
+  },
+  {
+   "sid": 73,
+   "eid": 108,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43e1a8"
+   ],
+   "call_sites": [
+    "0x41dc93",
+    "0x41ff7a",
+    "0x465ae1"
+   ]
+  },
+  {
+   "sid": 74,
+   "eid": 108,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43e1a8"
+   ],
+   "call_sites": [
+    "0x41dc93",
+    "0x41ff7a",
+    "0x465ae1"
+   ]
+  },
+  {
+   "sid": 75,
+   "eid": 108,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43e1a8"
+   ],
+   "call_sites": [
+    "0x41dc93",
+    "0x41ff7a",
+    "0x465ae1"
+   ]
+  },
+  {
+   "sid": 76,
+   "eid": 108,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43e1a8"
+   ],
+   "call_sites": [
+    "0x41dc93",
+    "0x41ff7a",
+    "0x465ae1"
+   ]
+  },
+  {
+   "sid": 77,
+   "eid": 108,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43e1a8"
+   ],
+   "call_sites": [
+    "0x41dc93",
+    "0x41ff7a",
+    "0x465ae1"
+   ]
+  },
+  {
+   "sid": 78,
+   "eid": 108,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43e1a8"
+   ],
+   "call_sites": [
+    "0x41dc93",
+    "0x41ff7a",
+    "0x465ae1"
+   ]
+  },
+  {
+   "sid": 79,
+   "eid": 108,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43e1a8"
+   ],
+   "call_sites": [
+    "0x41dc93",
+    "0x41ff7a",
+    "0x465ae1"
+   ]
+  },
+  {
+   "sid": 80,
+   "eid": 108,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43e1a8"
+   ],
+   "call_sites": [
+    "0x41dc93",
+    "0x41ff7a",
+    "0x465ae1"
+   ]
+  },
+  {
+   "sid": 81,
+   "eid": 109,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x45b695"
+   ]
+  },
+  {
+   "sid": 82,
+   "eid": 81,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x45d390"
+   ],
+   "call_sites": [
+    "0x428ab2"
+   ]
+  },
+  {
+   "sid": 83,
+   "eid": 111,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x44f9c9"
+   ],
+   "call_sites": [
+    "0x40c880",
+    "0x4389f9"
+   ]
+  },
+  {
+   "sid": 84,
+   "eid": 112,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x43c3ba"
+   ],
+   "call_sites": [
+    "0x40d2de"
+   ]
+  },
+  {
+   "sid": 85,
+   "eid": 113,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x43c3de"
+   ],
+   "call_sites": [
+    "0x4363b3"
+   ]
+  },
+  {
+   "sid": 86,
+   "eid": 114,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x43c3f0"
+   ],
+   "call_sites": [
+    "0x43beeb"
+   ]
+  },
+  {
+   "sid": 87,
+   "eid": 115,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x43c402"
+   ],
+   "call_sites": [
+    "0x418240"
+   ]
+  },
+  {
+   "sid": 88,
+   "eid": 116,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x43c414"
+   ],
+   "call_sites": [
+    "0x40f1cc",
+    "0x41024f"
+   ]
+  },
+  {
+   "sid": 89,
+   "eid": 117,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x43c426"
+   ],
+   "call_sites": [
+    "0x40f1c0",
+    "0x40f21d"
+   ]
+  },
+  {
+   "sid": 90,
+   "eid": 95,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x43c438"
+   ],
+   "call_sites": [
+    "0x415da3"
+   ]
+  },
+  {
+   "sid": 91,
+   "eid": 118,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x41cdee"
+   ],
+   "call_sites": [
+    "0x41ce92"
+   ]
+  },
+  {
+   "sid": 92,
+   "eid": 118,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x41cdee"
+   ],
+   "call_sites": [
+    "0x41ce92"
+   ]
+  },
+  {
+   "sid": 93,
+   "eid": 119,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x40641f"
+   ],
+   "call_sites": [
+    "0x41798a"
+   ]
+  },
+  {
+   "sid": 94,
+   "eid": 120,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x41932b"
+   ],
+   "call_sites": [
+    "0x410f37",
+    "0x417a0a"
+   ]
+  },
+  {
+   "sid": 95,
+   "eid": 121,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x40640d"
+   ],
+   "call_sites": [
+    "0x41794d",
+    "0x41ce0f"
+   ]
+  },
+  {
+   "sid": 96,
+   "eid": 122,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x4210e2"
+   ],
+   "call_sites": [
+    "0x412bab",
+    "0x42bba2",
+    "0x43a339"
+   ]
+  },
+  {
+   "sid": 97,
+   "eid": 53,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x421118"
+   ],
+   "call_sites": [
+    "0x4110a2"
+   ]
+  },
+  {
+   "sid": 98,
+   "eid": 53,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x42112a"
+   ],
+   "call_sites": [
+    "0x411096"
+   ]
+  },
+  {
+   "sid": 99,
+   "eid": 79,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x42f86a"
+   ],
+   "call_sites": [
+    "0x43b7e7"
+   ]
+  },
+  {
+   "sid": 100,
+   "eid": 123,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x42f87c"
+   ],
+   "call_sites": [
+    "0x43d1e4"
+   ]
+  },
+  {
+   "sid": 101,
+   "eid": 82,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x42f8a1"
+   ],
+   "call_sites": [
+    "0x42f8d9 (table 0x42f8c5)"
+   ]
+  },
+  {
+   "sid": 102,
+   "eid": 83,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x42f8b3"
+   ],
+   "call_sites": [
+    "0x42f8d9 (table 0x42f8c5)"
+   ]
+  },
+  {
+   "sid": 103,
+   "eid": 0,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x43d0d6"
+   ],
+   "call_sites": [
+    "0x42f8d9 (table 0x42f8c5)"
+   ]
+  },
+  {
+   "sid": 104,
+   "eid": 0,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x43d0e8"
+   ],
+   "call_sites": [
+    "0x42f8d9 (table 0x42f8c5)"
+   ]
+  },
+  {
+   "sid": 105,
+   "eid": 0,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x43d0fa"
+   ],
+   "call_sites": [
+    "0x43ce75"
+   ]
+  },
+  {
+   "sid": 106,
+   "eid": 106,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x421278"
+   ],
+   "call_sites": [
+    "0x40d2b1"
+   ]
+  },
+  {
+   "sid": 107,
+   "eid": 91,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x42107c"
+   ],
+   "call_sites": [
+    "0x42128d"
+   ]
+  },
+  {
+   "sid": 108,
+   "eid": 70,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [],
+   "call_sites": [
+    "0x422eec"
+   ]
+  },
+  {
+   "sid": 110,
+   "eid": 125,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x45d2da"
+   ],
+   "call_sites": [
+    "0x43637f",
+    "0x452911"
+   ]
+  },
+  {
+   "sid": 111,
+   "eid": 72,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x422e44"
+   ],
+   "call_sites": [
+    "0x424240"
+   ]
+  },
+  {
+   "sid": 112,
+   "eid": 52,
+   "mode": 1,
+   "a4": 1,
+   "wrappers": [
+    "0x422e56"
+   ],
+   "call_sites": [
+    "0x401e32",
+    "0x42aa31"
+   ]
+  },
+  {
+   "sid": 113,
+   "eid": 88,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x405954"
+   ],
+   "call_sites": [
+    "0x438f28 (table 0x415e2b)"
+   ]
+  },
+  {
+   "sid": 114,
+   "eid": 74,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x40bf99"
+   ],
+   "call_sites": [
+    "0x42202c"
+   ]
+  },
+  {
+   "sid": 115,
+   "eid": 74,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x40bfab"
+   ],
+   "call_sites": [
+    "0x422055"
+   ]
+  },
+  {
+   "sid": 116,
+   "eid": 76,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x43c3a8"
+   ],
+   "call_sites": [
+    "0x42218d"
+   ]
+  },
+  {
+   "sid": 117,
+   "eid": 76,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x413260"
+   ],
+   "call_sites": [
+    "0x43bd91"
+   ]
+  },
+  {
+   "sid": 118,
+   "eid": 78,
+   "mode": 1,
+   "a4": 0,
+   "wrappers": [
+    "0x413272"
+   ],
+   "call_sites": [
+    "0x42675e",
+    "0x426769"
+   ]
+  },
+  {
+   "sid": 128,
+   "eid": 124,
+   "mode": 2,
+   "a4": 0,
+   "wrappers": [
+    "0x421162"
+   ],
+   "call_sites": [
+    "0x412bf6",
+    "0x412bf6 (table 0x412c70)"
+   ]
+  },
+  {
+   "sid": 129,
+   "eid": 124,
+   "mode": 2,
+   "a4": 0,
+   "wrappers": [
+    "0x421162"
+   ],
+   "call_sites": [
+    "0x412bf6",
+    "0x412bf6 (table 0x412c70)"
+   ]
+  },
+  {
+   "sid": 130,
+   "eid": 124,
+   "mode": 2,
+   "a4": 0,
+   "wrappers": [
+    "0x421162"
+   ],
+   "call_sites": [
+    "0x412bf6",
+    "0x412bf6 (table 0x412c70)"
+   ]
+  },
+  {
+   "sid": 131,
+   "eid": 124,
+   "mode": 2,
+   "a4": 0,
+   "wrappers": [
+    "0x421162"
+   ],
+   "call_sites": [
+    "0x412bf6",
+    "0x412bf6 (table 0x412c70)"
+   ]
+  },
+  {
+   "sid": 132,
+   "eid": 124,
+   "mode": 2,
+   "a4": 0,
+   "wrappers": [
+    "0x421162"
+   ],
+   "call_sites": [
+    "0x412bf6",
+    "0x412bf6 (table 0x412c70)"
+   ]
+  },
+  {
+   "sid": 133,
+   "eid": 123,
+   "mode": 2,
+   "a4": 0,
+   "wrappers": [
+    "0x42114f"
+   ],
+   "call_sites": [
+    "0x412bf6",
+    "0x412bf6 (table 0x412c70)"
+   ]
+  },
+  {
+   "sid": 134,
+   "eid": 123,
+   "mode": 2,
+   "a4": 0,
+   "wrappers": [
+    "0x42114f"
+   ],
+   "call_sites": [
+    "0x412bf6",
+    "0x412bf6 (table 0x412c70)"
+   ]
+  },
+  {
+   "sid": 135,
+   "eid": 123,
+   "mode": 2,
+   "a4": 0,
+   "wrappers": [
+    "0x42114f"
+   ],
+   "call_sites": [
+    "0x412bf6",
+    "0x412bf6 (table 0x412c70)"
+   ]
+  },
+  {
+   "sid": 136,
+   "eid": 123,
+   "mode": 2,
+   "a4": 0,
+   "wrappers": [
+    "0x42114f"
+   ],
+   "call_sites": [
+    "0x412bf6",
+    "0x412bf6 (table 0x412c70)"
+   ]
+  },
+  {
+   "sid": 137,
+   "eid": 123,
+   "mode": 2,
+   "a4": 0,
+   "wrappers": [
+    "0x42114f"
+   ],
+   "call_sites": [
+    "0x412bf6",
+    "0x412bf6 (table 0x412c70)"
+   ]
+  },
+  {
+   "sid": 138,
+   "eid": 122,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42113c"
+   ],
+   "call_sites": [
+    "0x416a48"
+   ]
+  },
+  {
+   "sid": 139,
+   "eid": 122,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42113c"
+   ],
+   "call_sites": [
+    "0x416a48"
+   ]
+  },
+  {
+   "sid": 140,
+   "eid": 122,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42113c"
+   ],
+   "call_sites": [
+    "0x416a48"
+   ]
+  },
+  {
+   "sid": 141,
+   "eid": 122,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42113c"
+   ],
+   "call_sites": [
+    "0x416a48"
+   ]
+  },
+  {
+   "sid": 142,
+   "eid": 122,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42113c"
+   ],
+   "call_sites": [
+    "0x416a48"
+   ]
+  },
+  {
+   "sid": 143,
+   "eid": 122,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42113c"
+   ],
+   "call_sites": [
+    "0x416a48"
+   ]
+  },
+  {
+   "sid": 144,
+   "eid": 102,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43d025"
+   ],
+   "call_sites": [
+    "0x43d04f"
+   ]
+  },
+  {
+   "sid": 145,
+   "eid": 102,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43d025"
+   ],
+   "call_sites": [
+    "0x43d04f"
+   ]
+  },
+  {
+   "sid": 146,
+   "eid": 102,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43d025"
+   ],
+   "call_sites": [
+    "0x43d04f"
+   ]
+  },
+  {
+   "sid": 147,
+   "eid": 102,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43d025"
+   ],
+   "call_sites": [
+    "0x43d04f"
+   ]
+  },
+  {
+   "sid": 148,
+   "eid": 102,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43d025"
+   ],
+   "call_sites": [
+    "0x43d04f"
+   ]
+  },
+  {
+   "sid": 149,
+   "eid": 102,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43d025"
+   ],
+   "call_sites": [
+    "0x43d04f"
+   ]
+  },
+  {
+   "sid": 150,
+   "eid": 102,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x43d025"
+   ],
+   "call_sites": [
+    "0x43d04f"
+   ]
+  },
+  {
+   "sid": 151,
+   "eid": 127,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42f88e"
+   ],
+   "call_sites": [
+    "0x42f8d9",
+    "0x42f8d9 (table 0x42f8c5)"
+   ]
+  },
+  {
+   "sid": 152,
+   "eid": 127,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42f88e"
+   ],
+   "call_sites": [
+    "0x42f8d9",
+    "0x42f8d9 (table 0x42f8c5)"
+   ]
+  },
+  {
+   "sid": 153,
+   "eid": 127,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42f88e"
+   ],
+   "call_sites": [
+    "0x42f8d9",
+    "0x42f8d9 (table 0x42f8c5)"
+   ]
+  },
+  {
+   "sid": 154,
+   "eid": 127,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42f88e"
+   ],
+   "call_sites": [
+    "0x42f8d9",
+    "0x42f8d9 (table 0x42f8c5)"
+   ]
+  },
+  {
+   "sid": 155,
+   "eid": 127,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42f88e"
+   ],
+   "call_sites": [
+    "0x42f8d9",
+    "0x42f8d9 (table 0x42f8c5)"
+   ]
+  },
+  {
+   "sid": 156,
+   "eid": 127,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x42f88e"
+   ],
+   "call_sites": [
+    "0x42f8d9",
+    "0x42f8d9 (table 0x42f8c5)"
+   ]
+  },
+  {
+   "sid": 157,
+   "eid": 125,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x414d98"
+   ],
+   "call_sites": [
+    "0x428441"
+   ]
+  },
+  {
+   "sid": 158,
+   "eid": 125,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x414d98"
+   ],
+   "call_sites": [
+    "0x428441"
+   ]
+  },
+  {
+   "sid": 159,
+   "eid": 125,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x414d98"
+   ],
+   "call_sites": [
+    "0x428441"
+   ]
+  },
+  {
+   "sid": 160,
+   "eid": 125,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x414d98"
+   ],
+   "call_sites": [
+    "0x428441"
+   ]
+  },
+  {
+   "sid": 161,
+   "eid": 125,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x414d98"
+   ],
+   "call_sites": [
+    "0x428441"
+   ]
+  },
+  {
+   "sid": 162,
+   "eid": 126,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x414dab"
+   ],
+   "call_sites": [
+    "0x42846e",
+    "0x414d80"
+   ]
+  },
+  {
+   "sid": 163,
+   "eid": 126,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x414dab"
+   ],
+   "call_sites": [
+    "0x42846e",
+    "0x414d80"
+   ]
+  },
+  {
+   "sid": 164,
+   "eid": 126,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x414dab"
+   ],
+   "call_sites": [
+    "0x42846e",
+    "0x414d80"
+   ]
+  },
+  {
+   "sid": 165,
+   "eid": 126,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x414dab"
+   ],
+   "call_sites": [
+    "0x42846e",
+    "0x414d80"
+   ]
+  },
+  {
+   "sid": 166,
+   "eid": 126,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x414dab"
+   ],
+   "call_sites": [
+    "0x42846e",
+    "0x414d80"
+   ]
+  },
+  {
+   "sid": 167,
+   "eid": 87,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x45d36a"
+   ],
+   "call_sites": [
+    "0x45d327"
+   ]
+  },
+  {
+   "sid": 168,
+   "eid": 87,
+   "mode": 3,
+   "a4": 0,
+   "wrappers": [
+    "0x45d36a"
+   ],
+   "call_sites": [
+    "0x45d327"
+   ]
+  },
+  {
+   "sid": 169,
+   "eid": 42,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x45d422"
+   ],
+   "call_sites": [
+    "0x435bc4",
+    "0x435ba9",
+    "0x412586"
+   ]
+  },
+  {
+   "sid": 170,
+   "eid": 42,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x45d422"
+   ],
+   "call_sites": [
+    "0x435bc4",
+    "0x435ba9",
+    "0x412586"
+   ]
+  },
+  {
+   "sid": 171,
+   "eid": 42,
+   "mode": 0,
+   "a4": 0,
+   "wrappers": [
+    "0x45d422"
+   ],
+   "call_sites": [
+    "0x435bc4",
+    "0x435ba9",
+    "0x412586"
+   ]
+  }
+ ],
+ "bisha": {
+  "_source": "Ekd5.exe 6.6: records = Data.e5 e5 tail (97 x 16, runtime 0x4a7510, getter 0x41e918); learner table [0x500c37]=0x512000 (80 x 16, sub 6 0x40886e); see docs/skills.md",
+  "fields": {
+   "b11": "not read by battle logic found [G: icon]",
+   "range_code": "+0x0c attack range code replacing the class range when id!=0 (0x43f8ef)",
+   "pierce_shape": "+0x0d 穿透 shape (0x484e27 via 0x407835), 0 = none",
+   "sp_cost": "+0x0e SP cost (0x425ad0): menu needs SP>=cost (0x465bcd), spend SP-=min(SP,cost) (0x423910)",
+   "value": "+0x0f effect value returned by 0x436334(id,k) when the current 必杀 is k (0 = no forced effect)",
+   "learners": "5 slots (pid u16 (1024 = none), learn level u8); available if pid matches and person level >= level (0x418744)",
+   "family": "row byte 15: class family that has this 必杀 without learning (40 = none) (0x418755)"
+  },
+  "family_attr8": {
+   "0": 7,
+   "8": 5,
+   "9": 1,
+   "10": 4,
+   "15": 5,
+   "16": 9,
+   "17": 3,
+   "29": 6,
+   "30": 7,
+   "31": 8,
+   "38": 2,
+   "39": 6
+  },
+  "skills": [
+   {
+    "id": 0,
+    "name": "重击",
+    "b11": 60,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 100,
+    "value": 7,
+    "description": "00猛击-基础效果必中、暴击、无反。",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 1,
+    "name": "猛者",
+    "b11": 15,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "01武将必杀技猛者－自己加攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 2,
+    "name": "铁壁",
+    "b11": 16,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "02武将必杀技－01 自己加防御",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 3,
+    "name": "沉着",
+    "b11": 15,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "03 自己加精神",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 4,
+    "name": "敏捷",
+    "b11": 17,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "04 自己加爆发",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 5,
+    "name": "昂扬",
+    "b11": 3,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "05 自己加士气",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 6,
+    "name": "疾走",
+    "b11": 52,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "06 自己加移动。",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 7,
+    "name": "金刚",
+    "b11": 66,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "07 自己霸气",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 8,
+    "name": "破攻",
+    "b11": 20,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "08 破坏攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 9,
+    "name": "破防",
+    "b11": 21,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "09 破坏防御",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 10,
+    "name": "破精",
+    "b11": 20,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "10 破坏精神",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 11,
+    "name": "破敏",
+    "b11": 22,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "11 破坏爆发",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 12,
+    "name": "破士",
+    "b11": 23,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "12 破坏士气",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 13,
+    "name": "破移",
+    "b11": 31,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "13 破坏移动",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 14,
+    "name": "折磨",
+    "b11": 47,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "14 随机状态攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 15,
+    "name": "捕縛",
+    "b11": 68,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "15 麻痹攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 16,
+    "name": "攻心",
+    "b11": 13,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "16 禁咒攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 17,
+    "name": "威風",
+    "b11": 11,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "17 混乱攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 18,
+    "name": "虚弱",
+    "b11": 10,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "18 中毒攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 19,
+    "name": "鬼门",
+    "b11": 54,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "19 随机属性攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 20,
+    "name": "嗜血",
+    "b11": 36,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 100,
+    "description": "20 吸血攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 21,
+    "name": "斬首",
+    "b11": 63,
+    "range_code": 6,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 100,
+    "description": "21 破甲攻击，可瞬間擊殺敵軍",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 22,
+    "name": "驱逐",
+    "b11": 79,
+    "range_code": 1,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "22 突破攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 23,
+    "name": "血戰",
+    "b11": 34,
+    "range_code": 6,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "23 奋战攻击",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 24,
+    "name": "破阵",
+    "b11": 65,
+    "range_code": 6,
+    "pierce_shape": 1,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "24 穿透攻击十字",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 25,
+    "name": "血路",
+    "b11": 61,
+    "range_code": 6,
+    "pierce_shape": 4,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "25穿透攻击两格",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 26,
+    "name": "破軍",
+    "b11": 78,
+    "range_code": 1,
+    "pierce_shape": 2,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "26穿透攻击九宮格",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 27,
+    "name": "滅世",
+    "b11": 75,
+    "range_code": 6,
+    "pierce_shape": 3,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "27穿透攻击沒羽箭",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 28,
+    "name": "武将技28",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "28武将必杀技。",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 29,
+    "name": "武将技29",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "29武将必杀技。",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 30,
+    "name": "武将技30",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "30武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 31,
+    "name": "武将技31",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "31武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 32,
+    "name": "武将技32",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "32武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 33,
+    "name": "武将技33",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "33武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 34,
+    "name": "武将技34",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "34武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 35,
+    "name": "武将技35",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "35武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 36,
+    "name": "武将技36",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "36武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 37,
+    "name": "武将技37",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "37武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 38,
+    "name": "武将技38",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "38武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 39,
+    "name": "武将技39",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "39武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 40,
+    "name": "武将技40",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "40武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 41,
+    "name": "武将技40",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "41武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 42,
+    "name": "武将技42",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "42武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 43,
+    "name": "武将技43",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "43武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 44,
+    "name": "武将技44",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "44武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 45,
+    "name": "武将技45",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "45武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 46,
+    "name": "武将技46",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "46武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 47,
+    "name": "武将技47",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "47武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 48,
+    "name": "武将技48",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "48武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 49,
+    "name": "武将技49",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "49武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 50,
+    "name": "武将技50",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "50武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 51,
+    "name": "武将技51",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "51武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 52,
+    "name": "武将技52",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "52武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 53,
+    "name": "武将技53",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "53武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 54,
+    "name": "武将技54",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "54武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 55,
+    "name": "武将技55",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "55武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 56,
+    "name": "武将技56",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "56武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 57,
+    "name": "武将技57",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "57武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 58,
+    "name": "武将技58",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "58武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 59,
+    "name": "武将技59",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "59武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 60,
+    "name": "武将技60",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "60武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 61,
+    "name": "武将技61",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "61武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 62,
+    "name": "武将技62",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "62武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 63,
+    "name": "武将技63",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "63武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 64,
+    "name": "武将技64",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "64武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 65,
+    "name": "武将技65",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "65武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 66,
+    "name": "武将技66",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "66武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 67,
+    "name": "武将技67",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "67武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 68,
+    "name": "武将技68",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "68武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 69,
+    "name": "武将技69",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "69武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 70,
+    "name": "武将技70",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "70武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 71,
+    "name": "武将技71",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "71武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 72,
+    "name": "武将技72",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "72武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 73,
+    "name": "武将技73",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "73武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 74,
+    "name": "武将技74",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "74武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 75,
+    "name": "武将技75",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "75武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 76,
+    "name": "武将技76",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 1,
+    "sp_cost": 80,
+    "value": 0,
+    "description": "76武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 77,
+    "name": "武将技77",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 4,
+    "sp_cost": 80,
+    "value": 7,
+    "description": "77武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 78,
+    "name": "武将技78",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 5,
+    "sp_cost": 80,
+    "value": 7,
+    "description": "78武将技",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 79,
+    "name": "武将技79",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 7,
+    "sp_cost": 60,
+    "value": 7,
+    "description": "79武将技最后一个",
+    "learners": [
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     },
+     {
+      "person": 1024,
+      "level": 1
+     }
+    ],
+    "family": 40,
+    "kind": "武将技 (menu)"
+   },
+   {
+    "id": 80,
+    "name": "重生",
+    "b11": 7,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "80文官必杀技己方白虎",
+    "kind": "文官必杀 (family attr8)",
+    "families": [
+     {
+      "family": 9,
+      "name": "医师"
+     }
+    ]
+   },
+   {
+    "id": 81,
+    "name": "歷精圖治",
+    "b11": 55,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "81文官必杀技己方霸气",
+    "kind": "文官必杀 (family attr8)",
+    "families": [
+     {
+      "family": 38,
+      "name": "皇帝"
+     }
+    ]
+   },
+   {
+    "id": 82,
+    "name": "八陣圖",
+    "b11": 26,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 7,
+    "description": "82文官必杀技对方衰气",
+    "kind": "文官必杀 (family attr8)",
+    "families": [
+     {
+      "family": 17,
+      "name": "咒术士"
+     }
+    ]
+   },
+   {
+    "id": 83,
+    "name": "巫蠱",
+    "b11": 49,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "83文官必杀技对方负面状态",
+    "kind": "文官必杀 (family attr8)",
+    "families": [
+     {
+      "family": 10,
+      "name": "道士"
+     }
+    ]
+   },
+   {
+    "id": 84,
+    "name": "鼓舞",
+    "b11": 15,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "84文官必杀技。己方气合",
+    "kind": "文官必杀 (family attr8)",
+    "families": [
+     {
+      "family": 8,
+      "name": "策士"
+     },
+     {
+      "family": 15,
+      "name": "統軍"
+     }
+    ]
+   },
+   {
+    "id": 85,
+    "name": "賣慘",
+    "b11": 20,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "85文官必杀技。对方反气合",
+    "kind": "文官必杀 (family attr8)",
+    "families": [
+     {
+      "family": 29,
+      "name": "阴阳师"
+     },
+     {
+      "family": 39,
+      "name": "百姓"
+     }
+    ]
+   },
+   {
+    "id": 86,
+    "name": "濟世",
+    "b11": 9,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "86文官必杀技。己方恢复HPMP移动",
+    "kind": "文官必杀 (family attr8)",
+    "families": [
+     {
+      "family": 0,
+      "name": "君主"
+     },
+     {
+      "family": 30,
+      "name": "辎重队"
+     }
+    ]
+   },
+   {
+    "id": 87,
+    "name": "超度",
+    "b11": 32,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "87文官必杀技。优化八阵图",
+    "kind": "文官必杀 (family attr8)",
+    "families": [
+     {
+      "family": 31,
+      "name": "仙人"
+     }
+    ]
+   },
+   {
+    "id": 88,
+    "name": "再戰",
+    "b11": 14,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "88文官必杀技。己方回归",
+    "kind": "文官必杀 (family attr8)",
+    "families": [
+     {
+      "family": 16,
+      "name": "都督"
+     }
+    ]
+   },
+   {
+    "id": 89,
+    "name": "？？",
+    "b11": 8,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 255,
+    "value": 0,
+    "description": "89文官必杀技。随机",
+    "kind": "文官必杀 (family attr8)",
+    "families": []
+   },
+   {
+    "id": 90,
+    "name": "军师技10",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "10军师技",
+    "kind": "文官必杀 (family attr8)",
+    "families": []
+   },
+   {
+    "id": 91,
+    "name": "军师技11",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "11军师技",
+    "kind": "文官必杀 (family attr8)",
+    "families": []
+   },
+   {
+    "id": 92,
+    "name": "军师技12",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "12军师技",
+    "kind": "文官必杀 (family attr8)",
+    "families": []
+   },
+   {
+    "id": 93,
+    "name": "军师技13",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "13军师技",
+    "kind": "文官必杀 (family attr8)",
+    "families": []
+   },
+   {
+    "id": 94,
+    "name": "军师技14",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "14军师技",
+    "kind": "文官必杀 (family attr8)",
+    "families": []
+   },
+   {
+    "id": 95,
+    "name": "军师技15",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "15军师技",
+    "kind": "文官必杀 (family attr8)",
+    "families": []
+   },
+   {
+    "id": 96,
+    "name": "军师技16",
+    "b11": 0,
+    "range_code": 0,
+    "pierce_shape": 0,
+    "sp_cost": 0,
+    "value": 0,
+    "description": "16军师技最后一个",
+    "kind": "文官必杀 (family attr8)",
+    "families": []
+   }
+  ]
+ }
+}

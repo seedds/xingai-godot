@@ -1,0 +1,434 @@
+{
+ "source": "U_select.e5[31] (PNG 48x1440 = 30 frames of 48x48, frame = terrain id)",
+ "rule": "ImageList 0x4b68d0 = 0x40aa0b(U_SELECT, 30, unmasked, 48, fixed entry 31) built in the terrain list dialog 0x46c520 (call 0x46c644); picture index = terrain id",
+ "note": "names are CCZ defaults (guess); the data track has the authoritative terrain names",
+ "tiles": [
+  {
+   "terrain": 0,
+   "file": "00.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 0",
+   "name_guess": "平原"
+  },
+  {
+   "terrain": 1,
+   "file": "01.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 1",
+   "name_guess": "草原"
+  },
+  {
+   "terrain": 2,
+   "file": "02.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 2",
+   "name_guess": "树林"
+  },
+  {
+   "terrain": 3,
+   "file": "03.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 3",
+   "name_guess": "荒地"
+  },
+  {
+   "terrain": 4,
+   "file": "04.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 4",
+   "name_guess": "山地"
+  },
+  {
+   "terrain": 5,
+   "file": "05.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 5",
+   "name_guess": "岩山"
+  },
+  {
+   "terrain": 6,
+   "file": "06.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 6",
+   "name_guess": "山崖"
+  },
+  {
+   "terrain": 7,
+   "file": "07.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 7",
+   "name_guess": "雪原"
+  },
+  {
+   "terrain": 8,
+   "file": "08.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 8",
+   "name_guess": "桥梁"
+  },
+  {
+   "terrain": 9,
+   "file": "09.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 9",
+   "name_guess": "浅滩"
+  },
+  {
+   "terrain": 10,
+   "file": "10.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 10",
+   "name_guess": "沼泽"
+  },
+  {
+   "terrain": 11,
+   "file": "11.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 11",
+   "name_guess": "池塘"
+  },
+  {
+   "terrain": 12,
+   "file": "12.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 12",
+   "name_guess": "小河"
+  },
+  {
+   "terrain": 13,
+   "file": "13.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 13",
+   "name_guess": "大河"
+  },
+  {
+   "terrain": 14,
+   "file": "14.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 14",
+   "name_guess": "栅栏"
+  },
+  {
+   "terrain": 15,
+   "file": "15.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 15",
+   "name_guess": "城墙"
+  },
+  {
+   "terrain": 16,
+   "file": "16.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 16",
+   "name_guess": "城内"
+  },
+  {
+   "terrain": 17,
+   "file": "17.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 17",
+   "name_guess": "城门"
+  },
+  {
+   "terrain": 18,
+   "file": "18.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 18",
+   "name_guess": "城池"
+  },
+  {
+   "terrain": 19,
+   "file": "19.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 19",
+   "name_guess": "关隘"
+  },
+  {
+   "terrain": 20,
+   "file": "20.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 20",
+   "name_guess": "鹿砦"
+  },
+  {
+   "terrain": 21,
+   "file": "21.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 21",
+   "name_guess": "村庄"
+  },
+  {
+   "terrain": 22,
+   "file": "22.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 22",
+   "name_guess": "兵营"
+  },
+  {
+   "terrain": 23,
+   "file": "23.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 23",
+   "name_guess": "民居"
+  },
+  {
+   "terrain": 24,
+   "file": "24.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 24",
+   "name_guess": "宝物库"
+  },
+  {
+   "terrain": 25,
+   "file": "25.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 25",
+   "name_guess": null
+  },
+  {
+   "terrain": 26,
+   "file": "26.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 26",
+   "name_guess": "火"
+  },
+  {
+   "terrain": 27,
+   "file": "27.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 27",
+   "name_guess": null
+  },
+  {
+   "terrain": 28,
+   "file": "28.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 28",
+   "name_guess": null
+  },
+  {
+   "terrain": 29,
+   "file": "29.png",
+   "size": [
+    48,
+    48
+   ],
+   "source": "U_select.e5[31] frame 29",
+   "name_guess": null
+  }
+ ],
+ "mini": {
+  "source": "U_select.e5[14] (JPEG 12x360 = 30 frames of 12x12)",
+  "rule": "battle overview map 0x41e7fe: every cell of the Hexzmap grid is drawn as a 12x12 tile (entry 14 frame = terrain id, loaded by 0x41e929 at buffer 0x40159c+0x642+0x4380); deployment slots are numbered with U_select[12] (colour 0) / [13] (colour 1) 12x12 digits 1..20 (see ui/index.json)",
+  "cell": 12,
+  "tiles": [
+   {
+    "terrain": 0,
+    "file": "mini/00.png"
+   },
+   {
+    "terrain": 1,
+    "file": "mini/01.png"
+   },
+   {
+    "terrain": 2,
+    "file": "mini/02.png"
+   },
+   {
+    "terrain": 3,
+    "file": "mini/03.png"
+   },
+   {
+    "terrain": 4,
+    "file": "mini/04.png"
+   },
+   {
+    "terrain": 5,
+    "file": "mini/05.png"
+   },
+   {
+    "terrain": 6,
+    "file": "mini/06.png"
+   },
+   {
+    "terrain": 7,
+    "file": "mini/07.png"
+   },
+   {
+    "terrain": 8,
+    "file": "mini/08.png"
+   },
+   {
+    "terrain": 9,
+    "file": "mini/09.png"
+   },
+   {
+    "terrain": 10,
+    "file": "mini/10.png"
+   },
+   {
+    "terrain": 11,
+    "file": "mini/11.png"
+   },
+   {
+    "terrain": 12,
+    "file": "mini/12.png"
+   },
+   {
+    "terrain": 13,
+    "file": "mini/13.png"
+   },
+   {
+    "terrain": 14,
+    "file": "mini/14.png"
+   },
+   {
+    "terrain": 15,
+    "file": "mini/15.png"
+   },
+   {
+    "terrain": 16,
+    "file": "mini/16.png"
+   },
+   {
+    "terrain": 17,
+    "file": "mini/17.png"
+   },
+   {
+    "terrain": 18,
+    "file": "mini/18.png"
+   },
+   {
+    "terrain": 19,
+    "file": "mini/19.png"
+   },
+   {
+    "terrain": 20,
+    "file": "mini/20.png"
+   },
+   {
+    "terrain": 21,
+    "file": "mini/21.png"
+   },
+   {
+    "terrain": 22,
+    "file": "mini/22.png"
+   },
+   {
+    "terrain": 23,
+    "file": "mini/23.png"
+   },
+   {
+    "terrain": 24,
+    "file": "mini/24.png"
+   },
+   {
+    "terrain": 25,
+    "file": "mini/25.png"
+   },
+   {
+    "terrain": 26,
+    "file": "mini/26.png"
+   },
+   {
+    "terrain": 27,
+    "file": "mini/27.png"
+   },
+   {
+    "terrain": 28,
+    "file": "mini/28.png"
+   },
+   {
+    "terrain": 29,
+    "file": "mini/29.png"
+   }
+  ]
+ }
+}

@@ -1,0 +1,2059 @@
+[
+ {
+  "id": 0,
+  "unk_a": 911,
+  "unk_b": 911,
+  "equipment": [],
+  "items": [],
+  "raw": "8f038f03ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+ },
+ {
+  "id": 1,
+  "unk_a": 10,
+  "unk_b": 11,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "0a000b00ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 2,
+  "unk_a": 5,
+  "unk_b": 10,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "05000a00ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 3,
+  "unk_a": 12,
+  "unk_b": 11,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "0c000b00ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 4,
+  "unk_a": 5,
+  "unk_b": 24,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "05001800ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 5,
+  "unk_a": 6,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "06001500ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 6,
+  "unk_a": 16,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "10001500ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 7,
+  "unk_a": 1,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01001500ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 8,
+  "unk_a": 16,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "10001500ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 9,
+  "unk_a": 16,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "10001500ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 10,
+  "unk_a": 16,
+  "unk_b": 18,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "10001200ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 11,
+  "unk_a": 15,
+  "unk_b": 24,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "0f001800ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 12,
+  "unk_a": 21,
+  "unk_b": 20,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "15001400ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 13,
+  "unk_a": 1,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01001500ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 14,
+  "unk_a": 6,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "06001500ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 15,
+  "unk_a": 15,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "0f001700ffffffffffffffffffffffffffffffffa0bebfc3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 16,
+  "unk_a": 2,
+  "unk_b": 24,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "02001800ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 17,
+  "unk_a": 1,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01001500ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 18,
+  "unk_a": 1,
+  "unk_b": 22,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01001600ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 19,
+  "unk_a": 1,
+  "unk_b": 22,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01001600ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 20,
+  "unk_a": 2,
+  "unk_b": 1,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "02000100ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 21,
+  "unk_a": 1,
+  "unk_b": 22,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01001600ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 22,
+  "unk_a": 1,
+  "unk_b": 22,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01001600ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 23,
+  "unk_a": 12,
+  "unk_b": 22,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "0c001600ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 24,
+  "unk_a": 2,
+  "unk_b": 22,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "02001600ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 25,
+  "unk_a": 11,
+  "unk_b": 14,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "0b000e00ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 26,
+  "unk_a": 20,
+  "unk_b": 1,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "14000100ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 27,
+  "unk_a": 20,
+  "unk_b": 1,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "14000100ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 28,
+  "unk_a": 550,
+  "unk_b": 548,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "26022402ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 29,
+  "unk_a": 2,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "02001500ffffffffffffffffffffffffffffffffa0bebfc0c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 30,
+  "unk_a": 11,
+  "unk_b": 10,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0b000a00ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 31,
+  "unk_a": 15,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0f001700ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 32,
+  "unk_a": 15,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0f001500ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 33,
+  "unk_a": 15,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0f001500ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 34,
+  "unk_a": 9,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "09001300ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 35,
+  "unk_a": 7,
+  "unk_b": 7,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "07000700ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 36,
+  "unk_a": 1,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "01001300ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 37,
+  "unk_a": 15,
+  "unk_b": 21,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0f001500ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 38,
+  "unk_a": 15,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0f001300ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 39,
+  "unk_a": 15,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0f001300ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 40,
+  "unk_a": 21,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "15001300ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 41,
+  "unk_a": 15,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0f001300ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 42,
+  "unk_a": 208,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "d0001300ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 43,
+  "unk_a": 14,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0e001300ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 44,
+  "unk_a": 15,
+  "unk_b": 20,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0f001400ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 45,
+  "unk_a": 1,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "01001300ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 46,
+  "unk_a": 7,
+  "unk_b": 7,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "07000700ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 47,
+  "unk_a": 17,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "11001300ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 48,
+  "unk_a": 3,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "03001300ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 49,
+  "unk_a": 1,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "01001300ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 50,
+  "unk_a": 1,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "01001300ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 51,
+  "unk_a": 15,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0f001300ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 52,
+  "unk_a": 3,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "03001700ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 53,
+  "unk_a": 3,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "03001300ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 54,
+  "unk_a": 3,
+  "unk_b": 20,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "03001400ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 55,
+  "unk_a": 1,
+  "unk_b": 3,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "01000300ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 56,
+  "unk_a": 3,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "03001700ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 57,
+  "unk_a": 3,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "03001700ffffffffffffffffffffffffffffffffa0bebfc0c1c2c3c4c5c6c7ffffffffff"
+ },
+ {
+  "id": 58,
+  "unk_a": 13,
+  "unk_b": 13,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0d000d00ffffffffffffffffffffffffffffffffa0bebfc0c1c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 59,
+  "unk_a": 13,
+  "unk_b": 13,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0d000d00ffffffffffffffffffffffffffffffffa0bebfc0c1c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 60,
+  "unk_a": 2,
+  "unk_b": 20,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "02001400ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 61,
+  "unk_a": 1,
+  "unk_b": 12,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01000c00ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 62,
+  "unk_a": 1,
+  "unk_b": 12,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   196,
+   197,
+   198
+  ],
+  "raw": "01000c00ffffffffffffffffffffffffffffffffbebfc4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 63,
+  "unk_a": 15,
+  "unk_b": 157,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "0f009d00ffffffffffffffffffffffffffffffffa0bebfc0c1c3c4c5c6ffffffffffffff"
+ },
+ {
+  "id": 64,
+  "unk_a": 1,
+  "unk_b": 18,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01001200ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 65,
+  "unk_a": 1,
+  "unk_b": 22,
+  "equipment": [],
+  "items": [
+   190,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01001600ffffffffffffffffffffffffffffffffbec1c3c4c5c6ffffffffffffffffffff"
+ },
+ {
+  "id": 66,
+  "unk_a": 12,
+  "unk_b": 11,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0c000b00ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 67,
+  "unk_a": 782,
+  "unk_b": 72,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   196,
+   197,
+   198
+  ],
+  "raw": "0e034800ffffffffffffffffffffffffffffffffbebfc1c4c5c6ffffffffffffffffffff"
+ },
+ {
+  "id": 68,
+  "unk_a": 17,
+  "unk_b": 837,
+  "equipment": [],
+  "items": [],
+  "raw": "11004503ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+ },
+ {
+  "id": 69,
+  "unk_a": 1,
+  "unk_b": 22,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "01001600ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 70,
+  "unk_a": 36,
+  "unk_b": 90,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "24005a00ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6c7ffffffffffffffff"
+ },
+ {
+  "id": 71,
+  "unk_a": 46,
+  "unk_b": 47,
+  "equipment": [],
+  "items": [],
+  "raw": "2e002f00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+ },
+ {
+  "id": 72,
+  "unk_a": 1013,
+  "unk_b": 1014,
+  "equipment": [],
+  "items": [
+   196,
+   197,
+   198
+  ],
+  "raw": "f503f603ffffffffffffffffffffffffffffffffc4c5c6ffffffffffffffffffffffffff"
+ },
+ {
+  "id": 73,
+  "unk_a": 126,
+  "unk_b": 126,
+  "equipment": [],
+  "items": [
+   190,
+   193,
+   196,
+   197,
+   198
+  ],
+  "raw": "7e007e00ffffffffffffffffffffffffffffffffbec1c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 74,
+  "unk_a": 3,
+  "unk_b": 33,
+  "equipment": [],
+  "items": [
+   190,
+   196,
+   197,
+   198
+  ],
+  "raw": "03002100ffffffffffffffffffffffffffffffffbec4c5c6ffffffffffffffffffffffff"
+ },
+ {
+  "id": 75,
+  "unk_a": 108,
+  "unk_b": 106,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "6c006a00ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 76,
+  "unk_a": 100,
+  "unk_b": 77,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "64004d00ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 77,
+  "unk_a": 13,
+  "unk_b": 12,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "0d000c00ffffffffffffffffffffffffffffffffa0bebfc1c2c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 78,
+  "unk_a": 47,
+  "unk_b": 46,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "2f002e00ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6c7ffffffffffffffff"
+ },
+ {
+  "id": 79,
+  "unk_a": 54,
+  "unk_b": 49,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "36003100ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6c7ffffffffffffffff"
+ },
+ {
+  "id": 80,
+  "unk_a": 53,
+  "unk_b": 50,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "35003200ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6c7ffffffffffffffff"
+ },
+ {
+  "id": 81,
+  "unk_a": 91,
+  "unk_b": 830,
+  "equipment": [],
+  "items": [
+   190,
+   194,
+   196,
+   197,
+   198
+  ],
+  "raw": "5b003e03ffffffffffffffffffffffffffffffffbec2c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 82,
+  "unk_a": 91,
+  "unk_b": 78,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "5b004e00ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6c7ffffffffffffffff"
+ },
+ {
+  "id": 83,
+  "unk_a": 845,
+  "unk_b": 846,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   196,
+   197,
+   198
+  ],
+  "raw": "4d034e03ffffffffffffffffffffffffffffffffbebfc1c4c5c6ffffffffffffffffffff"
+ },
+ {
+  "id": 84,
+  "unk_a": 119,
+  "unk_b": 132,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "77008400ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 85,
+  "unk_a": 17,
+  "unk_b": 135,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "11008700ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 86,
+  "unk_a": 2,
+  "unk_b": 126,
+  "equipment": [],
+  "items": [
+   190,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "02007e00ffffffffffffffffffffffffffffffffbec1c3c4c5c6ffffffffffffffffffff"
+ },
+ {
+  "id": 87,
+  "unk_a": 848,
+  "unk_b": 848,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "50035003ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 88,
+  "unk_a": 3,
+  "unk_b": 41,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "03002900ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 89,
+  "unk_a": 819,
+  "unk_b": 818,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "33033203ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6c7ffffffffffffffff"
+ },
+ {
+  "id": 90,
+  "unk_a": 1,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "01001300ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 91,
+  "unk_a": 1,
+  "unk_b": 19,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "01001300ffffffffffffffffffffffffffffffffa0bebfc0c1c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 92,
+  "unk_a": 3,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   192,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "03001700ffffffffffffffffffffffffffffffffa0bebfc0c1c3c4c5c6c7ffffffffffff"
+ },
+ {
+  "id": 93,
+  "unk_a": 804,
+  "unk_b": 157,
+  "equipment": [],
+  "items": [
+   190,
+   193,
+   196,
+   197,
+   198
+  ],
+  "raw": "24039d00ffffffffffffffffffffffffffffffffbec1c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 94,
+  "unk_a": 800,
+  "unk_b": 46,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "20032e00ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 95,
+  "unk_a": 185,
+  "unk_b": 185,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "b900b900ffffffffffffffffffffffffffffffffbebfc1c2c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 96,
+  "unk_a": 829,
+  "unk_b": 35,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "3d032300ffffffffffffffffffffffffffffffffbebfc1c2c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 97,
+  "unk_a": 804,
+  "unk_b": 151,
+  "equipment": [],
+  "items": [
+   160,
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "24039700ffffffffffffffffffffffffffffffffa0bebfc1c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 98,
+  "unk_a": 1,
+  "unk_b": 157,
+  "equipment": [],
+  "items": [
+   160,
+   161,
+   162,
+   163,
+   164,
+   165,
+   166,
+   190,
+   191,
+   192,
+   193,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "01009d00ffffffffffffffffffffffffffffffffa0a1a2a3a4a5a6bebfc0c1c3c4c5c6c7"
+ },
+ {
+  "id": 99,
+  "unk_a": 594,
+  "unk_b": 595,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   194,
+   197,
+   198,
+   199
+  ],
+  "raw": "52025302ffffffffffffffffffffffffffffffffbebfc2c5c6c7ffffffffffffffffffff"
+ },
+ {
+  "id": 100,
+  "unk_a": 3,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [],
+  "raw": "03001700ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+ },
+ {
+  "id": 101,
+  "unk_a": 797,
+  "unk_b": 797,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "1d031d03ffffffffffffffffffffffffffffffffbebfc1c2c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 102,
+  "unk_a": 181,
+  "unk_b": 192,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "b500c000ffffffffffffffffffffffffffffffffbebfc1c2c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 103,
+  "unk_a": 46,
+  "unk_b": 49,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "2e003100ffffffffffffffffffffffffffffffffbebfc1c2c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 104,
+  "unk_a": 46,
+  "unk_b": 34,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "2e002200ffffffffffffffffffffffffffffffffbebfc1c2c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 105,
+  "unk_a": 15,
+  "unk_b": 816,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "0f003003ffffffffffffffffffffffffffffffffbebfc1c2c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 106,
+  "unk_a": 3,
+  "unk_b": 35,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198,
+   199
+  ],
+  "raw": "03002300ffffffffffffffffffffffffffffffffbebfc1c2c3c4c5c6c7ffffffffffffff"
+ },
+ {
+  "id": 107,
+  "unk_a": 3,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [],
+  "raw": "03001700ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+ },
+ {
+  "id": 108,
+  "unk_a": 3,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [],
+  "raw": "03001700ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+ },
+ {
+  "id": 109,
+  "unk_a": 3,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [],
+  "raw": "03001700ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+ },
+ {
+  "id": 110,
+  "unk_a": 547,
+  "unk_b": 546,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "23022202ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 111,
+  "unk_a": 707,
+  "unk_b": 707,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "c302c302ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 112,
+  "unk_a": 3,
+  "unk_b": 34,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "03002200ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 113,
+  "unk_a": 800,
+  "unk_b": 837,
+  "equipment": [],
+  "items": [
+   190,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "20034503ffffffffffffffffffffffffffffffffbec3c4c5c6ffffffffffffffffffffff"
+ },
+ {
+  "id": 114,
+  "unk_a": 706,
+  "unk_b": 707,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "c202c302ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 115,
+  "unk_a": 706,
+  "unk_b": 708,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "c202c402ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 116,
+  "unk_a": 837,
+  "unk_b": 837,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "45034503ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 117,
+  "unk_a": 546,
+  "unk_b": 157,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193
+  ],
+  "raw": "22029d00ffffffffffffffffffffffffffffffffbebfc1ffffffffffffffffffffffffff"
+ },
+ {
+  "id": 118,
+  "unk_a": 706,
+  "unk_b": 707,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193
+  ],
+  "raw": "c202c302ffffffffffffffffffffffffffffffffbebfc1ffffffffffffffffffffffffff"
+ },
+ {
+  "id": 119,
+  "unk_a": 46,
+  "unk_b": 707,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "2e00c302ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 120,
+  "unk_a": 800,
+  "unk_b": 157,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "20039d00ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 121,
+  "unk_a": 33,
+  "unk_b": 3,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "21000300ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 122,
+  "unk_a": 3,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [],
+  "raw": "03001700ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+ },
+ {
+  "id": 123,
+  "unk_a": 800,
+  "unk_b": 564,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "20033402ffffffffffffffffffffffffffffffffbebfc1c3c4c5c6ffffffffffffffffff"
+ },
+ {
+  "id": 124,
+  "unk_a": 703,
+  "unk_b": 747,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "bf02eb02ffffffffffffffffffffffffffffffffbebfc1c2c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 125,
+  "unk_a": 837,
+  "unk_b": 804,
+  "equipment": [],
+  "items": [
+   190,
+   191,
+   193,
+   194,
+   195,
+   196,
+   197,
+   198
+  ],
+  "raw": "45032403ffffffffffffffffffffffffffffffffbebfc1c2c3c4c5c6ffffffffffffffff"
+ },
+ {
+  "id": 126,
+  "unk_a": 3,
+  "unk_b": 23,
+  "equipment": [],
+  "items": [],
+  "raw": "03001700ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+ },
+ {
+  "id": 127,
+  "unk_a": 1,
+  "unk_b": 1,
+  "equipment": [],
+  "items": [],
+  "raw": "01000100ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+ }
+]

@@ -1,0 +1,52 @@
+{
+ "units": {
+  "mov": 717,
+  "atk": 717,
+  "spc": 717
+ },
+ "rpg_sprites": {
+  "characters": 461,
+  "zeroed_header_entries": 8
+ },
+ "backgrounds": {
+  "backgrounds": 852,
+  "jpg": 253,
+  "masks": 812
+ },
+ "maps": {
+  "maps": 126,
+  "pictures": 125
+ },
+ "portraits": {
+  "large": 700,
+  "fb": 108
+ },
+ "screens": {
+  "screens": 40
+ },
+ "effects": {
+  "xben": 60,
+  "dt": 60,
+  "mcall": 23,
+  "ranges_attack": 33,
+  "ranges_strategy": 10,
+  "tr": 11,
+  "weather": 5,
+  "map_patches": 192
+ },
+ "icons": {
+  "icons": 688,
+  "commands": 29,
+  "list16": 9
+ },
+ "terrain": {
+  "terrain": 30,
+  "mini": 30
+ },
+ "ui": {
+  "exe": 8,
+  "mark": 12,
+  "u_select": 32,
+  "compat": 6
+ }
+}

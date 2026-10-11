@@ -1,6 +1,5 @@
-# NOT ACTIVE YET: this workflow needs the converted game data (game/assets) in the repository, and game/assets is
-# still gitignored (it is regenerated from the original game by the converters, docs/BUILDING.md). The repository has
-# no GitHub remote either. Until both change, nothing runs this file; it is kept working in principle.
+# The converted game data (game/assets, made by the converters from the original game, docs/BUILDING.md) is
+# committed, so the runners build from the repository alone.
 #
 # Builds the game for macOS, Windows, iPhone and Android on every push to main and publishes them as a GitHub release.
 # The build number is the workflow's run number, so it increases with every build: tag build-N, version 1.0.N.
@@ -33,7 +32,7 @@ env:
   GODOT_MACOS_SHA256: c58a24e31d720be9d62f60cb5627c4e695fb72f21b0cfe1bc9ccaa9a3b3ba63e
   TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
   # SHA-256 of the Android release key's certificate (secrets ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_PASSWORD)
-  ANDROID_CERT_SHA256: a07c41ea2d4c5972156a57e46527896c6b9c6e1cc4f11a2e529094bdc732e667
+  ANDROID_CERT_SHA256: 27b6b03d67869d54e96ccc30c1b898e41bfe2f57c03fb020a860bbf865d1ed35
   KEEP_BUILDS: 5
 
 jobs:
@@ -274,7 +273,7 @@ jobs:
       - name: Export the Android app
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          GODOT_ANDROID_KEYSTORE_RELEASE_USER: wagang
+          GODOT_ANDROID_KEYSTORE_RELEASE_USER: xingai
           GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           if [ -z "$KEYSTORE_BASE64" ] || [ -z "$GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD" ]; then

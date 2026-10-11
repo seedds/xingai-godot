@@ -199,8 +199,8 @@ example, this plays one battle turn through the touch path with screenshots:
 
 * There is no HD graphics pack for this game yet; the mechanism and what a pack would need are in
   [HD_GRAPHICS.md](HD_GRAPHICS.md).
-* The release workflow is not active for this repository (no remote, and `game/assets/` is not committed); see
-  "Automatic releases" in [BUILDING.md](BUILDING.md).
+* Every push to `main` that changes the game builds and publishes *Build N* for macOS, Windows, iPhone and
+  Android; see "Automatic releases" in [BUILDING.md](BUILDING.md). Check a run with `gh run list --workflow release.yml`.
 
 ## Reverse-engineering workflow
 

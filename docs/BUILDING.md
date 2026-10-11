@@ -1,10 +1,10 @@
 # Building
 
-The repository holds the code, the converters and the documentation, not the game. The converted game data
-(`game/assets/`) is **gitignored for now**: it is generated from an original copy of 新改曹操傳 6.6 by the tools in
-`tools/` (see [Re-generating the game data](#re-generating-the-game-data)). Once `game/assets/` exists, running and
-exporting only need Godot. This page covers **exporting the apps**, the **converter pipeline** and the state of the
-**GitHub Actions** workflow.
+The repository holds the code, the converters, the documentation and the converted game data (`game/assets/`),
+which the tools in `tools/` generate from an original copy of 新改曹操傳 6.6 (see
+[Re-generating the game data](#re-generating-the-game-data)); the original game itself is not included. Running and
+exporting only need Godot. This page covers **exporting the apps**, the **converter pipeline** and the **GitHub
+Actions** release workflow.
 
 ## Exporting the apps
 
@@ -105,12 +105,21 @@ tools/build_android.sh --install           # ... then install and start it on th
 * The back button or gesture does what 返回 / 菜单 do; it does not quit the app. Saves stay in the app's private
   storage: kept when a newer build is installed over it, deleted when the app is uninstalled.
 * **Signing:** every build must be signed with the same key, or Android refuses to install it over the previous
-  one (players would have to uninstall first, which deletes their saves). `tools/build_android.sh` uses the release
-  key of the wg2025 port: `~/.android/wagang-release.keystore` (alias `wagang`, certificate `CN=WaGang`, SHA-256
-  `a07c41ea…e667`) with its password in the login keychain (item `wagang-android-keystore`). The two games have
-  different package names, so sharing the key is harmless. `GODOT_ANDROID_KEYSTORE_RELEASE_PATH` / `_USER` /
-  `_PASSWORD` select another key. Keep a backup of the keystore and its password: without them no new build can
-  update an installed one.
+  one (players would have to uninstall first, which deletes their saves). The release key is
+  `~/.android/xingai-release.keystore` (alias `xingai`, PKCS12, RSA 4096, certificate `CN=XinGai`, valid until 2054,
+  SHA-256 `27b6b03d…ed35`) with its password in the login keychain (item `xingai-android-keystore`;
+  `security find-generic-password -s xingai-android-keystore -w` prints it). `GODOT_ANDROID_KEYSTORE_RELEASE_PATH` /
+  `_USER` / `_PASSWORD` select another key. **Keep a backup of the keystore and its password**: without them no new
+  build can update an installed one.
+* The release workflow gets the key from the repository secrets `ANDROID_KEYSTORE_BASE64` and
+  `ANDROID_KEYSTORE_PASSWORD`, and checks the APK's certificate against `ANDROID_CERT_SHA256` in the workflow. To
+  set the secrets again (or, for a fork with its own key made with `keytool -genkeypair -keystore … -storetype PKCS12
+  -alias xingai -keyalg RSA -keysize 4096 -validity 10000 -dname "CN=XinGai"`, also put its certificate's SHA-256
+  from `keytool -list -v` into `ANDROID_CERT_SHA256`):
+  ```sh
+  base64 -i ~/.android/xingai-release.keystore | gh secret set ANDROID_KEYSTORE_BASE64
+  security find-generic-password -s xingai-android-keystore -w | tr -d '\n' | gh secret set ANDROID_KEYSTORE_PASSWORD
+  ```
 
 ### Smoke tests
 
@@ -130,8 +139,8 @@ variables work with `./run_game.sh --headless` from source. Longer automated pla
 
 ## Re-generating the game data
 
-Everything under `game/assets/` is produced from the original game by the converters in `tools/`. The output is
-gitignored until the converters are considered stable.
+Everything under `game/assets/` is produced from the original game by the converters in `tools/`, and committed
+(the release workflow builds from it). Re-run the converters after changing one and commit the result.
 
 ### Prerequisites
 
@@ -192,10 +201,18 @@ After converting, start the game once (`./run_game.sh`) and run the smoke tests 
 
 ## Automatic releases (GitHub Actions)
 
-`.github/workflows/release.yml` comes from the wg2025 port, where it builds macOS, Windows, iPhone and Android on
-every push to `main` and publishes them as a GitHub release *Build N* (version `1.0.N`, stamped by
-`.github/scripts/stamp_version.sh`). It has been adapted to this game (`XinGai` file names, original pictures, no HD
-pack), but **it is not set up for this repository**: the repository has no GitHub remote, and the runners would
-need the converted data, which is gitignored (`game/assets/` would have to be committed first). For the Android
-job the repository secrets `ANDROID_KEYSTORE_BASE64` and `ANDROID_KEYSTORE_PASSWORD` would have to hold the release
-key above; the workflow checks the APK's certificate against `ANDROID_CERT_SHA256` (that key's `a07c41ea…e667`).
+`.github/workflows/release.yml` builds the game on every push to `main` of
+[seedds/xingai-godot](https://github.com/seedds/xingai-godot) that changes the game (not for `docs/`, `*.md` or
+`tools/` only) and publishes it as a GitHub release *Build N*: version `1.0.N` (N = the workflow's run number,
+stamped into the project by `.github/scripts/stamp_version.sh` and shown on the title screen), tag `build-N`.
+
+* **build** (Ubuntu): imports the project, exports `XinGai-macOS-build-N.zip` (universal, ad-hoc signed) and
+  `XinGai-Windows-build-N.zip`, plays the first scenarios headless from the exported `.pck` as a smoke test, and
+  publishes the release.
+* **ios** (macOS runner): `tools/build_ios.sh --unsigned` → `XinGai-iOS-build-N.ipa` added to the release
+  (unsigned: install with AltStore / Sideloadly).
+* **android** (Ubuntu): `XinGai-Android-build-N.apk`, signed with the release key from the repository secrets
+  `ANDROID_KEYSTORE_BASE64` / `ANDROID_KEYSTORE_PASSWORD` (set as shown under Android above); the job checks the
+  APK's certificate against `ANDROID_CERT_SHA256` (`27b6b03d…ed35`) before uploading.
+* Only the newest `KEEP_BUILDS` releases are kept. Watch a run with `gh run list --workflow release.yml` /
+  `gh run watch`; `gh workflow run release.yml` starts one by hand.

@@ -9,8 +9,8 @@
 # docs/BUILDING.md), a JDK 17+ and the Android SDK (build-tools and platform-tools) set in Godot's editor settings
 # (Export → Android). The HD pack (game/assets_hd) is optional.
 # Signing: the release key, so the build installs over the published ones and keeps their saves. By default
-# ~/.android/wagang-release.keystore (alias wagang) with its password in the login keychain (item
-# wagang-android-keystore); GODOT_ANDROID_KEYSTORE_RELEASE_PATH / _USER / _PASSWORD override it.
+# ~/.android/xingai-release.keystore (alias xingai) with its password in the login keychain (item
+# xingai-android-keystore); GODOT_ANDROID_KEYSTORE_RELEASE_PATH / _USER / _PASSWORD override it.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -32,10 +32,10 @@ if [ ! -f "$tpl" ]; then
 fi
 
 if [ -z "${GODOT_ANDROID_KEYSTORE_RELEASE_PATH:-}" ]; then
-  export GODOT_ANDROID_KEYSTORE_RELEASE_PATH="$HOME/.android/wagang-release.keystore"
-  export GODOT_ANDROID_KEYSTORE_RELEASE_USER="wagang"
-  GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="$(security find-generic-password -s wagang-android-keystore -w 2> /dev/null)" \
-    || { echo "no password for the release key in the keychain (item wagang-android-keystore)" >&2; exit 1; }
+  export GODOT_ANDROID_KEYSTORE_RELEASE_PATH="$HOME/.android/xingai-release.keystore"
+  export GODOT_ANDROID_KEYSTORE_RELEASE_USER="xingai"
+  GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="$(security find-generic-password -s xingai-android-keystore -w 2> /dev/null)" \
+    || { echo "no password for the release key in the keychain (item xingai-android-keystore)" >&2; exit 1; }
   export GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD
 fi
 if [ ! -f "$GODOT_ANDROID_KEYSTORE_RELEASE_PATH" ]; then

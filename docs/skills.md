@@ -8,7 +8,7 @@ persons, units and the 0x501000 save block are in [memory.md](memory.md); item /
 locals); everything below was read in the disassembly (`tools/disx.py`), Ghidra only as a cross-check.
 Data file: `game/assets/data/skills.json` (names, descriptions, default values, initial class skills, every query
 pair with its call sites, item-effect table, the 97 必杀 records) — reference data generated from the exe tables
-(`game/assets/` is untracked; built by `tools/conv_skills.sh`).
+(built by `tools/conv_skills.sh`).
 
 Summary
 
